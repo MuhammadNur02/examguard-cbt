@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\ExamStatus;
+use Carbon\CarbonInterface;
+use Database\Factories\ExamFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+
+#[Fillable([
+    'judul', 'mata_kuliah', 'mulai', 'durasi_menit', 'batas_pelanggaran',
+    'acak_soal', 'acak_opsi', 'pool_size', 'status',
+])]
+class Exam extends Model
+{
+    /** @use HasFactory<ExamFactory> */
+    use HasFactory;
+
+    protected function casts(): array
+    {
+        return [
+            'mulai' => 'datetime',
+            'durasi_menit' => 'integer',
+            'batas_pelanggaran' => 'integer',
+            'acak_soal' => 'boolean',
+            'acak_opsi' => 'boolean',
+            'pool_size' => 'integer',
+            'status' => ExamStatus::class,
+        ];
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function dosen(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dosen_id');
+    }
+
+    /** @return HasOne<ExamAccess, $this> */
+    public function access(): HasOne
+    {
+        return $this->hasOne(ExamAccess::class);
+    }
+
+    /** @return HasMany<Question, $this> */
+    public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class)->orderBy('urutan')->orderBy('id');
+    }
+
+    /** @return HasMany<ExamAttempt, $this> */
+    public function attempts(): HasMany
+    {
+        return $this->hasMany(ExamAttempt::class);
+    }
+
+    /** @return BelongsToMany<Kelas, $this> */
+    public function kelas(): BelongsToMany
+    {
+        return $this->belongsToMany(Kelas::class, 'exam_classes', 'exam_id', 'class_id');
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === ExamStatus::Published;
+    }
+
+    /** Akhir jendela ujian: mulai + durasi. */
+    public function selesaiPada(): CarbonInterface
+    {
+        return $this->mulai->copy()->addMinutes($this->durasi_menit);
+    }
+
+    /** Ujian berada di dalam jadwal [mulai, selesai). */
+    public function dalamJadwal(?CarbonInterface $waktu = null): bool
+    {
+        $waktu ??= now();
+
+        return $waktu->greaterThanOrEqualTo($this->mulai) && $waktu->lessThan($this->selesaiPada());
+    }
+}
