@@ -23,13 +23,13 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 
 ## Fase 2 — Antarmuka Dosen dan Bank Soal
 
-- [ ] **2.1 (M)** Form manajemen ujian: judul, jadwal, durasi, batas pelanggaran, opsi pengacakan, publish/unpublish. *(FR-02.1, FR-02.3)*
+- [x] **2.1 (M)** Form manajemen ujian: judul, jadwal, durasi, batas pelanggaran, opsi pengacakan, publish/unpublish. *(FR-02.1, FR-02.3)*
   - DoD: ujian tidak dapat dimulai di luar jadwal.
 - [x] **2.2 (M)** Form soal PG berbobot dan esai berkunci patokan + kata kunci. *(FR-02.2)*
   - DoD: validasi satu kunci PG, kunci esai wajib.
 - [ ] **2.3 (S)** Parser impor CSV/Excel + template + laporan baris salah. *(FR-02.4)*
   - DoD: baris salah dilaporkan dengan nomor baris sebelum penyimpanan.
-- [ ] **2.4 (M)** Endpoint API soal teracak per mahasiswa. *(FR-03.1–FR-03.4)*
+- [x] **2.4 (M)** Endpoint API soal teracak per mahasiswa. *(FR-03.1–FR-03.4)*
   - Fisher-Yates dengan PRNG berseed; `shuffle_seed` disimpan di `exam_attempts`; pemetaan urutan ke ID asli disimpan; kunci jawaban tidak pernah dikirim.
   - DoD: dua akun uji mendapat urutan berbeda; reload tidak mengubah urutan; nilai tetap benar; respons API tidak memuat kunci.
 - [ ] **2.5 (S)** Opsi pengacakan per ujian (acak soal/opsi on/off, opsi posisi tetap). *(FR-03.5)*
