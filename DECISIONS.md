@@ -204,3 +204,54 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 ### D-26 Batas aksi admin atas akunnya sendiri
 - **Keputusan:** admin tidak bisa menonaktifkan atau me-reset sesi akunnya sendiri
   dari daftar akun, sehingga selalu ada minimal satu admin aktif.
+
+## G. Layar Ujian dan Anti-Kecurangan (Fase 3)
+
+### D-27 Memuat ulang / meninggalkan halaman ujian terhitung pindah tab
+- **Keputusan:** saat halaman dimuat ulang atau ditinggalkan, peramban memicu
+  `visibilitychange` (hidden); kejadian ini dilaporkan (fetch `keepalive`) dan
+  terhitung sebagai pelanggaran `pindah_tab`. Hal ini dijelaskan di kartu
+  persetujuan integritas ("termasuk memuat ulang atau meninggalkan halaman").
+- **Alasan:** menutup celah "pindah ke situs lain di tab yang sama lalu kembali".
+  Muat ulang yang tidak disengaja dapat dimaafkan dosen (FR-06.5).
+- **Alternatif:** mengabaikan kejadian saat `beforeunload` (celah tersebut terbuka).
+
+### D-28 Debounce dua lapis 2 detik, duplikat tidak disimpan
+- **Keputusan:** klien hanya mengirim satu laporan per 2 detik; server juga
+  menolak menghitung laporan yang tiba < 2 detik setelah pelanggaran terhitung
+  terakhir dan **tidak menyimpan baris** untuk laporan duplikat itu.
+- **Alasan:** PRD §9.1: `visibilitychange` dan `blur` (dan keluar layar penuh)
+  dari satu kejadian dihitung sekali. Nilai dapat diubah lewat
+  `EXAM_VIOLATION_DEBOUNCE_MS`.
+
+### D-29 Toleransi 10 detik dan penutupan terjadwal
+- **Keputusan:** jawaban yang tiba ≤ 10 detik setelah batas waktu masih diterima
+  (latensi jaringan); setelah itu attempt ditutup "waktu habis". Perintah
+  `ujian:tutup-kedaluwarsa` dijadwalkan tiap menit untuk attempt yang
+  pesertanya sudah menutup peramban (jalankan `php artisan schedule:work` atau cron).
+
+### D-30 Pintasan yang diblokir
+- **Keputusan:** sesuai FR-04.3 (klik kanan, salin/potong/tempel, seleksi teks,
+  Ctrl+C/V/U, Ctrl+Shift+I, F12) ditambah Ctrl+X (potong) dan Ctrl+Shift+J/C
+  (pintasan DevTools lain yang setara Ctrl+Shift+I). Ctrl+S/P dan Tab tidak
+  diblokir (StyleGuide §10). Seleksi teks diizinkan di kotak jawaban esai agar
+  mahasiswa bisa menyunting; tempel tetap diblokir di mana pun. Aksi yang
+  diblokir tidak dihitung sebagai pelanggaran.
+
+### D-31 Autosave satu-permintaan-sekaligus
+- **Keputusan:** klien mengirim perubahan jawaban berdasarkan posisi tampil,
+  satu permintaan pada satu waktu (urutan simpan terjaga, tidak ada jawaban lama
+  menimpa yang baru), antrean juga disimpan di `localStorage` agar selamat dari
+  koneksi putus dan muat ulang, dengan coba ulang bertahap hingga 30 detik.
+  Pilihan PG disimpan segera; esai 1,5 detik setelah berhenti mengetik; flush
+  berkala tiap 10 detik.
+
+### D-32 Layar penuh lewat tombol
+- **Keputusan:** layar pengerjaan menampilkan tombol "Masuk Layar Penuh & Mulai"
+  karena peramban hanya mengizinkan `requestFullscreen` dari gestur pengguna.
+  Pemantauan aktif setelah layar penuh berhasil. Tombol "Kembali ke Ujian" pada
+  modal meminta layar penuh lagi (DoD 3.2).
+
+### D-33 Batas laju endpoint ujian
+- **Keputusan:** 240 permintaan/menit per mahasiswa untuk endpoint ujian
+  (autosave, heartbeat, pelanggaran, kirim) agar klien yang rusak tidak membanjiri server.
