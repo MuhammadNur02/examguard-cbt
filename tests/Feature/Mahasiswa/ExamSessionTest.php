@@ -139,7 +139,7 @@ class ExamSessionTest extends TestCase
         $attempt = $this->attempt();
         $this->assertSame(FinishReason::WaktuHabis, $attempt->alasan_selesai);
         $peta = app(AttemptService::class)->petakanPosisi($attempt, $this->nomorPg, 1);
-        $this->assertSame($peta['option_id'], StudentAnswer::sole()->option_id);
+        $this->assertSame($peta['option_id'], StudentAnswer::where('question_id', $peta['question_id'])->sole()->option_id);
     }
 
     public function test_waktu_tambahan_memperpanjang_batas(): void

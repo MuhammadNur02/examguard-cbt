@@ -167,6 +167,11 @@ class AttemptService
 
         $attempt->refresh();
 
+        if ($berubah === 1) {
+            // Nilai PG instan di backend (FR-05.1); esai menunggu skor rekomendasi + dosen.
+            app(ScoringService::class)->nilaiOtomatis($attempt);
+        }
+
         return $berubah === 1;
     }
 
