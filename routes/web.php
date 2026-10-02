@@ -58,5 +58,8 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/', Mahasiswa\DashboardController::class)->name('dashboard');
+
+        Route::post('/ujian/{exam}/mulai', [Mahasiswa\AttemptController::class, 'start'])->name('attempts.start');
+        Route::get('/ujian/{exam}/soal', [Mahasiswa\AttemptController::class, 'questions'])->name('attempts.questions');
     });
 });
