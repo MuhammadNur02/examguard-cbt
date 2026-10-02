@@ -10,7 +10,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 
 ## Fase 1 — Arsitektur dan Skema Basis Data
 
-- [ ] **1.1 (M)** Rancang skema database: `users`, `classes`, `class_students`, `exams`, `exam_access`, `questions`, `options`, `exam_attempts`, `student_answers`, `exam_logs`, `exam_results`, `similarity_flags`. *(PRD §11)*
+- [x] **1.1 (M)** Rancang skema database: `users`, `classes`, `class_students`, `exams`, `exam_access`, `questions`, `options`, `exam_attempts`, `student_answers`, `exam_logs`, `exam_results`, `similarity_flags`. *(PRD §11)*
   - DoD: ERD final, migration berjalan bersih, seeder data contoh.
 - [ ] **1.2 (M)** Inisialisasi repositori, environment (`.env.example`), Laravel + Tailwind, layanan Python NLP (FastAPI), Docker Compose atau skrip setup.
   - DoD: `README` berisi langkah menjalankan; lint dan test kosong berjalan.
