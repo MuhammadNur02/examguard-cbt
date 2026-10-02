@@ -14,7 +14,9 @@ document.addEventListener('click', (event) => {
     }
 
     const tabel = document.getElementById(tombol.dataset.unduhTabel);
-    const sel = (teks) => `"${teks.replaceAll('"', '""')}"`;
+    // Awalan ' mencegah Excel mengeksekusi isi sel sebagai formula (CSV injection).
+    const aman = (teks) => (/^[=+\-@\t\r]/.test(teks) ? `'${teks}` : teks);
+    const sel = (teks) => `"${aman(teks).replaceAll('"', '""')}"`;
     const baris = [...tabel.querySelectorAll('tr')].map((tr) =>
         [...tr.querySelectorAll('th, td')].map((td) => sel(td.innerText.trim())).join(','),
     );
