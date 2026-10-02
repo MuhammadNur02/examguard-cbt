@@ -57,9 +57,9 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 
 - [x] **4.1 (M)** Penilaian PG otomatis di backend. *(FR-05.1)*
 - [x] **4.2 (M)** Preprocessing esai: case folding, tokenizing, stopword, stemming Sastrawi. *(FR-05.2)*
-- [ ] **4.3 (M)** TF-IDF dan Cosine Similarity (IDF dari kunci + seluruh jawaban per soal, K-2); skor = similarity × bobot. *(FR-05.3)*
+- [x] **4.3 (M)** TF-IDF dan Cosine Similarity (IDF dari kunci + seluruh jawaban per soal, K-2); skor = similarity × bobot. *(FR-05.3)*
   - DoD: unit test dengan contoh hitung manual; skor 0,0–1,0.
-- [ ] **4.4 (M)** Integrasi Laravel ↔ FastAPI (HTTP internal), antrean untuk penilaian massal.
+- [x] **4.4 (M)** Integrasi Laravel ↔ FastAPI (HTTP internal), antrean untuk penilaian massal.
 - [ ] **4.5 (M)** Live Monitor: peserta, status, jumlah pelanggaran, peringatan langsung (polling ≤ 10 detik). *(FR-06.1, FR-06.2)*
 - [ ] **4.6 (M)** Koreksi esai side-by-side dengan konfirmasi/edit skor. *(FR-06.3)*
 - [ ] **4.7 (S)** Koreksi cepat (terima massal di atas ambang) dan checklist kata kunci. *(FR-06.4, FR-05.4)*
