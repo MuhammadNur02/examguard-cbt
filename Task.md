@@ -14,7 +14,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
   - DoD: ERD final, migration berjalan bersih, seeder data contoh.
 - [x] **1.2 (M)** Inisialisasi repositori, environment (`.env.example`), Laravel + Tailwind, layanan Python NLP (FastAPI), Docker Compose atau skrip setup.
   - DoD: `README` berisi langkah menjalankan; lint dan test kosong berjalan.
-- [ ] **1.3 (M)** Autentikasi dan peran Admin/Dosen/Mahasiswa. *(FR-01.1)*
+- [x] **1.3 (M)** Autentikasi dan peran Admin/Dosen/Mahasiswa. *(FR-01.1)*
   - DoD: login NIM/NIDN/username; middleware peran; rate limiting login (FR-01.4).
 - [ ] **1.4 (M)** Single session login. *(FR-01.2, K-8)*
   - DoD: login kedua membatalkan sesi pertama dan tercatat.
