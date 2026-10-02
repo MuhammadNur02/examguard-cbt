@@ -28,10 +28,32 @@ function composer { php "$env:LOCALAPPDATA\Programs\Composer\composer.phar" @arg
 |---|---|---|
 | 1.1 Skema DB | Selesai | `tests/Feature/Database/SchemaTest.php` lulus; `migrate:fresh --seed`, `migrate:rollback`, `migrate` bersih di SQLite; ERD di `docs/ERD.md` |
 | 1.2 Inisialisasi | Selesai | Clone bersih: `composer setup` + `db:seed` + `php artisan test` (7/7) + Pint lulus; layanan NLP dari nol: `pytest` (9/9) + ruff lulus |
+| 1.3 Autentikasi & peran | Selesai | `LoginTest`, `RoleAuthorizationTest`; dicek di peramban headless (login per peran, pesan galat, logout, 403) |
+| 1.4 Single session | Selesai | `SingleSessionTest`; dua profil peramban: perangkat lama dikeluarkan, perangkat baru tetap masuk, keduanya tercatat di `audit_logs` |
+| 1.5 Manajemen akun admin | Selesai | `UserManagementTest`, `UserImportTest`, tes unit CSV; impor CSV salah/benar dan login akun hasil impor dicek di peramban |
+| 1.6 Kelas (S) | Ditunda | Dikerjakan setelah jalur MVP (aturan: MVP dulu, lalu Should) |
+
+Hasil tes akhir Fase 1: **PHPUnit 86/86 lulus**, Pint lulus, **pytest 9/9
+lulus**, ruff lulus, `npm run build` berhasil.
 
 Catatan 1.2: tidak ada Docker di mesin ini, jadi dipakai skrip setup
 (`composer setup`, bawaan Laravel 13) dan langkah manual di README. Docker
 Compose belum dibuat karena tidak bisa diuji di sini.
+
+### Tinjauan kritis Fase 1
+- Dicek: output tak ter-escape (hanya SVG ikon dari repo), SQL mentah (tidak
+  ada), rahasia di repo (tidak ada), `.env` tidak ter-track, otorisasi lintas
+  peran (diuji untuk semua area dan semua aksi admin), kunci jawaban
+  disembunyikan dari serialisasi model.
+- Diperbaiki: header keamanan dasar (`X-Frame-Options: DENY`, `nosniff`,
+  Referrer-Policy, Permissions-Policy) dan pencegahan injeksi formula pada CSV
+  kredensial yang diunduh.
+
+### Catatan untuk produksi (belum dikerjakan, dicatat agar tidak lupa)
+- Di balik reverse proxy/load balancer, atur *trusted proxies* agar IP asli
+  terbaca; tanpa itu rate limit login dan log IP memakai IP proxy.
+- Pakai HTTPS dan `SESSION_SECURE_COOKIE=true`.
+- Layanan NLP hanya di `127.0.0.1` atau jaringan privat, dengan token terisi.
 
 ## Cara menjalankan (ringkas)
 
