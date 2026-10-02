@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,5 +23,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Tangkap lazy loading (N+1) dan atribut yang dibuang diam-diam selama pengembangan.
         Model::shouldBeStrict(! $this->app->isProduction());
+
+        // Tampilan paginasi memakai token StyleGuide.
+        Paginator::defaultView('pagination.default');
     }
 }

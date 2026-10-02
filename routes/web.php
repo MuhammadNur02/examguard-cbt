@@ -19,6 +19,16 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', Admin\DashboardController::class)->name('dashboard');
+
+        Route::get('/pengguna', [Admin\UserController::class, 'index'])->name('users.index');
+        Route::get('/pengguna/tambah', [Admin\UserController::class, 'create'])->name('users.create');
+        Route::post('/pengguna', [Admin\UserController::class, 'store'])->name('users.store');
+        Route::get('/pengguna/impor', [Admin\UserImportController::class, 'create'])->name('users.import');
+        Route::post('/pengguna/impor', [Admin\UserImportController::class, 'store'])->name('users.import.store');
+        Route::get('/pengguna/impor/templat', [Admin\UserImportController::class, 'template'])->name('users.import.template');
+        Route::post('/pengguna/{user}/reset-password', [Admin\UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('/pengguna/{user}/reset-sesi', [Admin\UserController::class, 'resetSession'])->name('users.reset-session');
+        Route::patch('/pengguna/{user}/status', [Admin\UserController::class, 'updateStatus'])->name('users.status');
     });
 
     Route::middleware('role:dosen')->prefix('dosen')->name('dosen.')->group(function () {

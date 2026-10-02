@@ -13,3 +13,11 @@
   yang hanya berisi `php.ini` buatan saya. Tidak saya hapus karena aturan melarang
   menghapus berkas di luar folder proyek; aman dihapus manual.
 - **Saran:** bila nanti memperbarui PHP, uji `php -m | findstr mbstring` setelahnya.
+
+## B-02 Perlu keputusan: ganti kata sandi oleh pengguna sendiri
+- **Status:** belum dibuat, menunggu keputusan Anda.
+- **Konteks:** PRD tidak memuat fitur "ganti kata sandi sendiri". Saat ini kata
+  sandi hanya bisa diatur admin (reset menghasilkan kata sandi acak). Mahasiswa
+  dan dosen tidak dapat menggantinya sendiri.
+- **Saran:** tambahkan halaman "Ganti kata sandi" sederhana (kata sandi lama +
+  baru + konfirmasi) bila diinginkan; perkiraan kecil.

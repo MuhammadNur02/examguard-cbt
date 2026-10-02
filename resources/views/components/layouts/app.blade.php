@@ -4,6 +4,7 @@
     $menu = match ($user->role) {
         \App\Enums\Role::Admin => [
             ['route' => 'admin.dashboard', 'aktif' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard'],
+            ['route' => 'admin.users.index', 'aktif' => 'admin.users.*', 'label' => 'Akun Pengguna', 'icon' => 'users'],
         ],
         \App\Enums\Role::Dosen => [
             ['route' => 'dosen.dashboard', 'aktif' => 'dosen.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard'],
@@ -80,7 +81,7 @@
                 </div>
             </header>
 
-            <main id="konten" class="mx-auto w-full max-w-[1280px] flex-1 px-4 py-8 sm:px-6">
+            <main id="konten" class="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
                 <x-flash />
                 {{ $slot }}
             </main>

@@ -176,3 +176,31 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   aktif dan dapat ditambah bila diperlukan.
 - **Catatan:** `sesi_diganti` juga tercatat bila sesi sebelumnya sudah kedaluwarsa
   tanpa logout (token lama masih tersimpan). Logout normal menghapus token.
+
+### D-23 Task 1.5 dikerjakan di Fase 1
+- **Keputusan:** Task 1.5 (M) tidak tercantum di "Jalur MVP" Task.md, tetapi
+  berprioritas Must di PRD (FR-01.3) dan berada di Fase 1, jadi dikerjakan
+  bersama Fase 1. Task 1.6 (S) ditunda sampai jalur MVP selesai.
+
+### D-24 Kata sandi awal dan reset dibuat sistem, ditampilkan sekali
+- **Keputusan:** bila admin tidak mengisi kata sandi, sistem membuat 10 karakter
+  acak dari alfabet tanpa karakter mirip (i, l, o, 0, 1). Kata sandi tampil satu
+  kali. Untuk tambah/reset satu akun memakai flash sesi (terhapus pada permintaan
+  berikutnya); untuk impor, halaman hasil dirender langsung sehingga kata sandi
+  tidak pernah masuk sesi. Reset kata sandi juga mengakhiri sesi aktif akun itu.
+- **Alternatif:** admin mengetik kata sandi sendiri (rawan sandi lemah/seragam).
+
+### D-25 Impor akun: CSV, semua-atau-tidak sama sekali
+- **Keputusan:** format CSV (`nim_nidn,nama,peran,kata_sandi`), pemisah koma atau
+  titik koma, BOM UTF-8 diterima. Seluruh berkas divalidasi dulu; satu baris salah
+  membatalkan impor dan semua galat dilaporkan dengan nomor baris. Maksimal 500
+  baris; peran yang boleh diimpor hanya mahasiswa/dosen (admin lewat form).
+  Kata sandi impor di-hash bcrypt cost 10 (impor 500 akun cost 12 ≈ 2 menit di
+  mesin ini) dan dinaikkan otomatis ke cost 12 saat login pertama — terverifikasi
+  manual: hash akun yang sudah login berubah dari `$2y$10$` ke `$2y$12$`.
+- **Belum dibuat:** impor langsung berkas `.xlsx`; dari Excel gunakan
+  "Simpan sebagai CSV".
+
+### D-26 Batas aksi admin atas akunnya sendiri
+- **Keputusan:** admin tidak bisa menonaktifkan atau me-reset sesi akunnya sendiri
+  dari daftar akun, sehingga selalu ada minimal satu admin aktif.
