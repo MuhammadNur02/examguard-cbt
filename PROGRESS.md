@@ -24,4 +24,27 @@ function composer { php "$env:LOCALAPPDATA\Programs\Composer\composer.phar" @arg
 
 ## Fase 1 — Arsitektur dan Skema Basis Data
 
-(sedang dikerjakan)
+| Task | Status | Bukti |
+|---|---|---|
+| 1.1 Skema DB | Selesai | `tests/Feature/Database/SchemaTest.php` lulus; `migrate:fresh --seed`, `migrate:rollback`, `migrate` bersih di SQLite; ERD di `docs/ERD.md` |
+| 1.2 Inisialisasi | Selesai | Clone bersih: `composer setup` + `db:seed` + `php artisan test` (7/7) + Pint lulus; layanan NLP dari nol: `pytest` (9/9) + ruff lulus |
+
+Catatan 1.2: tidak ada Docker di mesin ini, jadi dipakai skrip setup
+(`composer setup`, bawaan Laravel 13) dan langkah manual di README. Docker
+Compose belum dibuat karena tidak bisa diuji di sini.
+
+## Cara menjalankan (ringkas)
+
+```powershell
+php artisan dev                  # web + queue + Vite, http://localhost:8000
+php artisan db:seed              # data contoh (akun di README)
+cd nlp-service; .venv\Scripts\uvicorn app.main:app --host 127.0.0.1 --port 8001 --env-file .env
+```
+
+## Perintah verifikasi
+
+```powershell
+php artisan test
+vendor\bin\pint --test
+cd nlp-service; .venv\Scripts\python -m pytest; .venv\Scripts\ruff check .
+```
