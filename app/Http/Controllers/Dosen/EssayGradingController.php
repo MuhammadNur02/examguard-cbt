@@ -9,15 +9,87 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ScoreEssayQuestion;
 use App\Models\AuditLog;
 use App\Models\Exam;
+use App\Models\Question;
+use App\Models\StudentAnswer;
 use App\Services\AttemptService;
+use App\Services\ScoringService;
+use App\Support\Format;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\View\View;
 
 /**
  * Penilaian esai oleh dosen: memicu skor rekomendasi NLP (Task 4.4) dan
- * koreksi berdampingan (Task 4.6).
+ * koreksi berdampingan dengan konfirmasi/ubah skor (Task 4.6, FR-06.3).
+ * Yang tersimpan sebagai nilai akhir selalu keputusan dosen (PRD §9.3 langkah 5).
  */
 class EssayGradingController extends Controller
 {
+    public function index(Exam $exam): View
+    {
+        $soal = $exam->questions()->where('tipe', QuestionType::Esai)->get()->map(function (Question $question) {
+            $jawaban = $this->jawabanFinal($question);
+
+            return [
+                'question' => $question,
+                'total' => $jawaban->count(),
+                'direkomendasikan' => $jawaban->whereNotNull('skor_sistem')->count(),
+                'dikonfirmasi' => $jawaban->whereNotNull('skor_final')->count(),
+            ];
+        });
+
+        return view('dosen.grading.index', ['exam' => $exam, 'soal' => $soal]);
+    }
+
+    public function show(Request $request, Exam $exam, Question $question): View
+    {
+        abort_if($question->isPg(), 404);
+
+        $jawaban = $this->jawabanFinal($question);
+        $dipilih = $request->filled('jawaban')
+            ? $jawaban->firstWhere('id', (int) $request->query('jawaban'))
+            : ($jawaban->first(fn (StudentAnswer $a) => $a->skor_final === null) ?? $jawaban->first());
+
+        abort_if($request->filled('jawaban') && ! $dipilih, 404);
+
+        return view('dosen.grading.show', [
+            'exam' => $exam,
+            'question' => $question,
+            'jawaban' => $jawaban,
+            'dipilih' => $dipilih,
+            'posisi' => $dipilih ? $jawaban->search(fn ($a) => $a->id === $dipilih->id) : null,
+        ]);
+    }
+
+    public function update(Request $request, Exam $exam, Question $question, StudentAnswer $answer, ScoringService $scoring): RedirectResponse
+    {
+        abort_if($question->isPg(), 404);
+        $jawaban = $this->jawabanFinal($question);
+        abort_unless($jawaban->contains('id', $answer->id), 404);
+
+        $data = $request->validate([
+            'aksi' => ['required', 'in:setujui,simpan'],
+            'skor' => ['required_if:aksi,simpan', 'nullable', 'numeric', 'min:0', 'max:'.$question->bobot],
+        ], [], ['skor' => 'skor']);
+
+        if ($data['aksi'] === 'setujui' && $answer->skor_sistem === null) {
+            return back()->with('error', 'Skor rekomendasi belum tersedia. Hitung skor rekomendasi terlebih dahulu atau isi skor secara manual.');
+        }
+
+        $skor = $data['aksi'] === 'setujui' ? $answer->skor_sistem : round((float) $data['skor'], 2);
+        $answer->update(['skor_final' => $skor, 'dinilai_oleh' => $request->user()->id, 'dinilai_pada' => now()]);
+        $scoring->perbaruiHasil($answer->attempt);
+
+        // Perbandingan ketat: skor final 0 (esai kosong) bukan "belum dikonfirmasi".
+        $berikutnya = $jawaban->skip($jawaban->search(fn ($a) => $a->id === $answer->id) + 1)
+            ->first(fn (StudentAnswer $a) => $a->skor_final === null);
+
+        return redirect()
+            ->route('dosen.grading.show', [$exam, $question, 'jawaban' => $berikutnya?->id ?? $answer->id])
+            ->with('status', 'Skor '.$answer->attempt->user->nim_nidn.' disimpan: '.Format::angka($skor).'.');
+    }
+
     /** Hitung skor rekomendasi semua soal esai lewat antrean. */
     public function hitung(Exam $exam, AttemptService $attempts): RedirectResponse
     {
@@ -44,5 +116,16 @@ class EssayGradingController extends Controller
         AuditLog::catat('skor_esai_dihitung', $exam, ['jumlah_soal' => $soalEsai->count()]);
 
         return back()->with('status', 'Penghitungan skor rekomendasi dimasukkan ke antrean. Pastikan queue worker dan layanan NLP berjalan; muat ulang halaman untuk melihat hasil.');
+    }
+
+    /** Jawaban soal ini dari attempt yang sudah final, urut NIM. @return Collection<int, StudentAnswer> */
+    private function jawabanFinal(Question $question): Collection
+    {
+        return StudentAnswer::where('question_id', $question->id)
+            ->whereHas('attempt', fn ($q) => $q->whereIn('status', [AttemptStatus::Selesai, AttemptStatus::Terkunci]))
+            ->with('attempt.user:id,nim_nidn,nama')
+            ->get()
+            ->sortBy(fn (StudentAnswer $a) => $a->attempt->user->nim_nidn)
+            ->values();
     }
 }

@@ -40,6 +40,12 @@ class Question extends Model
         return $this->hasMany(Option::class)->orderBy('label');
     }
 
+    /** @return HasMany<StudentAnswer, $this> */
+    public function answers(): HasMany
+    {
+        return $this->hasMany(StudentAnswer::class);
+    }
+
     public function isPg(): bool
     {
         return $this->tipe === QuestionType::Pg;

@@ -50,7 +50,12 @@ Route::middleware('auth')->group(function () {
             Route::get('/ujian/{exam}/monitor', [Dosen\MonitorController::class, 'show'])->name('monitor');
             Route::get('/ujian/{exam}/monitor/data', [Dosen\MonitorController::class, 'data'])->name('monitor.data');
 
+            Route::get('/ujian/{exam}/koreksi', [Dosen\EssayGradingController::class, 'index'])->name('grading.index');
             Route::post('/ujian/{exam}/koreksi/hitung', [Dosen\EssayGradingController::class, 'hitung'])->name('grading.score');
+            Route::scopeBindings()->group(function () {
+                Route::get('/ujian/{exam}/koreksi/{question}', [Dosen\EssayGradingController::class, 'show'])->name('grading.show');
+                Route::put('/ujian/{exam}/koreksi/{question}/{answer}', [Dosen\EssayGradingController::class, 'update'])->name('grading.update');
+            });
 
             Route::get('/ujian/{exam}/soal/buat', [Dosen\QuestionController::class, 'create'])->name('questions.create');
             Route::post('/ujian/{exam}/soal', [Dosen\QuestionController::class, 'store'])->name('questions.store');
