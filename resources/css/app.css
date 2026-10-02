@@ -213,6 +213,15 @@
     }
 }
 
+/* Pola garis halus maroon-100 untuk halaman login (StyleGuide §8). */
+@utility bg-pola-garis {
+    background-image: repeating-linear-gradient(
+        135deg,
+        var(--color-maroon-100) 0 1px,
+        transparent 1px 22px
+    );
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
