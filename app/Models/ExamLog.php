@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Enums\LogType;
+use Illuminate\Database\Eloquent\Attributes\DateFormat;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+// Milidetik disimpan agar debounce dan latensi pencatatan (< 1 detik) terukur.
+#[DateFormat('Y-m-d H:i:s.v')]
 #[Fillable([
     'jenis', 'waktu', 'detail', 'dihitung', 'dimaafkan', 'dimaafkan_oleh',
     'dimaafkan_pada', 'alasan',

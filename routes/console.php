@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+// Kirim otomatis attempt yang waktunya habis walau peramban mahasiswa tertutup.
+// Jalankan penjadwal dengan `php artisan schedule:work` (pengembangan) atau cron.
+Schedule::command('ujian:tutup-kedaluwarsa')->everyMinute()->withoutOverlapping();

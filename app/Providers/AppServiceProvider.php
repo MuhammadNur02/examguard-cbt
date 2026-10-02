@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Tampilan paginasi memakai token StyleGuide.
         Paginator::defaultView('pagination.default');
+
+        // Batas wajar permintaan layar ujian per mahasiswa (autosave, heartbeat, pelanggaran).
+        RateLimiter::for('ujian', fn (Request $request) => Limit::perMinute(240)->by($request->user()?->id ?: $request->ip()));
 
         // Parameter ID pada rute selalu numerik.
         Route::pattern('exam', '[0-9]+');

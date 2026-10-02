@@ -279,9 +279,13 @@ class ShuffledQuestionsTest extends TestCase
     {
         $this->mulai($this->andi);
 
-        $this->travelTo($this->exam->selesaiPada()->addSecond());
+        // Lewat batas waktu + toleransi latensi: attempt ditutup sebagai waktu habis.
+        $this->travelTo($this->exam->selesaiPada()->addSeconds(config('examguard.toleransi_simpan_detik') + 1));
 
-        $this->soal($this->andi)->assertStatus(409)->assertJson(['message' => 'Waktu ujian sudah habis.']);
+        $this->soal($this->andi)->assertStatus(409)->assertJson([
+            'message' => 'Waktu ujian sudah habis. Jawaban yang tersimpan sudah dikirim.',
+            'attempt' => ['status' => 'selesai', 'alasan_selesai' => 'waktu_habis'],
+        ]);
     }
 
     public function test_respons_soal_tidak_boleh_disimpan_di_cache(): void
@@ -301,6 +305,6 @@ class ShuffledQuestionsTest extends TestCase
 
         $this->assertSame(80 * 60, $respons->json('attempt.sisa_detik'));
         $this->assertSame(8, $respons->json('attempt.jumlah_soal'));
-        $this->assertSame(3, $respons->json('ujian.batas_pelanggaran'));
+        $this->assertSame(3, $respons->json('attempt.batas_pelanggaran'));
     }
 }

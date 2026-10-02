@@ -3,20 +3,25 @@
 namespace App\Services;
 
 use App\Enums\AttemptStatus;
+use App\Enums\FinishReason;
 use App\Exceptions\UjianTidakTersedia;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Question;
 use App\Models\User;
 use App\Support\FisherYates;
+use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Random\Engine\Mt19937;
 use Random\Randomizer;
 
 /**
- * Siklus attempt mahasiswa: mulai/lanjut, susunan soal teracak, dan payload
- * soal untuk klien yang tidak pernah memuat kunci jawaban (FR-03.1–FR-03.4).
+ * Siklus attempt mahasiswa: mulai/lanjut, susunan soal teracak, payload soal
+ * tanpa kunci (FR-03.1–FR-03.4), autosave, heartbeat, dan finalisasi. Waktu dan
+ * status selalu ditentukan server (PRD §9.1).
  */
 class AttemptService
 {
@@ -39,6 +44,7 @@ class AttemptService
         $attempt = $this->attemptMilik($exam, $mahasiswa);
 
         if ($attempt) {
+            $this->finalisasiBilaKedaluwarsa($attempt);
             $this->pastikanBisaLanjut($attempt);
 
             return $attempt;
@@ -74,20 +80,173 @@ class AttemptService
         }
     }
 
+    /**
+     * Keadaan ujian bagi seorang mahasiswa: akan_datang, dibuka, berlangsung,
+     * selesai, atau ditutup (jadwal lewat tanpa attempt). Panggil setelah
+     * finalisasiBilaKedaluwarsa agar attempt yang habis waktunya tidak terbaca berlangsung.
+     */
+    public function keadaan(Exam $exam, ?ExamAttempt $attempt): string
+    {
+        if ($attempt) {
+            return $attempt->isBerlangsung() ? 'berlangsung' : 'selesai';
+        }
+        if (now()->lessThan($exam->mulai)) {
+            return 'akan_datang';
+        }
+
+        return $exam->dalamJadwal() ? 'dibuka' : 'ditutup';
+    }
+
     public function attemptMilik(Exam $exam, User $mahasiswa): ?ExamAttempt
     {
         return $exam->attempts()->where('user_id', $mahasiswa->id)->first()?->setRelation('exam', $exam);
     }
 
+    /**
+     * Attempt yang masih bisa dikerjakan, setelah finalisasi otomatis bila waktu habis.
+     *
+     * @throws UjianTidakTersedia 404 bila belum mulai, 409 bila sudah selesai/habis
+     */
+    public function attemptAktif(Exam $exam, User $mahasiswa, int $toleransiDetik = 0): ExamAttempt
+    {
+        $attempt = $this->attemptMilik($exam, $mahasiswa);
+        if (! $attempt) {
+            throw new UjianTidakTersedia('Anda belum memulai ujian ini.', 404);
+        }
+
+        $this->finalisasiBilaKedaluwarsa($attempt, $toleransiDetik);
+        $this->pastikanBisaLanjut($attempt, $toleransiDetik);
+
+        return $attempt;
+    }
+
     /** @throws UjianTidakTersedia */
-    public function pastikanBisaLanjut(ExamAttempt $attempt): void
+    public function pastikanBisaLanjut(ExamAttempt $attempt, int $toleransiDetik = 0): void
     {
         if (! $attempt->isBerlangsung()) {
-            throw new UjianTidakTersedia('Ujian ini sudah Anda selesaikan.', 409);
+            throw new UjianTidakTersedia($this->pesanSelesai($attempt), 409, $this->statusUntukKlien($attempt));
         }
-        if ($attempt->sisaDetik() <= 0) {
-            throw new UjianTidakTersedia('Waktu ujian sudah habis.', 409);
+        if ($attempt->sisaDetik() + $toleransiDetik <= 0) {
+            throw new UjianTidakTersedia('Waktu ujian sudah habis.', 409, $this->statusUntukKlien($attempt));
         }
+    }
+
+    public function pesanSelesai(ExamAttempt $attempt): string
+    {
+        return match ($attempt->alasan_selesai) {
+            FinishReason::Pelanggaran => 'Ujian Anda dikunci karena batas pelanggaran terlampaui. Jawaban yang tersimpan sudah dikirim.',
+            FinishReason::DikunciDosen => 'Ujian Anda dikunci oleh dosen. Jawaban yang tersimpan sudah dikirim.',
+            FinishReason::WaktuHabis => 'Waktu ujian sudah habis. Jawaban yang tersimpan sudah dikirim.',
+            default => 'Ujian ini sudah Anda selesaikan.',
+        };
+    }
+
+    /** Tutup attempt yang melewati batas waktu (+ toleransi) sebagai "waktu habis". */
+    public function finalisasiBilaKedaluwarsa(ExamAttempt $attempt, int $toleransiDetik = 0): void
+    {
+        if ($attempt->isBerlangsung() && now()->greaterThan($attempt->batasWaktu()->copy()->addSeconds($toleransiDetik))) {
+            $this->selesaikan($attempt, FinishReason::WaktuHabis);
+        }
+    }
+
+    /**
+     * Finalisasi attempt satu kali saja (aman dari permintaan bersamaan).
+     * Jawaban yang sudah tersimpan di server menjadi jawaban yang dikirim.
+     *
+     * @return bool true bila attempt baru saja difinalisasi oleh panggilan ini
+     */
+    public function selesaikan(ExamAttempt $attempt, FinishReason $alasan): bool
+    {
+        $status = in_array($alasan, [FinishReason::Pelanggaran, FinishReason::DikunciDosen], true)
+            ? AttemptStatus::Terkunci
+            : AttemptStatus::Selesai;
+
+        $berubah = ExamAttempt::whereKey($attempt->id)
+            ->where('status', AttemptStatus::Berlangsung)
+            ->update(['status' => $status, 'alasan_selesai' => $alasan, 'selesai' => now(), 'updated_at' => now()]);
+
+        $attempt->refresh();
+
+        return $berubah === 1;
+    }
+
+    /**
+     * Simpan jawaban berdasarkan posisi tampil. Item: nomor (1..n), opsi
+     * (indeks tampil, null = kosongkan) untuk PG, teks untuk esai, ragu.
+     *
+     * @param  list<array<string, mixed>>  $items
+     *
+     * @throws ValidationException bila nomor/opsi tidak sesuai susunan attempt
+     */
+    public function simpanJawaban(ExamAttempt $attempt, array $items): CarbonInterface
+    {
+        $waktu = now();
+        $questions = Question::whereIn('id', $attempt->urutan_soal)->get(['id', 'tipe'])->keyBy('id');
+
+        DB::transaction(function () use ($attempt, $items, $questions, $waktu) {
+            foreach ($items as $item) {
+                $nomor = (int) $item['nomor'];
+                $peta = $this->petakanPosisi($attempt, $nomor);
+                if (! $peta) {
+                    throw ValidationException::withMessages(['jawaban' => "Nomor soal {$nomor} tidak valid."]);
+                }
+
+                $question = $questions[$peta['question_id']];
+                $data = ['disimpan_pada' => $waktu];
+
+                if (array_key_exists('ragu', $item)) {
+                    $data['ragu'] = (bool) $item['ragu'];
+                }
+
+                if ($question->isPg() && array_key_exists('opsi', $item)) {
+                    if ($item['opsi'] === null) {
+                        $data['option_id'] = null;
+                    } else {
+                        $petaOpsi = $this->petakanPosisi($attempt, $nomor, (int) $item['opsi']);
+                        if (! $petaOpsi) {
+                            throw ValidationException::withMessages(['jawaban' => "Pilihan pada soal {$nomor} tidak valid."]);
+                        }
+                        $data['option_id'] = $petaOpsi['option_id'];
+                    }
+                }
+
+                if (! $question->isPg() && array_key_exists('teks', $item)) {
+                    $data['teks_jawaban'] = $item['teks'];
+                }
+
+                $attempt->answers()->updateOrCreate(['question_id' => $question->id], $data);
+            }
+
+            $attempt->forceFill(['terakhir_aktif' => $waktu])->save();
+        });
+
+        return $waktu;
+    }
+
+    /** Tandai peserta masih aktif (FR-04.7). */
+    public function heartbeat(ExamAttempt $attempt): void
+    {
+        $attempt->forceFill(['terakhir_aktif' => now()])->save();
+    }
+
+    /**
+     * Status ringkas untuk layar ujian. Waktu dihitung server.
+     *
+     * @return array<string, mixed>
+     */
+    public function statusUntukKlien(ExamAttempt $attempt): array
+    {
+        return [
+            'attempt' => [
+                'status' => $attempt->status->value,
+                'alasan_selesai' => $attempt->alasan_selesai?->value,
+                'sisa_detik' => $attempt->isBerlangsung() ? $attempt->sisaDetik() : 0,
+                'jumlah_pelanggaran' => $attempt->jumlah_pelanggaran,
+                'batas_pelanggaran' => $attempt->exam->batas_pelanggaran,
+                'jumlah_soal' => count($attempt->urutan_soal),
+            ],
+            'waktu_server' => now()->toIso8601String(),
+        ];
     }
 
     /**
@@ -179,8 +338,8 @@ class AttemptService
      */
     public function petakanPosisi(ExamAttempt $attempt, int $nomor, ?int $indeksOpsi = null): ?array
     {
-        $questionId = $attempt->urutan_soal[$nomor - 1] ?? null;
-        if ($nomor < 1 || $questionId === null) {
+        $questionId = $nomor >= 1 ? ($attempt->urutan_soal[$nomor - 1] ?? null) : null;
+        if ($questionId === null) {
             return null;
         }
 
@@ -188,10 +347,8 @@ class AttemptService
             return ['question_id' => $questionId, 'option_id' => null];
         }
 
-        $optionId = $attempt->urutan_opsi[$questionId][$indeksOpsi] ?? null;
+        $optionId = $indeksOpsi >= 0 ? ($attempt->urutan_opsi[$questionId][$indeksOpsi] ?? null) : null;
 
-        return $indeksOpsi >= 0 && $optionId !== null
-            ? ['question_id' => $questionId, 'option_id' => $optionId]
-            : null;
+        return $optionId !== null ? ['question_id' => $questionId, 'option_id' => $optionId] : null;
     }
 }

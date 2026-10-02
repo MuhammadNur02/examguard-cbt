@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\UjianTidakTersedia;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureSingleSession;
 use App\Http\Middleware\SecurityHeaders;
@@ -24,4 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // Kegagalan alur ujian untuk layar ujian (JSON): pesan + status attempt terbaru.
+        $exceptions->render(function (UjianTidakTersedia $e, Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $e->getMessage(), ...$e->data], $e->status);
+            }
+        });
     })->create();
