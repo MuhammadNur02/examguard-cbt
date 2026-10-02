@@ -37,6 +37,48 @@ privat dan batasi dengan firewall.
 - `/health` tidak memerlukan token dan tidak memuat data apa pun.
 - Halaman dokumentasi otomatis FastAPI (`/docs`, `/openapi.json`) dimatikan.
 
+## Metode
+
+1. **Praproses** (`app/preprocessing.py`): case folding → hapus tanda baca dan
+   angka → tokenisasi → hapus stopword (daftar Sastrawi) → stemming Sastrawi.
+   Contoh: `menghubungkan` → `hubung`.
+2. **TF-IDF** (`app/scoring.py`, rumus bawaan scikit-learn):
+   `tf` = frekuensi mentah; `idf = ln((1 + n) / (1 + df)) + 1`; bobot = tf × idf,
+   lalu tiap vektor dinormalisasi L2. Korpus IDF per soal = kunci + seluruh
+   jawaban mahasiswa pada soal itu (PRD K-2).
+3. **Cosine Similarity** antara vektor kunci dan jawaban, rentang 0,0–1,0.
+   Laravel menghitung skor rekomendasi = similarity × bobot soal.
+
+Contoh hitung manual ada di docstring `tests/test_scoring.py`.
+
+### Keterbatasan yang diketahui (untuk pembahasan)
+- Negasi hilang: "tidak" termasuk stopword Sastrawi, sehingga "data tidak
+  terkirim" dan "data terkirim" menghasilkan token yang sama.
+- Stemmer dapat keliru, misalnya `penyaring` → `nyaring` (bukan `saring`).
+- Pendekatan *bag-of-words*: urutan kata dan sinonim/parafrase tidak dikenali,
+  sehingga skor hanya rekomendasi dan dosen tetap memutuskan nilai akhir.
+
+## API internal
+
+Semua endpoint selain `/health` mensyaratkan header `X-Internal-Token`.
+
+`POST /score`
+```json
+{
+  "kunci": "teks kunci dosen",
+  "jawaban": [{"id": 1, "teks": "jawaban mahasiswa"}],
+  "kata_kunci": ["opsional"],
+  "stemming": true,
+  "korpus_idf": "kunci_dan_jawaban"
+}
+```
+Respons: `hasil[]` berisi `id`, `similarity` (4 desimal),
+`kata_kunci_terpenuhi`, `kata_kunci_tidak_terpenuhi`; serta `metode`.
+`korpus_idf: "kunci"` dan `stemming: false` disediakan untuk variasi evaluasi.
+
+`POST /preprocess` dengan `{"teks": "...", "stemming": true}` mengembalikan
+`{"token": [...]}` untuk transparansi.
+
 ## Tes dan lint
 
 ```bash

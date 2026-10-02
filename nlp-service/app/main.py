@@ -7,7 +7,11 @@ Hanya dipanggil oleh Laravel lewat jaringan internal. Jalankan dengan host
 import os
 import secrets
 
-from fastapi import FastAPI, Header, HTTPException, status
+from fastapi import Depends, FastAPI, Header, HTTPException, status
+from pydantic import BaseModel, Field
+
+from app.preprocessing import praproses
+from app.scoring import KorpusIdf, cek_kata_kunci, skor_esai
 
 app = FastAPI(
     title="ExamGuard NLP",
@@ -30,6 +34,58 @@ def require_internal_token(x_internal_token: str | None = Header(default=None)) 
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token internal tidak valid.")
 
 
+class Jawaban(BaseModel):
+    id: int
+    teks: str = Field(default="", max_length=20000)
+
+
+class PermintaanSkor(BaseModel):
+    kunci: str = Field(min_length=1, max_length=5000)
+    jawaban: list[Jawaban] = Field(max_length=2000)
+    kata_kunci: list[str] = Field(default_factory=list, max_length=20)
+    stemming: bool = True
+    korpus_idf: KorpusIdf = "kunci_dan_jawaban"
+
+
+class PermintaanPraproses(BaseModel):
+    teks: str = Field(max_length=20000)
+    stemming: bool = True
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.post("/score", dependencies=[Depends(require_internal_token)])
+def score(permintaan: PermintaanSkor) -> dict:
+    """Similarity TF-IDF + Cosine tiap jawaban terhadap kunci, plus checklist kata kunci."""
+    similarity = skor_esai(
+        permintaan.kunci,
+        [j.teks for j in permintaan.jawaban],
+        stemming=permintaan.stemming,
+        korpus_idf=permintaan.korpus_idf,
+    )
+
+    hasil = []
+    for jawaban, nilai in zip(permintaan.jawaban, similarity, strict=True):
+        terpenuhi, tidak = cek_kata_kunci(permintaan.kata_kunci, jawaban.teks, permintaan.stemming)
+        hasil.append(
+            {
+                "id": jawaban.id,
+                "similarity": round(nilai, 4),
+                "kata_kunci_terpenuhi": terpenuhi,
+                "kata_kunci_tidak_terpenuhi": tidak,
+            }
+        )
+
+    return {
+        "hasil": hasil,
+        "metode": {"stemming": permintaan.stemming, "korpus_idf": permintaan.korpus_idf},
+    }
+
+
+@app.post("/preprocess", dependencies=[Depends(require_internal_token)])
+def preprocess(permintaan: PermintaanPraproses) -> dict:
+    """Token hasil praproses, untuk transparansi dan dokumentasi."""
+    return {"token": praproses(permintaan.teks, permintaan.stemming)}
