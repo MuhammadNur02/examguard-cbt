@@ -1,0 +1,7 @@
+# Dependensi runtime layanan NLP ExamGuard CBT (Python 3.11+ 64-bit).
+fastapi==0.142.2
+uvicorn==0.54.0
+python-dotenv==1.2.4
+PySastrawi==1.2.1
+scikit-learn==1.9.1
+numpy==2.5.3
