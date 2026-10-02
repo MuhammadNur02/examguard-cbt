@@ -39,7 +39,7 @@
                                 @foreach ($kataKunci as $kata)
                                     @php $cocok = in_array($kata, $dipilih->kata_kunci_cocok ?? [], true); @endphp
                                     <li class="flex items-center gap-2">
-                                        @if ($dipilih->kata_kunci_cocok === null)
+                                        @if ($dipilih->kata_kunci_cocok === null && filled($dipilih->teks_jawaban))
                                             <x-icon name="circle-alert" class="size-4 text-stone-500" /><span>{{ $kata }} <span class="text-stone-500">(belum dicek)</span></span>
                                         @elseif ($cocok)
                                             <x-icon name="circle-check" class="size-4 text-status-success" /><span>{{ $kata }} <span class="sr-only">terpenuhi</span></span>
