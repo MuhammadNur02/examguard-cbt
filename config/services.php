@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    /*
+    | Layanan NLP internal (FastAPI) untuk penilaian esai. Hanya dipanggil
+    | Laravel lewat jaringan internal; jangan diekspos ke publik.
+    */
+    'nlp' => [
+        'url' => env('NLP_SERVICE_URL', 'http://127.0.0.1:8001'),
+        'token' => env('NLP_SERVICE_TOKEN'),
+        'timeout' => (int) env('NLP_SERVICE_TIMEOUT', 30),
+    ],
+
 ];

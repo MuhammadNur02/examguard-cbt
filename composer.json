@@ -1,10 +1,10 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "muhammadnur02/examguard-cbt",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "ExamGuard CBT: ujian daring berbasis web dengan deteksi pindah tab, pengacakan soal, dan rekomendasi nilai esai (TF-IDF + Cosine Similarity).",
+    "keywords": ["laravel", "cbt", "ujian", "tf-idf", "cosine-similarity"],
+    "license": "proprietary",
     "require": {
         "php": "^8.3",
         "laravel/framework": "^13.17",
