@@ -76,6 +76,49 @@ pengacakan (teruji), tetapi Task 2.5 baru akan dicentang saat dikerjakan utuh.
 - Belum ada: pembatasan ujian per kelas (FR-02.6, Should). Saat ini semua
   mahasiswa dapat memulai ujian terbit mana pun dalam jadwal.
 
+## Fase 3 — Antarmuka Mahasiswa dan Engine Anti-Kecurangan (jalur MVP)
+
+| Task | Status | Bukti |
+|---|---|---|
+| 3.1 Layar pengerjaan | Selesai | Peramban headless: navigasi nomor urutan acak, ragu, timer dari `sisa_detik` server; `ExamSessionTest` (heartbeat, waktu tambahan) |
+| 3.2 Persetujuan + layar penuh | Selesai | Tombol Mulai nonaktif sampai dicentang (server juga memvalidasi, `ExamPagesTest`); keluar layar penuh → pelanggaran `keluar_fullscreen` + modal, tombol modal masuk layar penuh lagi (diuji di peramban) |
+| 3.3 Blokir aksi | Selesai | Peramban: `copy/paste/cut/contextmenu/selectstart`, Ctrl+C/V/U, Ctrl+Shift+I, F12 → `defaultPrevented`; Tab tidak diblokir |
+| 3.4 Deteksi + debounce | Selesai | `ViolationTest` (debounce, K-7, presisi ms); peramban: `blur`+`visibilitychange` satu kejadian = 1 pelanggaran; latensi lihat bawah |
+| 3.5 Modal bertingkat + auto-submit | Selesai | Peramban: 1/3 → 2/3 → Peringatan Terakhir (3/3) → Ujian Dikunci, input beku; `ViolationTest`: ke-(N+1) mengunci, jawaban tersimpan ikut terkirim |
+| 3.6 Autosave + heartbeat | Selesai | Peramban: offline → antrean di localStorage + "Offline, mencoba lagi" → online → tersimpan; muat ulang mempertahankan jawaban; `ExamSessionTest` |
+| 3.7 Kirim + riwayat nilai | Selesai | Peramban: modal konfirmasi berisi rekap, jawaban esai terakhir ikut tersimpan, 0 pelanggaran palsu saat keluar layar penuh setelah kirim; `ExamPagesTest` (nilai tersembunyi sebelum publikasi) |
+| 3.8 Watermark, perangkat, mobile (S) | Belum | Setelah jalur MVP |
+
+### Pengukuran latensi pencatatan pelanggaran (mesin pengembangan ini)
+Selisih `exam_logs.waktu` (server) dan `detail.waktu_klien` (saat event terjadi;
+klien dan server satu mesin sehingga jam sama):
+
+| Kondisi server dev | Kejadian → tersimpan di DB | Kejadian → modal tampil |
+|---|---|---|
+| `php artisan serve` tanpa OPcache | 610–1047 ms (7 dari 8 sampel < 1 s) | – |
+| PHP built-in server + OPcache | **194–257 ms** (3 sampel) | 324–383 ms |
+
+Ini bukan uji beban (Task 5.4) dan bukan lingkungan produksi; ukur ulang di
+server target. Untuk produksi, OPcache wajib aktif. Untuk pengembangan di
+Windows, aktifkan OPcache di `php.ini` (`zend_extension=opcache`,
+`opcache.enable_cli=1`) atau jalankan server dari folder `public`:
+
+```powershell
+cd public
+php -d zend_extension=opcache -d opcache.enable_cli=1 -S 127.0.0.1:8000 ..\vendor\laravel\framework\src\Illuminate\Foundation\resources\server.php
+```
+
+Tes otomatis juga memastikan waktu proses server satu laporan < 1 detik.
+
+### Tinjauan kritis Fase 3 (lihat juga DECISIONS D-27..D-33)
+- Waktu, penghitung pelanggaran, dan status hanya ditentukan server; klien yang
+  dimanipulasi paling jauh bisa *tidak melapor* (batasan jujur PRD §4), tetapi
+  tidak bisa mengurangi hitungan atau memperpanjang waktu.
+- Attempt selalu dicari dari (ujian, pengguna login); endpoint ujian diberi
+  rate limit dan `Cache-Control: no-store`.
+- Layar pengerjaan tidak menyisipkan soal/kunci di HTML; soal diambil lewat API
+  tanpa kunci dan dirender dengan `textContent`.
+
 ## Cara menjalankan (ringkas)
 
 ```powershell

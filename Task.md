@@ -40,17 +40,17 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 
 ## Fase 3 — Antarmuka Mahasiswa dan Engine Anti-Kecurangan
 
-- [ ] **3.1 (M)** Layar pengerjaan: navigasi nomor soal (sesuai urutan acak), penanda ragu, timer mundur sinkron server. *(FR-07.1)*
-- [ ] **3.2 (M)** Persetujuan integritas dan penguncian fullscreen saat Mulai Ujian. *(FR-04.2, FR-04.10)*
+- [x] **3.1 (M)** Layar pengerjaan: navigasi nomor soal (sesuai urutan acak), penanda ragu, timer mundur sinkron server. *(FR-07.1)*
+- [x] **3.2 (M)** Persetujuan integritas dan penguncian fullscreen saat Mulai Ujian. *(FR-04.2, FR-04.10)*
   - DoD: Esc memicu pelanggaran dan permintaan fullscreen ulang.
-- [ ] **3.3 (M)** Blokir klik kanan, seleksi teks, copy/cut/paste, Ctrl+C/V/U, Ctrl+Shift+I, F12. *(FR-04.3)*
-- [ ] **3.4 (M)** Detektor `visibilitychange` + `blur` dengan debounce, kirim log ke backend. *(FR-04.1, FR-04.4)*
+- [x] **3.3 (M)** Blokir klik kanan, seleksi teks, copy/cut/paste, Ctrl+C/V/U, Ctrl+Shift+I, F12. *(FR-04.3)*
+- [x] **3.4 (M)** Detektor `visibilitychange` + `blur` dengan debounce, kirim log ke backend. *(FR-04.1, FR-04.4)*
   - DoD: log tercatat < 1 detik; kejadian ganda dihitung sekali.
-- [ ] **3.5 (M)** Modal peringatan bertingkat dan auto-submit saat batas terlampaui. *(FR-04.5, FR-04.6, K-1)*
+- [x] **3.5 (M)** Modal peringatan bertingkat dan auto-submit saat batas terlampaui. *(FR-04.5, FR-04.6, K-1)*
   - DoD: hitungan benar; lembar dibekukan; jawaban tersimpan terakhir terkirim.
-- [ ] **3.6 (M)** Autosave berkala dan heartbeat; auto-submit memakai jawaban tersimpan. *(FR-04.7)*
+- [x] **3.6 (M)** Autosave berkala dan heartbeat; auto-submit memakai jawaban tersimpan. *(FR-04.7)*
   - DoD: putus koneksi tidak menghilangkan jawaban lebih lama dari satu interval autosave.
-- [ ] **3.7 (M)** Tombol Kirim Jawaban + konfirmasi dan halaman riwayat nilai. *(FR-07.2, FR-07.3)*
+- [x] **3.7 (M)** Tombol Kirim Jawaban + konfirmasi dan halaman riwayat nilai. *(FR-07.2, FR-07.3)*
 - [ ] **3.8 (S)** Watermark nama/NIM, deteksi perangkat berganti, penolakan perangkat mobile. *(FR-04.8, FR-04.9, FR-04.11)*
 
 ## Fase 4 — Mesin Penilaian dan Dashboard Dosen
