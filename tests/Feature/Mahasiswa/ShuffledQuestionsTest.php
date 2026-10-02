@@ -284,6 +284,15 @@ class ShuffledQuestionsTest extends TestCase
         $this->soal($this->andi)->assertStatus(409)->assertJson(['message' => 'Waktu ujian sudah habis.']);
     }
 
+    public function test_respons_soal_tidak_boleh_disimpan_di_cache(): void
+    {
+        $this->mulai($this->andi);
+
+        $cache = $this->soal($this->andi)->assertOk()->headers->get('Cache-Control');
+
+        $this->assertStringContainsString('no-store', $cache);
+    }
+
     public function test_ringkasan_attempt_memuat_sisa_waktu_dari_server(): void
     {
         $this->freezeSecond();

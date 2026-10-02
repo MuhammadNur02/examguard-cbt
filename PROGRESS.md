@@ -55,6 +55,27 @@ Compose belum dibuat karena tidak bisa diuji di sini.
 - Pakai HTTPS dan `SESSION_SECURE_COOKIE=true`.
 - Layanan NLP hanya di `127.0.0.1` atau jaringan privat, dengan token terisi.
 
+## Fase 2 — Antarmuka Dosen dan Bank Soal (jalur MVP)
+
+| Task | Status | Bukti |
+|---|---|---|
+| 2.1 Kelola ujian | Selesai | `ExamManagementTest` (validasi, kepemilikan 8 aksi × 3 peran, aturan terbit, penguncian setelah dikerjakan); DoD jadwal di `ShuffledQuestionsTest` |
+| 2.2 Form soal PG/esai | Selesai | `QuestionManagementTest`; alur tambah soal + galat kunci dicek di peramban |
+| 2.4 API soal teracak | Selesai | `FisherYatesTest` (termasuk uji keseragaman), `ShuffledQuestionsTest` (seed deterministik) |
+| 2.3, 2.5–2.8 | Belum | Should/Could, dikerjakan setelah jalur MVP |
+
+Catatan: centang "posisi tetap" untuk opsi sudah ada di form dan dihormati
+pengacakan (teruji), tetapi Task 2.5 baru akan dicentang saat dikerjakan utuh.
+
+### Tinjauan kritis Fase 2
+- Dicek: kunci tidak ada di respons mahasiswa (diuji, termasuk ID dan label asli),
+  attempt selalu dicari dari pasangan (ujian, pengguna login), soal memakai
+  scoped binding, `status` ujian tidak bisa dikirim lewat form.
+- Diperbaiki: semua respons area mahasiswa kini `Cache-Control: no-store` agar
+  soal tidak tertinggal di cache komputer lab bersama.
+- Belum ada: pembatasan ujian per kelas (FR-02.6, Should). Saat ini semua
+  mahasiswa dapat memulai ujian terbit mana pun dalam jadwal.
+
 ## Cara menjalankan (ringkas)
 
 ```powershell

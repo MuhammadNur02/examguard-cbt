@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dosen;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Mahasiswa;
+use App\Http\Middleware\NoStore;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -56,7 +57,7 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
+    Route::middleware(['role:mahasiswa', NoStore::class])->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/', Mahasiswa\DashboardController::class)->name('dashboard');
 
         Route::post('/ujian/{exam}/mulai', [Mahasiswa\AttemptController::class, 'start'])->name('attempts.start');
