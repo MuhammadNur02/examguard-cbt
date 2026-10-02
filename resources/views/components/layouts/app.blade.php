@@ -10,7 +10,8 @@
             ['route' => 'dosen.dashboard', 'aktif' => ['dosen.dashboard', 'dosen.exams.*', 'dosen.questions.*'], 'label' => 'Ujian Saya', 'icon' => 'clipboard-list'],
         ],
         \App\Enums\Role::Mahasiswa => [
-            ['route' => 'mahasiswa.dashboard', 'aktif' => 'mahasiswa.dashboard', 'label' => 'Beranda', 'icon' => 'layout-dashboard'],
+            ['route' => 'mahasiswa.dashboard', 'aktif' => ['mahasiswa.dashboard', 'mahasiswa.exams.*'], 'label' => 'Ujian', 'icon' => 'clipboard-list'],
+            ['route' => 'mahasiswa.grades', 'aktif' => 'mahasiswa.grades', 'label' => 'Riwayat Nilai', 'icon' => 'chart-column'],
         ],
     };
 @endphp

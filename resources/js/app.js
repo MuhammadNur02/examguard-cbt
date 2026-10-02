@@ -6,6 +6,18 @@ document.addEventListener('submit', (event) => {
     }
 });
 
+// Tombol "Mulai Ujian" aktif hanya setelah persetujuan integritas dicentang (FR-04.10).
+// Server tetap memvalidasi persetujuan; ini hanya kenyamanan antarmuka.
+document.querySelectorAll('[data-persetujuan]').forEach((form) => {
+    const centang = form.querySelector('[data-persetujuan-centang]');
+    const tombol = form.querySelector('[data-persetujuan-tombol]');
+    const sinkron = () => {
+        tombol.disabled = !centang.checked;
+    };
+    centang.addEventListener('change', sinkron);
+    sinkron();
+});
+
 // Unduh isi tabel sebagai CSV: <button data-unduh-tabel="id-tabel" data-nama-berkas="x.csv">
 document.addEventListener('click', (event) => {
     const tombol = event.target.closest('[data-unduh-tabel]');

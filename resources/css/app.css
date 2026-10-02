@@ -213,6 +213,29 @@
     }
 }
 
+/* Modal: fade + naik 8 px (StyleGuide §9). */
+@keyframes modal-masuk {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+.modal-masuk {
+    animation: modal-masuk 180ms ease-out;
+}
+
+/* Timer <= 1 menit berkedip lembut; dimatikan oleh prefers-reduced-motion. */
+@keyframes kedip-lembut {
+    50% {
+        opacity: 0.45;
+    }
+}
+
+.timer-kedip {
+    animation: kedip-lembut 1s ease-in-out infinite;
+}
+
 /* Pola garis halus maroon-100 untuk halaman login (StyleGuide §8). */
 @utility bg-pola-garis {
     background-image: repeating-linear-gradient(

@@ -59,8 +59,17 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware(['role:mahasiswa', NoStore::class])->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
         Route::get('/', Mahasiswa\DashboardController::class)->name('dashboard');
+        Route::get('/nilai', Mahasiswa\GradeHistoryController::class)->name('grades');
+        Route::get('/ujian/{exam}', [Mahasiswa\ExamController::class, 'show'])->name('exams.show');
+        Route::get('/ujian/{exam}/kerjakan', [Mahasiswa\ExamController::class, 'work'])->name('exams.work');
 
-        Route::post('/ujian/{exam}/mulai', [Mahasiswa\AttemptController::class, 'start'])->name('attempts.start');
-        Route::get('/ujian/{exam}/soal', [Mahasiswa\AttemptController::class, 'questions'])->name('attempts.questions');
+        Route::middleware('throttle:ujian')->group(function () {
+            Route::post('/ujian/{exam}/mulai', [Mahasiswa\AttemptController::class, 'start'])->name('attempts.start');
+            Route::get('/ujian/{exam}/soal', [Mahasiswa\AttemptController::class, 'questions'])->name('attempts.questions');
+            Route::post('/ujian/{exam}/jawaban', [Mahasiswa\AttemptController::class, 'saveAnswers'])->name('attempts.answers');
+            Route::post('/ujian/{exam}/heartbeat', [Mahasiswa\AttemptController::class, 'heartbeat'])->name('attempts.heartbeat');
+            Route::post('/ujian/{exam}/pelanggaran', [Mahasiswa\AttemptController::class, 'violation'])->name('attempts.violation');
+            Route::post('/ujian/{exam}/kirim', [Mahasiswa\AttemptController::class, 'submit'])->name('attempts.submit');
+        });
     });
 });
