@@ -89,3 +89,64 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 ### D-12 `httpx2` untuk TestClient
 - **Keputusan:** dependensi pengembangan memakai `httpx2` (dirujuk langsung oleh
   Starlette 1.7; `httpx` menimbulkan peringatan usang).
+
+## D. Skema dan Aturan Bisnis
+
+### D-13 Kolom identitas login `nim_nidn`
+- **Keputusan:** satu kolom `users.nim_nidn` (unik) menyimpan NIM (mahasiswa),
+  NIDN (dosen), atau username (admin), sesuai PRD §11. Nilai hanya di-*trim*,
+  tidak diubah huruf besar/kecilnya.
+- **Alternatif:** kolom `username` generik (lebih umum di Laravel, tetapi
+  menyimpang dari PRD).
+
+### D-14 Jadwal ujian sinkron
+- **Keputusan:** ujian terbuka pada jendela `[mulai, mulai + durasi_menit)`.
+  Batas waktu setiap attempt = akhir jendela + `waktu_tambahan` (FR-06.6).
+  Mahasiswa yang mulai terlambat mendapat sisa waktu, bukan durasi penuh.
+- **Alasan:** PRD hanya punya `mulai` dan `durasi_menit`; "tidak bisa dimulai di
+  luar jadwal" paling sederhana dibaca sebagai jendela tersebut, dan semua peserta
+  selesai bersamaan sehingga soal tidak bocor ke peserta yang mulai belakangan.
+- **Alternatif:** durasi penuh per attempt sejak mulai + batas akhir terpisah
+  (butuh kolom tambahan yang tidak ada di PRD).
+
+### D-15 Pemetaan urutan disimpan, klien hanya melihat posisi
+- **Keputusan:** saat attempt dibuat, Fisher-Yates (PRNG Mt19937 berseed
+  `shuffle_seed`) menghasilkan `urutan_soal` dan `urutan_opsi` yang disimpan di
+  attempt. Klien hanya menerima nomor posisi soal/opsi, bukan ID asli; server
+  memetakan posisi ke ID dari data tersimpan.
+- **Alasan:** urutan stabil saat reload (FR-03.3) walau soal diedit kemudian, dan
+  ID berurutan tidak membocorkan urutan asli opsi (pola letak kunci dosen).
+
+### D-16 Publikasi nilai per hasil
+- **Keputusan:** `exam_results.dipublikasikan_pada` per attempt (sesuai PRD §11).
+  Tombol publikasi mengisi kolom ini untuk semua hasil ujian yang sudah final.
+
+### D-17 Rumus nilai akhir
+- **Keputusan:** `nilai_akhir = (skor_pg + skor_esai_final) / skor_maksimal × 100`
+  (dua desimal), terisi setelah semua esai pada attempt dikonfirmasi dosen.
+  `skor_maksimal` = jumlah bobot soal pada attempt.
+
+### D-18 Akun dinonaktifkan, bukan dihapus
+- **Keputusan:** tidak ada hapus akun; admin menonaktifkan (`aktif = false`).
+  Relasi ke ujian/attempt memakai `restrictOnDelete` agar data ujian tidak hilang.
+
+### D-19 Mode ketat Eloquent di luar produksi
+- **Keputusan:** `Model::shouldBeStrict()` aktif kecuali produksi, untuk menangkap
+  N+1 dan atribut yang dibuang diam-diam saat tes.
+
+### D-20 Kata sandi data contoh
+- **Keputusan:** `DemoSeeder` memakai `SEED_PASSWORD` dari `.env` (bawaan
+  `password`) dan menolak berjalan bila `APP_ENV=production`.
+
+## E. Keputusan Terbuka PRD §14
+
+| ID | Sikap yang dipakai |
+|---|---|
+| K-1 | Batas = N (`exams.batas_pelanggaran`, bawaan 3). Pelanggaran 1..N memunculkan modal "Peringatan Pelanggaran (X/N)" (ke-N berjudul "Peringatan Terakhir (N/N)"); pelanggaran ke-(N+1) memicu auto-submit dan status `terkunci`. |
+| K-2 | IDF dihitung dari korpus per soal: kunci dosen + seluruh jawaban mahasiswa pada soal itu, setelah ujian selesai. |
+| K-3 | Kata kunci wajib ditampilkan sebagai checklist ke dosen (terpenuhi/tidak) **tanpa penalti** agar rumus inti tetap murni; penalti dapat ditambah kemudian. |
+| K-4 | Live Monitor memakai polling 5 detik (≤ 10 detik sesuai PRD). |
+| K-5 | Admin: akun dan kelas. Dosen: ujian dan nilai, **hanya ujian miliknya sendiri**. Peran dipisah ketat (admin tidak otomatis bisa mengelola ujian). |
+| K-6 | Autentikasi dibangun di Fase 1. |
+| K-7 | Pindah tab dan keluar fullscreen masuk penghitung yang sama, dengan `jenis` berbeda di `exam_logs`. |
+| K-8 | Login kedua memutus sesi lama (sesi lama ditolak pada permintaan berikutnya) dan dicatat di `audit_logs`. |
