@@ -25,7 +25,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 
 - [ ] **2.1 (M)** Form manajemen ujian: judul, jadwal, durasi, batas pelanggaran, opsi pengacakan, publish/unpublish. *(FR-02.1, FR-02.3)*
   - DoD: ujian tidak dapat dimulai di luar jadwal.
-- [ ] **2.2 (M)** Form soal PG berbobot dan esai berkunci patokan + kata kunci. *(FR-02.2)*
+- [x] **2.2 (M)** Form soal PG berbobot dan esai berkunci patokan + kata kunci. *(FR-02.2)*
   - DoD: validasi satu kunci PG, kunci esai wajib.
 - [ ] **2.3 (S)** Parser impor CSV/Excel + template + laporan baris salah. *(FR-02.4)*
   - DoD: baris salah dilaporkan dengan nomor baris sebelum penyimpanan.
