@@ -55,7 +55,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 
 ## Fase 4 — Mesin Penilaian dan Dashboard Dosen
 
-- [ ] **4.1 (M)** Penilaian PG otomatis di backend. *(FR-05.1)*
+- [x] **4.1 (M)** Penilaian PG otomatis di backend. *(FR-05.1)*
 - [ ] **4.2 (M)** Preprocessing esai: case folding, tokenizing, stopword, stemming Sastrawi. *(FR-05.2)*
 - [ ] **4.3 (M)** TF-IDF dan Cosine Similarity (IDF dari kunci + seluruh jawaban per soal, K-2); skor = similarity × bobot. *(FR-05.3)*
   - DoD: unit test dengan contoh hitung manual; skor 0,0–1,0.
