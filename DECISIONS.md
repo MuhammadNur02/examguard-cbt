@@ -150,3 +150,29 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 | K-6 | Autentikasi dibangun di Fase 1. |
 | K-7 | Pindah tab dan keluar fullscreen masuk penghitung yang sama, dengan `jenis` berbeda di `exam_logs`. |
 | K-8 | Login kedua memutus sesi lama (sesi lama ditolak pada permintaan berikutnya) dan dicatat di `audit_logs`. |
+
+## F. Autentikasi
+
+### D-21 Rate limit login per identitas + IP
+- **Keputusan:** 5 percobaan gagal berturut-turut untuk kombinasi NIM/NIDN +
+  IP memicu penundaan 60 detik (FR-01.4); login berhasil mereset hitungan.
+  Tidak ada batas global per IP.
+- **Alasan:** batas per akun saja memungkinkan orang lain sengaja mengunci akun
+  temannya menjelang ujian; batas global per IP berisiko memblokir satu lab yang
+  keluar lewat satu IP NAT.
+- **Alternatif:** batas per akun (rawan penguncian sengaja), batas per IP.
+
+### D-22 Single session dengan token di sesi
+- **Keputusan:** setiap login membuat token acak 64 karakter yang disimpan di
+  `users.session_token` dan di sesi. Middleware `EnsureSingleSession` (grup `web`)
+  mengeluarkan sesi yang tokennya tidak lagi cocok, juga akun yang dinonaktifkan.
+  Dicatat di `audit_logs`: `sesi_diganti` (saat login baru menggantikan token
+  lama) dan `sesi_lama_ditolak` (saat sesi lama mencoba dipakai; berisi
+  user-agent dan path). Permintaan JSON dari sesi lama mendapat 401
+  `{"kode": "sesi_berakhir"}` agar halaman ujian bisa menampilkan pesan.
+- **Alasan:** bekerja untuk semua driver sesi (database, file, redis).
+- **Belum dibuat:** mode "tolak login kedua" (FR-01.2 menyebut "sesuai
+  pengaturan"). K-8 memilih memutus sesi lama; mode tolak butuh pelacakan sesi
+  aktif dan dapat ditambah bila diperlukan.
+- **Catatan:** `sesi_diganti` juga tercatat bila sesi sebelumnya sudah kedaluwarsa
+  tanpa logout (token lama masih tersimpan). Logout normal menghapus token.
