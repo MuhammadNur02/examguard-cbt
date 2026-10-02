@@ -13,7 +13,7 @@ HTTP di jaringan internal dan tidak boleh diekspos ke publik.
 
 ```bash
 cd nlp-service
-python -m venv .venv
+python -m venv .venv    # Windows dengan beberapa versi Python: py -3.13 -m venv .venv
 # Windows: .venv\Scripts\activate    Linux/macOS: source .venv/bin/activate
 pip install -r requirements-dev.txt
 cp .env.example .env    # lalu isi NLP_SERVICE_TOKEN (sama dengan .env Laravel)
