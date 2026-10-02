@@ -61,7 +61,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
   - DoD: unit test dengan contoh hitung manual; skor 0,0–1,0.
 - [x] **4.4 (M)** Integrasi Laravel ↔ FastAPI (HTTP internal), antrean untuk penilaian massal.
 - [x] **4.5 (M)** Live Monitor: peserta, status, jumlah pelanggaran, peringatan langsung (polling ≤ 10 detik). *(FR-06.1, FR-06.2)*
-- [ ] **4.6 (M)** Koreksi esai side-by-side dengan konfirmasi/edit skor. *(FR-06.3)*
+- [x] **4.6 (M)** Koreksi esai side-by-side dengan konfirmasi/edit skor. *(FR-06.3)*
 - [ ] **4.7 (S)** Koreksi cepat (terima massal di atas ambang) dan checklist kata kunci. *(FR-06.4, FR-05.4)*
 - [ ] **4.8 (S)** Kelola pelanggaran (maafkan/reset + audit log) dan tambah waktu/buka ulang attempt. *(FR-06.5, FR-06.6)*
 - [ ] **4.9 (S)** Deteksi kemiripan esai antar mahasiswa. *(FR-05.5)*
