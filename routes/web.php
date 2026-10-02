@@ -47,6 +47,9 @@ Route::middleware('auth')->group(function () {
             Route::post('/ujian/{exam}/terbitkan', [Dosen\ExamController::class, 'publish'])->name('exams.publish');
             Route::post('/ujian/{exam}/tarik', [Dosen\ExamController::class, 'unpublish'])->name('exams.unpublish');
 
+            Route::get('/ujian/{exam}/monitor', [Dosen\MonitorController::class, 'show'])->name('monitor');
+            Route::get('/ujian/{exam}/monitor/data', [Dosen\MonitorController::class, 'data'])->name('monitor.data');
+
             Route::post('/ujian/{exam}/koreksi/hitung', [Dosen\EssayGradingController::class, 'hitung'])->name('grading.score');
 
             Route::get('/ujian/{exam}/soal/buat', [Dosen\QuestionController::class, 'create'])->name('questions.create');

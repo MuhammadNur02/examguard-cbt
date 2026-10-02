@@ -24,6 +24,9 @@
         </dl>
 
         <div class="mt-6 flex flex-wrap gap-2">
+            @unless ($draf)
+                <a href="{{ route('dosen.monitor', $exam) }}" class="btn btn-primary btn-sm"><x-icon name="monitor" class="size-4" />Live Monitor</a>
+            @endunless
             @unless ($dikerjakan)
                 <a href="{{ route('dosen.exams.edit', $exam) }}" class="btn btn-secondary btn-sm"><x-icon name="pencil" class="size-4" />Ubah ujian</a>
             @endunless
