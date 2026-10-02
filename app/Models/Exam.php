@@ -83,4 +83,41 @@ class Exam extends Model
 
         return $waktu->greaterThanOrEqualTo($this->mulai) && $waktu->lessThan($this->selesaiPada());
     }
+
+    /** Sudah ada mahasiswa yang memulai; ujian tidak boleh diubah lagi. */
+    public function sudahDikerjakan(): bool
+    {
+        return $this->attempts()->exists();
+    }
+
+    /**
+     * Alasan ujian belum dapat diterbitkan (FR-02.2). Kosong berarti siap.
+     *
+     * @return list<string>
+     */
+    public function masalahPublikasi(): array
+    {
+        $questions = $this->questions()->with('options')->get();
+
+        if ($questions->isEmpty()) {
+            return ['Ujian belum memiliki soal.'];
+        }
+
+        $masalah = [];
+        foreach ($questions->values() as $i => $question) {
+            $nomor = $i + 1;
+            if ($question->isPg()) {
+                if ($question->options->count() < 2) {
+                    $masalah[] = "Soal {$nomor}: minimal dua opsi.";
+                }
+                if ($question->options->where('is_correct', true)->count() !== 1) {
+                    $masalah[] = "Soal {$nomor}: harus memiliki tepat satu kunci jawaban.";
+                }
+            } elseif (blank($question->kunci_esai)) {
+                $masalah[] = "Soal {$nomor}: kunci esai wajib diisi.";
+            }
+        }
+
+        return $masalah;
+    }
 }

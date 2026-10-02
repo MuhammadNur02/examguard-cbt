@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,5 +27,10 @@ class AppServiceProvider extends ServiceProvider
 
         // Tampilan paginasi memakai token StyleGuide.
         Paginator::defaultView('pagination.default');
+
+        // Parameter ID pada rute selalu numerik.
+        Route::pattern('exam', '[0-9]+');
+        Route::pattern('question', '[0-9]+');
+        Route::pattern('user', '[0-9]+');
     }
 }

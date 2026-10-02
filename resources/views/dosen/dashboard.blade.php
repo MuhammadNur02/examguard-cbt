@@ -9,7 +9,10 @@
     </section>
 
     <section aria-labelledby="daftar-ujian" class="card overflow-hidden p-0">
-        <h2 id="daftar-ujian" class="px-6 pt-6 text-h3 font-semibold">Ujian Anda</h2>
+        <div class="flex flex-wrap items-center justify-between gap-3 px-6 pt-6">
+            <h2 id="daftar-ujian" class="text-h3 font-semibold">Ujian Anda</h2>
+            <a href="{{ route('dosen.exams.create') }}" class="btn btn-primary btn-sm"><x-icon name="plus" class="size-4" />Buat Ujian</a>
+        </div>
         @if ($exams->isEmpty())
             <p class="px-6 pb-6 pt-2 text-stone-500">Belum ada ujian.</p>
         @else
@@ -28,7 +31,7 @@
                     <tbody>
                         @foreach ($exams as $exam)
                             <tr>
-                                <td class="font-medium text-ink">{{ $exam->judul }}</td>
+                                <td class="font-medium"><a href="{{ route('dosen.exams.show', $exam) }}" class="text-maroon-700 underline-offset-2 hover:underline">{{ $exam->judul }}</a></td>
                                 <td>{{ $exam->mata_kuliah }}</td>
                                 <td>{{ $exam->mulai->translatedFormat('d M Y, H:i') }}</td>
                                 <td class="num">{{ $exam->durasi_menit }} mnt</td>

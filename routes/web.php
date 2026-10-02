@@ -33,6 +33,27 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:dosen')->prefix('dosen')->name('dosen.')->group(function () {
         Route::get('/', Dosen\DashboardController::class)->name('dashboard');
+
+        Route::get('/ujian/buat', [Dosen\ExamController::class, 'create'])->name('exams.create');
+        Route::post('/ujian', [Dosen\ExamController::class, 'store'])->name('exams.store');
+
+        // Hanya dosen pemilik ujian (ExamPolicy@kelola).
+        Route::middleware('can:kelola,exam')->group(function () {
+            Route::get('/ujian/{exam}', [Dosen\ExamController::class, 'show'])->name('exams.show');
+            Route::get('/ujian/{exam}/ubah', [Dosen\ExamController::class, 'edit'])->name('exams.edit');
+            Route::put('/ujian/{exam}', [Dosen\ExamController::class, 'update'])->name('exams.update');
+            Route::delete('/ujian/{exam}', [Dosen\ExamController::class, 'destroy'])->name('exams.destroy');
+            Route::post('/ujian/{exam}/terbitkan', [Dosen\ExamController::class, 'publish'])->name('exams.publish');
+            Route::post('/ujian/{exam}/tarik', [Dosen\ExamController::class, 'unpublish'])->name('exams.unpublish');
+
+            Route::get('/ujian/{exam}/soal/buat', [Dosen\QuestionController::class, 'create'])->name('questions.create');
+            Route::post('/ujian/{exam}/soal', [Dosen\QuestionController::class, 'store'])->name('questions.store');
+            Route::scopeBindings()->group(function () {
+                Route::get('/ujian/{exam}/soal/{question}/ubah', [Dosen\QuestionController::class, 'edit'])->name('questions.edit');
+                Route::put('/ujian/{exam}/soal/{question}', [Dosen\QuestionController::class, 'update'])->name('questions.update');
+                Route::delete('/ujian/{exam}/soal/{question}', [Dosen\QuestionController::class, 'destroy'])->name('questions.destroy');
+            });
+        });
     });
 
     Route::middleware('role:mahasiswa')->prefix('mahasiswa')->name('mahasiswa.')->group(function () {
