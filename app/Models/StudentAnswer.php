@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'question_id', 'option_id', 'teks_jawaban', 'ragu', 'disimpan_pada',
-    'similarity', 'skor_sistem', 'skor_final', 'dinilai_oleh', 'dinilai_pada',
+    'similarity', 'kata_kunci_cocok', 'skor_sistem', 'skor_final', 'dinilai_oleh', 'dinilai_pada',
 ])]
 class StudentAnswer extends Model
 {
@@ -18,6 +18,7 @@ class StudentAnswer extends Model
             'ragu' => 'boolean',
             'disimpan_pada' => 'datetime',
             'similarity' => 'float',
+            'kata_kunci_cocok' => 'array',
             'skor_sistem' => 'float',
             'skor_final' => 'float',
             'dinilai_pada' => 'datetime',
