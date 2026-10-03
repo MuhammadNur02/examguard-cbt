@@ -5,11 +5,13 @@ namespace App\Jobs;
 use App\Enums\AttemptStatus;
 use App\Models\ExamAttempt;
 use App\Models\Question;
+use App\Models\SimilarityFlag;
 use App\Models\StudentAnswer;
 use App\Services\NlpClient;
 use App\Services\ScoringService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -77,6 +79,40 @@ class ScoreEssayQuestion implements ShouldQueue
                 }
 
                 $scoring->perbaruiHasil($attempt);
+            }
+        });
+
+        $this->perbaruiTandaKemiripan($nlp, $question, $berisi);
+    }
+
+    /**
+     * FR-05.5: tandai pasangan jawaban antarmahasiswa yang mirip. Tanda lama
+     * soal ini diganti seluruhnya agar selalu sesuai jawaban terakhir.
+     *
+     * @param  Collection<int, StudentAnswer>  $berisi
+     */
+    private function perbaruiTandaKemiripan(NlpClient $nlp, Question $question, Collection $berisi): void
+    {
+        $pasangan = $berisi->count() < 2 ? [] : $nlp->kemiripan(
+            $berisi->map(fn (StudentAnswer $a) => ['id' => $a->id, 'teks' => $a->teks_jawaban])->values()->all(),
+            (float) config('examguard.ambang_kemiripan_esai'),
+            (int) config('examguard.min_token_kemiripan'),
+        );
+        $attemptPerJawaban = $berisi->mapWithKeys(fn (StudentAnswer $a) => [$a->id => $a->attempt_id]);
+
+        DB::transaction(function () use ($question, $pasangan, $attemptPerJawaban) {
+            SimilarityFlag::where('question_id', $question->id)->delete();
+
+            foreach ($pasangan as ['a' => $a, 'b' => $b, 'skor' => $skor]) {
+                $x = $attemptPerJawaban->get($a);
+                $y = $attemptPerJawaban->get($b);
+                if ($x === null || $y === null || $x === $y) {
+                    continue;
+                }
+                SimilarityFlag::firstOrCreate(
+                    ['question_id' => $question->id, 'attempt_a' => min($x, $y), 'attempt_b' => max($x, $y)],
+                    ['skor' => round($skor, 4)],
+                );
             }
         });
     }

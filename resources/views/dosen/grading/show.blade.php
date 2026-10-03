@@ -45,12 +45,40 @@
             </form>
         </section>
 
+        @if ($kemiripan->isNotEmpty())
+            <section id="kemiripan" class="card mb-6" aria-labelledby="judul-kemiripan">
+                <h2 id="judul-kemiripan" class="flex items-center gap-2 text-h3 font-semibold"><x-icon name="copy" class="size-5 text-status-warning" />Kemiripan antarmahasiswa</h2>
+                <p class="mt-1 text-small text-stone-500">
+                    Pasangan jawaban dengan kemiripan TF-IDF ≥ {{ number_format((float) config('examguard.ambang_kemiripan_esai'), 2, ',', '.') }}.
+                    Ini penanda untuk ditinjau, bukan bukti kecurangan: jawaban yang sama-sama mendekati kunci juga bisa mirip.
+                </p>
+                <ul class="mt-3 divide-y divide-stone-200 text-small">
+                    @foreach ($kemiripan as $p)
+                        <li class="flex flex-wrap items-center justify-between gap-3 py-2">
+                            <span class="font-mono text-ink">{{ $p['a']->attempt->user->nim_nidn }} ↔ {{ $p['b']->attempt->user->nim_nidn }}</span>
+                            <span class="flex items-center gap-3">
+                                <span class="badge badge-warning">{{ number_format($p['skor'], 2, ',', '.') }}</span>
+                                <a href="{{ route('dosen.grading.show', [$exam, $question, 'jawaban' => $p['a']->id]) }}" class="font-semibold text-maroon-700 underline">{{ $p['a']->attempt->user->nim_nidn }}</a>
+                                <a href="{{ route('dosen.grading.show', [$exam, $question, 'jawaban' => $p['b']->id]) }}" class="font-semibold text-maroon-700 underline">{{ $p['b']->attempt->user->nim_nidn }}</a>
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            </section>
+        @endif
+
         <div class="grid items-start gap-6 xl:grid-cols-[1fr_15rem]">
             <div class="space-y-6">
                 <div class="grid gap-6 lg:grid-cols-2">
                     <section class="card" aria-labelledby="judul-jawaban">
                         <h2 id="judul-jawaban" class="text-h3 font-semibold">Jawaban mahasiswa</h2>
                         <p class="text-small text-stone-500">{{ $dipilih->attempt->user->nim_nidn }} · {{ $dipilih->attempt->user->nama }}</p>
+                        @foreach ($kemiripan->filter(fn ($p) => $p['a']->id === $dipilih->id || $p['b']->id === $dipilih->id) as $p)
+                            @php $lain = $p['a']->id === $dipilih->id ? $p['b'] : $p['a']; @endphp
+                            <a href="{{ route('dosen.grading.show', [$exam, $question, 'jawaban' => $lain->id]) }}" class="badge badge-warning mr-1 mt-2">
+                                <x-icon name="copy" class="size-3.5" />Mirip dengan {{ $lain->attempt->user->nim_nidn }} ({{ number_format($p['skor'], 2, ',', '.') }})
+                            </a>
+                        @endforeach
                         @if (filled($dipilih->teks_jawaban))
                             <p class="mt-4 whitespace-pre-line text-ink">{{ \App\Support\Highlight::kataKunci($dipilih->teks_jawaban, $kataKunci) }}</p>
                         @else

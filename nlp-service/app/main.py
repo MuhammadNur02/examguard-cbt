@@ -11,7 +11,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, status
 from pydantic import BaseModel, Field
 
 from app.preprocessing import praproses
-from app.scoring import KorpusIdf, cek_kata_kunci, skor_esai
+from app.scoring import KorpusIdf, cek_kata_kunci, pasangan_mirip, skor_esai
 
 app = FastAPI(
     title="ExamGuard NLP",
@@ -45,6 +45,13 @@ class PermintaanSkor(BaseModel):
     kata_kunci: list[str] = Field(default_factory=list, max_length=20)
     stemming: bool = True
     korpus_idf: KorpusIdf = "kunci_dan_jawaban"
+
+
+class PermintaanKemiripan(BaseModel):
+    jawaban: list[Jawaban] = Field(max_length=2000)
+    ambang: float = Field(default=0.8, ge=0.5, le=1.0)
+    min_token: int = Field(default=5, ge=1, le=100)
+    stemming: bool = True
 
 
 class PermintaanPraproses(BaseModel):
@@ -82,6 +89,19 @@ def score(permintaan: PermintaanSkor) -> dict:
     return {
         "hasil": hasil,
         "metode": {"stemming": permintaan.stemming, "korpus_idf": permintaan.korpus_idf},
+    }
+
+
+@app.post("/kemiripan", dependencies=[Depends(require_internal_token)])
+def kemiripan(permintaan: PermintaanKemiripan) -> dict:
+    """Pasangan jawaban antarmahasiswa yang mirip (FR-05.5), untuk ditinjau dosen."""
+    token = [praproses(j.teks, permintaan.stemming) for j in permintaan.jawaban]
+    pasangan = pasangan_mirip(token, permintaan.ambang, permintaan.min_token)
+    return {
+        "pasangan": [
+            {"a": permintaan.jawaban[a].id, "b": permintaan.jawaban[b].id, "skor": skor}
+            for a, b, skor in pasangan
+        ]
     }
 
 

@@ -416,3 +416,18 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 - Semua tindakan wajib alasan (5–500 karakter) dan dicatat di `audit_logs`
   (`pelanggaran_dimaafkan`, `pelanggaran_direset`, `waktu_ditambah`,
   `attempt_dibuka_ulang`).
+
+### D-49 Kemiripan esai antarmahasiswa (Task 4.9)
+- **Keputusan:** endpoint NLP baru `/kemiripan` menghitung cosine TF-IDF
+  antarjawaban satu soal (IDF dari seluruh jawaban, praproses sama dengan
+  penilaian). Pasangan ≥ 0,80 disimpan di `similarity_flags` (attempt_a <
+  attempt_b) oleh job `ScoreEssayQuestion` setelah skor rekomendasi, dan tanda
+  lama soal itu diganti seluruhnya setiap penghitungan ulang. Jawaban dengan
+  < 5 token setelah praproses tidak dibandingkan.
+- **Alasan:** memakai metode yang sama dengan penilaian (konsisten dan mudah
+  dijelaskan di KTI); batas token mencegah jawaban pendek yang wajar sama
+  (mis. "TCP dan UDP") ditandai.
+- **Alternatif:** n-gram/shingling (lebih peka urutan kata, tetapi metode baru
+  yang perlu dievaluasi tersendiri) atau mengurangi kemiripan terhadap kunci
+  (dua jawaban yang sama-sama benar tidak ditandai, tetapi menambah asumsi).
+  Keterbatasan dicatat di UI dan panduan: penanda untuk ditinjau, bukan bukti.

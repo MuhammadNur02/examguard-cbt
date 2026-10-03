@@ -13,6 +13,7 @@ untuk evaluasi akurasi (Task 5.3).
 
 from typing import Literal
 
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -58,6 +59,32 @@ def skor_esai(
         [praproses(teks, stemming) for teks in jawaban],
         korpus_idf,
     )
+
+
+def pasangan_mirip(
+    jawaban: list[list[str]], ambang: float, min_token: int = 5
+) -> list[tuple[int, int, float]]:
+    """Pasangan jawaban (indeks a < b) dengan cosine TF-IDF >= ambang (FR-05.5).
+
+    IDF dihitung dari seluruh jawaban yang dibandingkan. Jawaban dengan token
+    hasil praproses < min_token diabaikan agar jawaban pendek yang wajar sama
+    (mis. "TCP dan UDP") tidak ditandai. Hasil urut skor menurun.
+    """
+    indeks = [i for i, token in enumerate(jawaban) if len(token) >= min_token]
+    if len(indeks) < 2:
+        return []
+
+    vektorizer = TfidfVectorizer(analyzer=_token_apa_adanya)
+    try:
+        matriks = vektorizer.fit_transform([jawaban[i] for i in indeks])
+    except ValueError:
+        return []
+
+    a, b = np.triu_indices(len(indeks), k=1)
+    skor = np.round(np.clip(cosine_similarity(matriks)[a, b], 0.0, 1.0), 4)
+    pilih = np.flatnonzero(skor >= ambang)
+    hasil = [(indeks[a[k]], indeks[b[k]], float(skor[k])) for k in pilih]
+    return sorted(hasil, key=lambda p: (-p[2], p[0], p[1]))
 
 
 def cek_kata_kunci(

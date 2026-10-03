@@ -76,6 +76,17 @@ Respons: `hasil[]` berisi `id`, `similarity` (4 desimal),
 `kata_kunci_terpenuhi`, `kata_kunci_tidak_terpenuhi`; serta `metode`.
 `korpus_idf: "kunci"` dan `stemming: false` disediakan untuk variasi evaluasi.
 
+`POST /kemiripan` (FR-05.5, kemiripan esai antarmahasiswa pada satu soal)
+```json
+{"jawaban": [{"id": 1, "teks": "..."}], "ambang": 0.8, "min_token": 5, "stemming": true}
+```
+Respons: `pasangan[]` berisi `a`, `b` (id jawaban) dan `skor` (cosine TF-IDF
+antarjawaban, IDF dari seluruh jawaban yang dikirim), urut skor menurun, hanya
+yang ≥ `ambang` (0,5–1,0). Jawaban dengan token hasil praproses < `min_token`
+diabaikan agar jawaban pendek yang wajar sama tidak ditandai. Hasilnya penanda
+untuk ditinjau dosen, bukan bukti kecurangan: dua jawaban yang sama-sama
+mendekati kunci juga bisa mirip.
+
 `POST /preprocess` dengan `{"teks": "...", "stemming": true}` mengembalikan
 `{"token": [...]}` untuk transparansi.
 

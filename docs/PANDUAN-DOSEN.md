@@ -96,6 +96,14 @@ ditinjau, bukan bukti mutlak kecurangan.
    diterima. Jawaban lain tetap dikoreksi satu per satu, dan skor yang sudah
    Anda tetapkan tidak pernah ditimpa.
 
+**Kemiripan antarmahasiswa:** saat skor rekomendasi dihitung, sistem juga
+membandingkan jawaban antarmahasiswa pada soal yang sama. Pasangan dengan
+kemiripan ≥ 0,80 tampil di halaman koreksi soal (bagian **Kemiripan
+antarmahasiswa**, lencana **Pasangan mirip** di daftar soal, dan lencana
+**Mirip dengan …** pada jawaban). Jawaban sangat pendek (< 5 kata bermakna)
+tidak dibandingkan. Ini penanda untuk ditinjau, bukan bukti kecurangan: dua
+jawaban yang sama-sama mendekati kunci juga bisa mirip.
+
 Nilai akhir selalu keputusan Anda; setiap perubahan skor tercatat di audit.
 Esai yang tidak dijawab otomatis bernilai 0.
 

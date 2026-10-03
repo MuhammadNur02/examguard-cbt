@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    @forelse ($soal as ['question' => $question, 'total' => $total, 'direkomendasikan' => $direkomendasikan, 'dikonfirmasi' => $dikonfirmasi])
+    @forelse ($soal as ['question' => $question, 'total' => $total, 'direkomendasikan' => $direkomendasikan, 'dikonfirmasi' => $dikonfirmasi, 'mirip' => $mirip])
         <article class="card mb-4 flex flex-wrap items-center justify-between gap-4">
             <div class="min-w-0 flex-1">
                 <h2 class="text-h3 font-semibold">Soal esai · bobot {{ \App\Support\Format::angka($question->bobot) }}</h2>
@@ -21,6 +21,9 @@
                 <p class="mt-2 flex flex-wrap gap-2 text-small">
                     <span class="badge {{ $total > 0 && $dikonfirmasi === $total ? 'badge-success' : 'badge-neutral' }}">Dikonfirmasi {{ $dikonfirmasi }}/{{ $total }}</span>
                     <span class="badge badge-info">Ada rekomendasi {{ $direkomendasikan }}/{{ $total }}</span>
+                    @if ($mirip > 0)
+                        <span class="badge badge-warning"><x-icon name="copy" class="size-3.5" />Pasangan mirip {{ $mirip }}</span>
+                    @endif
                 </p>
             </div>
             <a href="{{ route('dosen.grading.show', [$exam, $question]) }}" class="btn btn-secondary btn-sm">

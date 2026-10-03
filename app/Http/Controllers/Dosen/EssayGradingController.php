@@ -10,6 +10,7 @@ use App\Jobs\ScoreEssayQuestion;
 use App\Models\AuditLog;
 use App\Models\Exam;
 use App\Models\Question;
+use App\Models\SimilarityFlag;
 use App\Models\StudentAnswer;
 use App\Services\AttemptService;
 use App\Services\ScoringService;
@@ -37,6 +38,7 @@ class EssayGradingController extends Controller
                 'total' => $jawaban->count(),
                 'direkomendasikan' => $jawaban->whereNotNull('skor_sistem')->count(),
                 'dikonfirmasi' => $jawaban->whereNotNull('skor_final')->count(),
+                'mirip' => SimilarityFlag::where('question_id', $question->id)->count(),
             ];
         });
 
@@ -68,7 +70,24 @@ class EssayGradingController extends Controller
             'posisi' => $dipilih ? $jawaban->search(fn ($a) => $a->id === $dipilih->id) : null,
             'opsiAmbang' => $opsiAmbang,
             'ambangBawaan' => (float) config('examguard.ambang_terima_massal_bawaan'),
+            'kemiripan' => $this->pasanganMirip($question, $jawaban),
         ]);
+    }
+
+    /**
+     * Pasangan jawaban mirip antarmahasiswa (FR-05.5) beserta jawabannya.
+     *
+     * @param  Collection<int, StudentAnswer>  $jawaban
+     * @return Collection<int, array{skor: float, a: StudentAnswer, b: StudentAnswer}>
+     */
+    private function pasanganMirip(Question $question, Collection $jawaban): Collection
+    {
+        $perAttempt = $jawaban->keyBy('attempt_id');
+
+        return SimilarityFlag::where('question_id', $question->id)->orderByDesc('skor')->get()
+            ->map(fn (SimilarityFlag $f) => ['skor' => $f->skor, 'a' => $perAttempt->get($f->attempt_a), 'b' => $perAttempt->get($f->attempt_b)])
+            ->filter(fn (array $p) => $p['a'] && $p['b'])
+            ->values();
     }
 
     /**

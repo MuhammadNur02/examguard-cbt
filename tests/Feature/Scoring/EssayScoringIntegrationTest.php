@@ -106,7 +106,11 @@ class EssayScoringIntegrationTest extends TestCase
 
         $this->actingAs($this->dosen)->post("/dosen/ujian/{$this->exam->id}/koreksi/hitung");
 
-        Http::assertSentCount(1);
+        // /score lalu /kemiripan (FR-05.5); keduanya wajib bertoken internal.
+        Http::assertSentCount(2);
+        Http::assertSent(fn (Request $request) => $request->url() === 'http://127.0.0.1:8001/kemiripan'
+            && $request->hasHeader('X-Internal-Token', 'token-uji')
+            && array_column($request['jawaban'], 'teks') === ['Jawaban satu.', 'Jawaban dua.']);
         Http::assertSent(fn (Request $request) => $request->url() === 'http://127.0.0.1:8001/score'
             && $request->hasHeader('X-Internal-Token', 'token-uji')
             && $request['kunci'] === 'Middleware menyaring permintaan HTTP.'

@@ -31,4 +31,9 @@ return [
     'ambang_terima_massal' => [0.9, 0.85, 0.8, 0.75, 0.7, 0.6, 0.5],
     'ambang_terima_massal_bawaan' => 0.8,
 
+    // Kemiripan esai antarmahasiswa (FR-05.5): pasangan >= ambang ditandai untuk
+    // ditinjau; jawaban dengan token < min_token (setelah praproses) diabaikan.
+    'ambang_kemiripan_esai' => 0.8,
+    'min_token_kemiripan' => 5,
+
 ];
