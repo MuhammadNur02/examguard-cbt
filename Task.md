@@ -36,7 +36,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 - [x] **2.6 (S)** Duplikat ujian, pratinjau sebagai mahasiswa, kode akses ujian. *(FR-02.5, FR-02.7, FR-02.8)*
   - DoD: pratinjau tidak membuat attempt atau nilai.
 - [x] **2.7 (C)** Pembatasan IP/CIDR kampus. *(FR-02.9)*
-- [ ] **2.8 (C)** Pool soal N dari M. *(FR-03.6)*
+- [x] **2.8 (C)** Pool soal N dari M. *(FR-03.6)*
 
 ## Fase 3 — Antarmuka Mahasiswa dan Engine Anti-Kecurangan
 
