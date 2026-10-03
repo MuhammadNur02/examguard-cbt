@@ -1,0 +1,9 @@
+soal_id,bobot,kunci,jawaban_id,kode_mahasiswa,jawaban,skor_dosen
+1,10,"Metode GET mengirim data melalui URL sehingga data terlihat, cocok untuk mengambil data. Metode POST mengirim data di dalam badan permintaan dan cocok untuk mengubah data di server.",1,M001,"GET mengirim data lewat URL untuk mengambil data, POST mengirim data dalam badan permintaan untuk mengubah data di server.",9
+1,10,"Metode GET mengirim data melalui URL sehingga data terlihat, cocok untuk mengambil data. Metode POST mengirim data di dalam badan permintaan dan cocok untuk mengubah data di server.",2,M002,"GET lebih cepat daripada POST.",3
+1,10,"Metode GET mengirim data melalui URL sehingga data terlihat, cocok untuk mengambil data. Metode POST mengirim data di dalam badan permintaan dan cocok untuk mengubah data di server.",3,M003,"Data pada GET terlihat di URL, sedangkan POST menyembunyikan data di badan permintaan.",7
+1,10,"Metode GET mengirim data melalui URL sehingga data terlihat, cocok untuk mengambil data. Metode POST mengirim data di dalam badan permintaan dan cocok untuk mengubah data di server.",4,M004,"Keduanya adalah metode HTTP.",2
+2,10,"Middleware berfungsi sebagai penyaring permintaan HTTP yang masuk sebelum diteruskan ke controller, misalnya memeriksa autentikasi pengguna.",5,M001,"Middleware menyaring permintaan HTTP sebelum masuk controller, contohnya cek login pengguna.",9
+2,10,"Middleware berfungsi sebagai penyaring permintaan HTTP yang masuk sebelum diteruskan ke controller, misalnya memeriksa autentikasi pengguna.",6,M002,"Middleware adalah bagian dari Laravel.",2
+2,10,"Middleware berfungsi sebagai penyaring permintaan HTTP yang masuk sebelum diteruskan ke controller, misalnya memeriksa autentikasi pengguna.",7,M003,"Middleware memeriksa autentikasi sebelum permintaan diteruskan.",7
+2,10,"Middleware berfungsi sebagai penyaring permintaan HTTP yang masuk sebelum diteruskan ke controller, misalnya memeriksa autentikasi pengguna.",8,M004,,

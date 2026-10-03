@@ -86,3 +86,13 @@ pytest
 ruff check .
 ruff format --check .
 ```
+
+## Evaluasi akurasi (Task 5.3)
+
+`evaluasi.py` menghitung MAE dan korelasi Pearson skor sistem terhadap skor
+dosen untuk empat varian (stemming ya/tidak × korpus IDF kunci+jawaban/kunci).
+Protokol lengkap: [docs/EVALUASI-AKURASI-ESAI.md](../docs/EVALUASI-AKURASI-ESAI.md).
+
+```bash
+python evaluasi.py contoh/dataset-rekaan.csv   # data rekaan, hanya untuk mencoba alat
+```

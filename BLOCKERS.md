@@ -34,3 +34,12 @@
 - **Bila terulang:** jalankan `attrib -R bootstrap\cache` lalu ulangi perintah.
   Saran jangka panjang: simpan proyek di luar folder OneDrive (mis. `C:\dev\`),
   karena `vendor/`, `node_modules/`, dan `.venv/` juga ikut tersinkron.
+
+## B-04 Task 5.3 (uji akurasi esai) butuh data nyata
+- **Status:** alat siap dan teruji; menunggu data.
+- **Yang dibutuhkan:** 30–50 jawaban esai nyata yang dinilai dosen secara buta
+  (tanpa melihat rekomendasi sistem).
+- **Yang sudah tersedia:** `php artisan ujian:ekspor-esai <id>` (CSV anonim,
+  kolom skor_dosen kosong) dan `nlp-service/evaluasi.py` (MAE, Pearson, empat
+  varian). Protokol: `docs/EVALUASI-AKURASI-ESAI.md`.
+- **Task 5.3 tidak dicentang** sampai hasil dari data nyata ada.
