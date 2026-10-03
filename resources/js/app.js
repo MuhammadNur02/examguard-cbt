@@ -8,11 +8,19 @@ document.addEventListener('submit', (event) => {
 
 // Tombol "Mulai Ujian" aktif hanya setelah persetujuan integritas dicentang (FR-04.10).
 // Server tetap memvalidasi persetujuan; ini hanya kenyamanan antarmuka.
+// FR-04.11: layar kecil (ponsel/tablet kecil) atau perangkat sentuh tanpa mouse/trackpad
+// tidak dapat memulai. Server juga menolak user-agent seluler.
+const layarTidakDidukung = () =>
+    Math.max(window.screen.width, window.screen.height) < 1024 ||
+    (window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(any-pointer: fine)').matches);
+
 document.querySelectorAll('[data-persetujuan]').forEach((form) => {
     const centang = form.querySelector('[data-persetujuan-centang]');
     const tombol = form.querySelector('[data-persetujuan-tombol]');
+    const tidakDidukung = layarTidakDidukung();
+    form.querySelector('[data-layar-kecil]')?.classList.toggle('hidden', !tidakDidukung);
     const sinkron = () => {
-        tombol.disabled = !centang.checked;
+        tombol.disabled = tidakDidukung || !centang.checked;
     };
     centang.addEventListener('change', sinkron);
     sinkron();

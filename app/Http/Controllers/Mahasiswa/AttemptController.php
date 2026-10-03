@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Services\AttemptService;
 use App\Services\ViolationService;
+use App\Support\Perangkat;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,13 +39,18 @@ class AttemptController extends Controller
             ['setuju.accepted' => 'Centang persetujuan integritas sebelum memulai ujian.'],
         );
 
-        // Kode akses hanya diperiksa saat attempt baru dibuat; melanjutkan tidak memintanya lagi.
-        if (! $this->attempts->attemptMilik($exam, $request->user())) {
-            $this->periksaKodeAkses($request, $exam);
-        }
-
         try {
+            $this->tolakPerangkatSeluler($request);
+
+            // Kode akses hanya diperiksa saat attempt baru dibuat; melanjutkan tidak memintanya lagi.
+            if (! $this->attempts->attemptMilik($exam, $request->user())) {
+                $this->periksaKodeAkses($request, $exam);
+            }
+
             $attempt = $this->attempts->mulai($exam, $request->user(), $request->ip(), $request->userAgent());
+            if (! $attempt->wasRecentlyCreated) {
+                $this->attempts->periksaPerangkat($attempt, $request->ip(), $request->userAgent());
+            }
         } catch (UjianTidakTersedia $e) {
             if ($request->expectsJson()) {
                 throw $e;
@@ -182,8 +188,26 @@ class AttemptController extends Controller
     private function attemptAktif(Request $request, Exam $exam)
     {
         $this->pastikanTerlihat($request, $exam);
+        $attempt = $this->attempts->attemptAktif($exam, $request->user(), (int) config('examguard.toleransi_simpan_detik'));
 
-        return $this->attempts->attemptAktif($exam, $request->user(), (int) config('examguard.toleransi_simpan_detik'));
+        // Catat dulu perubahan perangkat (termasuk bila pindah ke ponsel), baru tolak ponsel.
+        $this->attempts->periksaPerangkat($attempt, $request->ip(), $request->userAgent());
+        $this->tolakPerangkatSeluler($request);
+
+        return $attempt;
+    }
+
+    /**
+     * FR-04.11: ujian hanya untuk laptop/komputer. Berdasarkan user-agent, jadi
+     * dapat dikelabui (mis. "mode desktop"); tujuannya mencegah ketidaksengajaan.
+     *
+     * @throws UjianTidakTersedia
+     */
+    private function tolakPerangkatSeluler(Request $request): void
+    {
+        if (Perangkat::seluler($request->userAgent())) {
+            throw new UjianTidakTersedia(AttemptService::PESAN_SELULER);
+        }
     }
 
     /** @return array<string, mixed> */

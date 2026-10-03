@@ -68,6 +68,12 @@ Saat ujian berjalan, buka **Live Monitor** (diperbarui tiap 5 detik):
 - Kolom pelanggaran X/N; baris bergaris kuning bila melewati separuh batas,
   merah bila terkunci.
 - **Pelanggaran terbaru** muncul tanpa memuat ulang halaman.
+- **Perangkat berganti** (alamat IP atau peramban mahasiswa berubah di tengah
+  ujian) muncul sebagai insiden "dicatat, tidak dihitung". Detail IP dan
+  peramban lama → baru ada di **Rekap Nilai → Detail**. IP dapat berubah wajar
+  (mis. ganti Wi-Fi), jadi tinjau bersama konteksnya.
+- Layar ujian mahasiswa memuat watermark samar nama/NIM sehingga tangkapan
+  layar soal yang beredar dapat ditelusuri.
 
 Ingat: aplikasi web hanya mendeteksi dan mencatat; log adalah penanda untuk
 ditinjau, bukan bukti mutlak kecurangan.

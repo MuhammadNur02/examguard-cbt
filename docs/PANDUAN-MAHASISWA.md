@@ -3,7 +3,10 @@
 ## Sebelum ujian
 
 - Gunakan **laptop/PC** dengan **Google Chrome** atau **Microsoft Edge** versi
-  terbaru. Ponsel dan tablet tidak didukung.
+  terbaru. Ponsel dan tablet tidak didukung: tombol **Mulai Ujian** tidak
+  tersedia dan sistem menampilkan pesan "Gunakan laptop atau komputer".
+- Layar ujian menampilkan **nama dan NIM Anda secara samar** di latar belakang
+  (watermark). Watermark tidak menghalangi klik atau ketikan.
 - Pastikan koneksi internet stabil dan baterai cukup.
 - Tutup aplikasi lain (chat, musik, notifikasi) agar tidak memicu pindah jendela.
 - Login dengan **NIM** dan kata sandi dari admin prodi. Lupa kata sandi?
@@ -56,6 +59,9 @@ ditinjau dosen sebagai penanda, bukan bukti mutlak.
   login kembali dan pilih **Lanjutkan Ujian**. Urutan soal dan jawaban
   tersimpan tetap sama; waktu tetap berjalan.
 - **Peramban tertutup:** login lagi sebelum jadwal berakhir lalu lanjutkan.
+- **Ganti laptop atau jaringan:** boleh, tetapi perubahan alamat IP atau
+  peramban dicatat sebagai insiden "Perangkat berganti" untuk ditinjau dosen.
+  Catatan ini **tidak** menambah hitungan pelanggaran.
 
 ## Mengirim jawaban
 

@@ -10,6 +10,13 @@
             </dl>
         </section>
 
+        @if ($seluler && in_array($keadaan, ['dibuka', 'berlangsung'], true))
+            {{-- FR-04.11: server juga menolak memulai/melanjutkan dari user-agent seluler. --}}
+            <div class="alert alert-warning" role="alert">
+                <x-icon name="monitor" class="mt-0.5 size-5" />
+                <p>{{ \App\Services\AttemptService::PESAN_SELULER }} Buka halaman ini dari laptop atau komputer untuk {{ $keadaan === 'berlangsung' ? 'melanjutkan' : 'memulai' }} ujian.</p>
+            </div>
+        @else
         @switch($keadaan)
             @case('akan_datang')
                 <div class="alert alert-info" role="status">
@@ -82,10 +89,15 @@
                             <x-field-error name="kode_akses" />
                         </div>
                     @endif
+                    <p class="alert alert-warning mt-5 hidden" role="alert" data-layar-kecil>
+                        <x-icon name="monitor" class="mt-0.5 size-5" />
+                        Layar perangkat ini terlalu kecil atau hanya berupa layar sentuh. Gunakan laptop atau komputer untuk memulai ujian.
+                    </p>
                     <button type="submit" class="btn btn-primary mt-5" disabled data-persetujuan-tombol>
                         <x-icon name="shield-check" class="size-4" />Mulai Ujian
                     </button>
                 </form>
         @endswitch
+        @endif
     </div>
 </x-layouts.app>

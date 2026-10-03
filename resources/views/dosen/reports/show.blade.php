@@ -73,13 +73,24 @@
         @else
             <div class="mt-4 overflow-x-auto">
                 <table class="table-eg">
-                    <thead><tr><th scope="col">Waktu</th><th scope="col">Jenis</th><th scope="col">Pemicu</th><th scope="col">Dihitung</th><th scope="col">Dimaafkan</th></tr></thead>
+                    <thead><tr><th scope="col">Waktu</th><th scope="col">Jenis</th><th scope="col">Keterangan</th><th scope="col">Dihitung</th><th scope="col">Dimaafkan</th></tr></thead>
                     <tbody>
                         @foreach ($attempt->logs->sortBy('waktu') as $log)
                             <tr>
                                 <td class="font-mono">{{ $log->waktu->format('H:i:s.v') }}</td>
                                 <td>{{ $log->jenis->label() }}</td>
-                                <td>{{ $log->detail['pemicu'] ?? '–' }}</td>
+                                <td>
+                                    @if ($log->jenis === \App\Enums\LogType::PerangkatBerganti)
+                                        @if (($log->detail['ip_sebelumnya'] ?? null) !== ($log->detail['ip_baru'] ?? null))
+                                            <span class="block">IP {{ $log->detail['ip_sebelumnya'] ?? '?' }} → {{ $log->detail['ip_baru'] ?? '?' }}</span>
+                                        @endif
+                                        @if (($log->detail['ua_sebelumnya'] ?? null) !== ($log->detail['ua_baru'] ?? null))
+                                            <span class="block" title="{{ $log->detail['ua_baru'] ?? '' }}">Peramban {{ $log->detail['perangkat_sebelumnya'] ?? '?' }} → {{ $log->detail['perangkat_baru'] ?? '?' }}</span>
+                                        @endif
+                                    @else
+                                        {{ $log->detail['pemicu'] ?? '–' }}
+                                    @endif
+                                </td>
                                 <td>{{ $log->dihitung ? 'Ya' : 'Tidak' }}</td>
                                 <td>{{ $log->dimaafkan ? 'Ya' : 'Tidak' }}</td>
                             </tr>

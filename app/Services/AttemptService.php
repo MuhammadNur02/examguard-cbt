@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Enums\AttemptStatus;
 use App\Enums\FinishReason;
+use App\Enums\LogType;
 use App\Exceptions\UjianTidakTersedia;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Question;
 use App\Models\User;
 use App\Support\FisherYates;
+use App\Support\Perangkat;
 use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -26,6 +28,8 @@ use Random\Randomizer;
 class AttemptService
 {
     /** @var Closure(): int */
+    public const PESAN_SELULER = 'Gunakan laptop atau komputer untuk mengerjakan ujian. Perangkat seluler dan tablet tidak didukung.';
+
     private Closure $seedGenerator;
 
     /** @param  (Closure(): int)|null  $seedGenerator  dapat diganti di tes agar seed deterministik */
@@ -118,6 +122,49 @@ class AttemptService
         $this->pastikanBisaLanjut($attempt, $toleransiDetik);
 
         return $attempt;
+    }
+
+    /**
+     * FR-04.9: catat insiden "perangkat berganti" bila IP atau peramban berbeda
+     * dari permintaan sebelumnya pada attempt ini. Tidak menambah hitungan
+     * pelanggaran (hanya ditinjau dosen; IP bisa berubah wajar saat ganti
+     * jaringan). Pembaruan bersyarat mencegah permintaan paralel dari perangkat
+     * baru mencatat perubahan yang sama dua kali.
+     */
+    public function periksaPerangkat(ExamAttempt $attempt, ?string $ip, ?string $userAgent): bool
+    {
+        $userAgent = $userAgent !== null ? mb_substr($userAgent, 0, 1000) : null;
+        if (! $attempt->isBerlangsung() || ($attempt->ip === $ip && $attempt->user_agent === $userAgent)) {
+            return false;
+        }
+
+        $lama = ['ip' => $attempt->ip, 'user_agent' => $attempt->user_agent];
+        $berubah = ExamAttempt::whereKey($attempt->id)
+            ->where(fn ($q) => $lama['ip'] === null ? $q->whereNull('ip') : $q->where('ip', $lama['ip']))
+            ->where(fn ($q) => $lama['user_agent'] === null ? $q->whereNull('user_agent') : $q->where('user_agent', $lama['user_agent']))
+            ->update(['ip' => $ip, 'user_agent' => $userAgent]);
+        $attempt->forceFill(['ip' => $ip, 'user_agent' => $userAgent])->syncOriginal();
+
+        // Attempt lama tanpa data perangkat: simpan saja sebagai acuan, bukan insiden.
+        if ($berubah !== 1 || ($lama['ip'] === null && $lama['user_agent'] === null)) {
+            return false;
+        }
+
+        $attempt->logs()->create([
+            'jenis' => LogType::PerangkatBerganti,
+            'waktu' => now(),
+            'dihitung' => false,
+            'detail' => [
+                'ip_sebelumnya' => $lama['ip'],
+                'ip_baru' => $ip,
+                'perangkat_sebelumnya' => Perangkat::ringkas($lama['user_agent']),
+                'perangkat_baru' => Perangkat::ringkas($userAgent),
+                'ua_sebelumnya' => $lama['user_agent'] !== null ? mb_substr($lama['user_agent'], 0, 300) : null,
+                'ua_baru' => $userAgent !== null ? mb_substr($userAgent, 0, 300) : null,
+            ],
+        ]);
+
+        return true;
     }
 
     /** @throws UjianTidakTersedia */

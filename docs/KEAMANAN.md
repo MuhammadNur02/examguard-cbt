@@ -31,8 +31,17 @@ produksi. Bahan untuk Bab 4 KTI (PRD §12 Keamanan).
 - Proteksi sisi klien (blokir klik kanan, deteksi pindah tab) dapat dilewati
   pengguna mahir; aplikasi web tidak dapat memblokir Alt+Tab. Log pelanggaran
   adalah penanda untuk ditinjau dosen, bukan bukti mutlak.
-- Belum ada pembatasan IP/jaringan kampus (FR-02.9, Could) dan kode akses
-  (FR-02.8, Should).
+- Penolakan ponsel/tablet memakai user-agent (server) dan ukuran layar/jenis
+  penunjuk (peramban). Keduanya dapat dikelabui, mis. "mode desktop" di
+  peramban ponsel; tujuannya mencegah ketidaksengajaan, bukan pengamanan.
+- Deteksi perangkat berganti membandingkan IP dan user-agent antarpermintaan.
+  Dua orang yang memakai satu akun di jaringan dan peramban yang sama tidak
+  terdeteksi dengan cara ini (sesi tunggal per akun tetap berlaku), dan IP
+  dapat berubah wajar saat ganti jaringan.
+- Watermark nama/NIM hanya membantu menelusuri tangkapan layar; tidak mencegah
+  pemotretan layar dengan ponsel.
+- Kode akses (FR-02.8) melindungi saat memulai saja; pembatasan IP/jaringan
+  kampus (FR-02.9, Could) belum ada.
 
 ## Daftar periksa produksi
 

@@ -38,6 +38,15 @@
         </main>
     </div>
 
+    {{-- FR-04.8: watermark samar nama/NIM agar tangkapan layar soal dapat ditelusuri. Tidak menghalangi klik. --}}
+    <div data-watermark aria-hidden="true" class="pointer-events-none fixed inset-0 z-35 select-none overflow-hidden">
+        <div class="absolute -left-1/4 -top-1/4 grid h-[150%] w-[150%] rotate-[-24deg] grid-cols-5 content-start gap-x-12 gap-y-20 p-8 opacity-8">
+            @for ($i = 0; $i < 150; $i++)
+                <span class="whitespace-nowrap text-small font-semibold text-ink">{{ $watermark }}</span>
+            @endfor
+        </div>
+    </div>
+
     <div id="layar-mulai" class="fixed inset-0 z-40 flex items-center justify-center bg-ivory px-4">
         <div class="card card-important max-w-md text-center">
             <x-icon name="maximize" class="mx-auto size-10 text-maroon-700" />

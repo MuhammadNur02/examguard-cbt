@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mahasiswa;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Services\AttemptService;
+use App\Support\Perangkat;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -31,6 +32,7 @@ class ExamController extends Controller
             'attempt' => $attempt,
             'keadaan' => $this->attempts->keadaan($exam, $attempt),
             'perluKode' => $exam->perluKodeAkses(),
+            'seluler' => Perangkat::seluler($request->userAgent()),
             'pesanSelesai' => $attempt && ! $attempt->isBerlangsung() ? $this->attempts->pesanSelesai($attempt) : null,
         ]);
     }
@@ -38,6 +40,10 @@ class ExamController extends Controller
     public function work(Request $request, Exam $exam): View|RedirectResponse
     {
         abort_unless($exam->terlihatOleh($request->user()), 404);
+
+        if (Perangkat::seluler($request->userAgent())) {
+            return redirect()->route('mahasiswa.exams.show', $exam)->with('error', AttemptService::PESAN_SELULER);
+        }
 
         $attempt = $this->attempts->attemptMilik($exam, $request->user());
         if (! $attempt) {
@@ -51,6 +57,7 @@ class ExamController extends Controller
 
         return view('mahasiswa.exams.work', [
             'exam' => $exam,
+            'watermark' => $request->user()->nama.' · '.$request->user()->nim_nidn,
             'konfigurasi' => [
                 'url' => [
                     'soal' => route('mahasiswa.attempts.questions', $exam),

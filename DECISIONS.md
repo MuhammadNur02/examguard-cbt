@@ -362,3 +362,21 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   5 menit per mahasiswa per ujian. Alternatif: hash kode (tidak bisa
   ditampilkan ke dosen) atau meminta kode di setiap lanjut (mengganggu
   mahasiswa yang peramban-nya tertutup).
+
+### D-46 Watermark, perangkat berganti, dan penolakan ponsel (Task 3.8)
+- **Watermark (FR-04.8):** lapisan HTML tetap (`pointer-events-none`,
+  `aria-hidden`) berisi "nama · NIM" berulang, miring, opasitas 8%, di atas
+  konten tetapi di bawah modal. Alternatif: gambar SVG sebagai latar (lebih
+  ringan, tetapi teks di dalam data URI lebih sulit diuji dan diubah).
+- **Perangkat berganti (FR-04.9):** setiap permintaan attempt (mulai-lanjut,
+  soal, jawaban, heartbeat, pelanggaran) membandingkan IP dan user-agent
+  dengan nilai terakhir pada attempt. Perubahan dicatat sekali sebagai
+  `perangkat_berganti` (tidak dihitung, PRD K-7) lalu nilai acuan diperbarui,
+  sehingga setiap perpindahan tercatat tepat satu kali. Pembaruan bersyarat
+  mencegah catatan ganda dari permintaan paralel. Alternatif: menghitungnya
+  sebagai pelanggaran (berisiko menghukum ganti Wi-Fi yang wajar).
+- **Ponsel (FR-04.11):** server menolak memulai dan melanjutkan dari
+  user-agent seluler (termasuk tablet Android/iPad lama); peramban menolak
+  layar < 1024 px sisi terpanjang atau perangkat sentuh tanpa mouse/trackpad.
+  Perubahan perangkat dicatat dulu sebelum permintaan dari ponsel ditolak.
+  Batasan (dapat dikelabui) ditulis jujur di `docs/KEAMANAN.md`.
