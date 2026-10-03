@@ -31,9 +31,10 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
 
 ## ✨ Fitur Utama
 
-> Seluruh fitur di bawah sudah diimplementasikan dan diuji (jalur MVP Task.md).
-> Fitur Should/Could yang belum dibuat (mis. kelas, kode akses, memaafkan
-> pelanggaran, uji beban) tercatat di [Task.md](Task.md) dan [PROGRESS.md](PROGRESS.md).
+> Seluruh fitur di bawah sudah diimplementasikan dan diuji (jalur MVP dan
+> tugas Should di Task.md). Fitur Could yang belum dibuat (mis. pembatasan IP
+> kampus, pool soal, ekspor PDF) dan status setiap task tercatat di
+> [Task.md](Task.md) dan [PROGRESS.md](PROGRESS.md).
 
 ### Sisi mahasiswa: pemantauan dan proteksi layar ujian
 - **Deteksi pindah tab/jendela** lewat Page Visibility API dan event `blur`.
@@ -46,7 +47,12 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
 - **Proteksi salin-tempel.** Klik kanan, seleksi teks, dan pintasan Ctrl+C/V/U,
   Ctrl+Shift+I, F12 dinonaktifkan di halaman ujian.
 - **Pengacakan soal dan opsi per mahasiswa** (Fisher-Yates dengan seed tersimpan),
-  sehingga mahasiswa yang bersebelahan tidak mendapat urutan yang sama.
+  sehingga mahasiswa yang bersebelahan tidak mendapat urutan yang sama. Acak soal
+  dan acak opsi dapat dimatikan per ujian; opsi seperti "Semua benar" dapat dikunci
+  posisinya.
+- **Watermark nama/NIM** samar di layar ujian, **deteksi perangkat berganti**
+  (IP/peramban, dicatat untuk ditinjau), dan penolakan ponsel/tablet.
+- **Kode akses** opsional dan **kelas peserta** per ujian.
 
 ### Sisi dosen: penilaian dan validasi
 - **Nilai pilihan ganda otomatis** dihitung di server.
@@ -55,8 +61,15 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
   kunci dosen menghasilkan skor rekomendasi (similarity × bobot soal).
 - **Koreksi berdampingan (*human-in-the-loop*):** dosen membandingkan jawaban dan
   kunci, lalu menyetujui atau mengubah skor sebelum nilai dipublikasikan.
+- **Koreksi cepat:** terima massal rekomendasi di atas ambang similarity untuk
+  jawaban yang belum dikonfirmasi, dengan checklist kata kunci wajib.
+- **Kemiripan esai antarmahasiswa** ditandai untuk ditinjau (bukan bukti).
 - **Live Monitor:** daftar peserta, status, waktu aktivitas terakhir, dan log
-  pelanggaran yang diperbarui berkala.
+  pelanggaran yang diperbarui berkala; dari sana dosen dapat **memaafkan
+  pelanggaran, menambah waktu, atau membuka ulang** ujian seorang mahasiswa
+  (wajib beralasan, tercatat di log audit).
+- **Bank soal:** impor soal dari Excel/CSV dengan laporan baris salah, duplikat
+  ujian, dan pratinjau sebagai mahasiswa.
 
 ## ⚠️ Batasan yang Perlu Diketahui
 

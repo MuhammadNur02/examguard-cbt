@@ -431,3 +431,20 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   yang perlu dievaluasi tersendiri) atau mengurangi kemiripan terhadap kunci
   (dua jawaban yang sama-sama benar tidak ditandai, tetapi menambah asumsi).
   Keterbatasan dicatat di UI dan panduan: penanda untuk ditinjau, bukan bukti.
+
+### D-50 Metode uji beban (Task 5.4)
+- **Keputusan:** skrip Node tanpa dependensi (`tools/uji-beban/uji-beban.mjs`)
+  yang menjalankan alur peramban sungguhan (cookie, CSRF, login, mulai, soal,
+  autosave, heartbeat, pelanggaran, kirim) untuk N peserta, terhadap basis data
+  SQLite terpisah (`LoadTestSeeder`, menolak berjalan di produksi). Karena
+  server bawaan PHP di Windows hanya satu proses, diukur dua konfigurasi: 1
+  proses (bawaan) dan 4 proses dengan SQLite WAL + `busy_timeout` + transaksi
+  `IMMEDIATE` (meniru beberapa worker PHP-FPM). Opsi SQLite tersebut dibuat dapat
+  diatur lewat `.env` (bawaan tidak berubah).
+- **Alasan:** tidak memasang alat baru (k6/JMeter) di luar stack, hasil dapat
+  diulang di server produksi dengan `--url`, dan beban yang diuji sama persis
+  dengan pola `exam.js`.
+- **Alternatif:** k6/Locust (lebih lengkap, tetapi dependensi tambahan) atau
+  Docker dengan PHP-FPM + MySQL (lebih mirip produksi, tidak tersedia di mesin
+  ini). Keterbatasan dicatat di `docs/UJI-BEBAN.md`: angka adalah batas bawah dan
+  harus diulang di server target.

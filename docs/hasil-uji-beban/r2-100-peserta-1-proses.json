@@ -1,0 +1,125 @@
+{
+  "waktu": "2026-10-03T02:03:03.180Z",
+  "parameter": {
+    "url": [
+      "http://127.0.0.1:8002"
+    ],
+    "ujian": 1,
+    "peserta": 100,
+    "ramp_login_detik": 90,
+    "durasi_detik": 120,
+    "heartbeat_detik": 15,
+    "autosave_detik": 10
+  },
+  "peserta_siap": 100,
+  "durasi_fase_detik": {
+    "login": 100.6,
+    "awal": 30.6,
+    "berjalan": 134.8,
+    "akhir": 18.8
+  },
+  "throughput_berjalan_rps": 6.59,
+  "total_permintaan": 1489,
+  "total_galat": 0,
+  "endpoint": [
+    {
+      "endpoint": "login:GET /login",
+      "jumlah": 100,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 3219,
+      "p95_ms": 5299,
+      "p99_ms": 5480,
+      "maks_ms": 5507,
+      "rata_ms": 3228
+    },
+    {
+      "endpoint": "login:POST /login",
+      "jumlah": 100,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 3784,
+      "p95_ms": 5577,
+      "p99_ms": 5648,
+      "maks_ms": 5816,
+      "rata_ms": 3702
+    },
+    {
+      "endpoint": "login:GET halaman ujian",
+      "jumlah": 100,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 3157,
+      "p95_ms": 4962,
+      "p99_ms": 5146,
+      "maks_ms": 5193,
+      "rata_ms": 3082
+    },
+    {
+      "endpoint": "awal:POST mulai",
+      "jumlah": 100,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 8325,
+      "p95_ms": 15513,
+      "p99_ms": 16394,
+      "maks_ms": 16591,
+      "rata_ms": 8366
+    },
+    {
+      "endpoint": "awal:GET soal",
+      "jumlah": 100,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 15438,
+      "p95_ms": 16447,
+      "p99_ms": 16509,
+      "maks_ms": 16511,
+      "rata_ms": 15413
+    },
+    {
+      "endpoint": "berjalan:POST jawaban (autosave)",
+      "jumlah": 696,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 14984,
+      "p95_ms": 16763,
+      "p99_ms": 16940,
+      "maks_ms": 17028,
+      "rata_ms": 13986
+    },
+    {
+      "endpoint": "berjalan:POST heartbeat",
+      "jumlah": 93,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 7381,
+      "p95_ms": 13827,
+      "p99_ms": 13924,
+      "maks_ms": 13924,
+      "rata_ms": 7719
+    },
+    {
+      "endpoint": "berjalan:POST pelanggaran",
+      "jumlah": 100,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 15805,
+      "p95_ms": 16777,
+      "p99_ms": 16894,
+      "maks_ms": 16953,
+      "rata_ms": 15707
+    },
+    {
+      "endpoint": "akhir:POST kirim",
+      "jumlah": 100,
+      "galat": 0,
+      "rincian_galat": {},
+      "p50_ms": 9332,
+      "p95_ms": 17924,
+      "p99_ms": 18529,
+      "maks_ms": 18712,
+      "rata_ms": 9564
+    }
+  ]
+}

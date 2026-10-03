@@ -44,7 +44,7 @@ Contoh hitung manual TF-IDF/Cosine siap kutip: docstring
 | Keamanan teknis | `docs/KEAMANAN.md`, `tests/Feature/Security/RouteSecurityTest.php` | Selesai |
 | Latensi pencatatan pelanggaran | `PROGRESS.md` (194–257 ms di mesin pengembangan dengan OPcache) | Ukur ulang di server target |
 | Akurasi esai (MAE, Pearson; variasi stemming dan korpus IDF) | `docs/EVALUASI-AKURASI-ESAI.md`, `nlp-service/evaluasi.py` | Menunggu data nyata |
-| Uji beban 50–100 peserta | Task 5.4 | Belum dikerjakan |
+| Uji beban 50–100 peserta | `docs/UJI-BEBAN.md`, `tools/uji-beban/uji-beban.mjs` | Dijalankan di laptop pengembangan (100 peserta, 0 galat dengan 4 proses PHP); ulangi di server target |
 | SUS/UAT | `docs/KUESIONER-SUS-UAT.md`, `nlp-service/sus.py` | Menunggu responden |
 
 Bahan pembahasan keterbatasan: `nlp-service/README.md` (negasi hilang,

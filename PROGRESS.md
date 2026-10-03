@@ -153,7 +153,7 @@ Menjalankan penilaian esai: layanan NLP (`uvicorn ...`) dan queue worker
 | 5.1 Black-box | Selesai | `docs/PENGUJIAN-BLACKBOX.md`: 25 skenario lulus (Chromium headless + tes otomatis); pindah tab/Esc disimulasikan lewat event — ulangi manual untuk lampiran |
 | 5.2 Keamanan teknis | Selesai | `RouteSecurityTest` (semua rute × peran, CSRF 31 rute pengubah data, batas laju), CSP diuji di peramban; `docs/KEAMANAN.md` |
 | 5.3 Akurasi esai | **Alat siap, data belum ada** | `ujian:ekspor-esai` + `nlp-service/evaluasi.py` (teruji); butuh 30–50 jawaban yang dinilai dosen (BLOCKERS B-04) |
-| 5.4 Uji beban (S) | Belum | — |
+| 5.4 Uji beban (S) | Selesai (lingkungan pengembangan) | `docs/UJI-BEBAN.md`: 100 peserta, 4 proses PHP + SQLite WAL: 0 galat dari 3.400 permintaan, pelanggaran p95 0,80 s / p99 1,17 s; 1 proses jenuh di ±7 permintaan/s; perlu diulang di server target |
 | 5.5 SUS/UAT | **Instrumen siap, responden belum ada** | `docs/KUESIONER-SUS-UAT.md` + `nlp-service/sus.py` (teruji) (BLOCKERS B-05) |
 | 5.6 Dokumentasi | Selesai | README, panduan dosen/admin/mahasiswa, backup, pemetaan KTI |
 
