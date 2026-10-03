@@ -32,7 +32,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 - [x] **2.4 (M)** Endpoint API soal teracak per mahasiswa. *(FR-03.1–FR-03.4)*
   - Fisher-Yates dengan PRNG berseed; `shuffle_seed` disimpan di `exam_attempts`; pemetaan urutan ke ID asli disimpan; kunci jawaban tidak pernah dikirim.
   - DoD: dua akun uji mendapat urutan berbeda; reload tidak mengubah urutan; nilai tetap benar; respons API tidak memuat kunci.
-- [ ] **2.5 (S)** Opsi pengacakan per ujian (acak soal/opsi on/off, opsi posisi tetap). *(FR-03.5)*
+- [x] **2.5 (S)** Opsi pengacakan per ujian (acak soal/opsi on/off, opsi posisi tetap). *(FR-03.5)*
 - [ ] **2.6 (S)** Duplikat ujian, pratinjau sebagai mahasiswa, kode akses ujian. *(FR-02.5, FR-02.7, FR-02.8)*
   - DoD: pratinjau tidak membuat attempt atau nilai.
 - [ ] **2.7 (C)** Pembatasan IP/CIDR kampus. *(FR-02.9)*
