@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
                 Route::post('/pelanggaran/reset', [Dosen\AttemptManagementController::class, 'reset'])->name('reset');
                 Route::post('/tambah-waktu', [Dosen\AttemptManagementController::class, 'extend'])->name('extend');
                 Route::post('/buka-ulang', [Dosen\AttemptManagementController::class, 'reopen'])->name('reopen');
+                Route::post('/kunci', [Dosen\AttemptManagementController::class, 'lock'])->name('lock');
             });
 
             Route::get('/ujian/{exam}/koreksi', [Dosen\EssayGradingController::class, 'index'])->name('grading.index');

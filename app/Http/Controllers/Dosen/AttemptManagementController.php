@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dosen;
 
+use App\Enums\FinishReason;
 use App\Exceptions\TindakanDitolak;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
@@ -68,6 +69,24 @@ class AttemptManagementController extends Controller
             AuditLog::catat('attempt_dibuka_ulang', $attempt, [...$sebelumnya, 'menit' => $menit, 'alasan' => $alasan, 'batas_baru' => $batas->toIso8601String()]);
 
             return "Attempt {$attempt->user->nim_nidn} dibuka ulang sampai {$batas->format('H:i')} WIB. Mahasiswa dapat melanjutkan dari halaman ujiannya.";
+        });
+    }
+
+    /**
+     * FR-06.7: kunci/bekukan satu mahasiswa. Jawaban tersimpan dikirim dan dinilai
+     * seperti biasa; layar ujian membeku pada permintaan berikutnya (≤ heartbeat).
+     */
+    public function lock(Request $request, Exam $exam, ExamAttempt $attempt, AttemptService $attempts): RedirectResponse
+    {
+        $alasan = $this->alasan($request);
+
+        return $this->jalankan($exam, $attempt, function () use ($attempt, $attempts, $alasan) {
+            if (! $attempts->selesaikan($attempt, FinishReason::DikunciDosen)) {
+                throw new TindakanDitolak('Attempt ini sudah tidak berlangsung.');
+            }
+            AuditLog::catat('attempt_dikunci', $attempt, ['alasan' => $alasan]);
+
+            return "Ujian {$attempt->user->nim_nidn} dikunci; jawaban tersimpan sudah dikirim. Layar mahasiswa membeku dalam ±".config('examguard.heartbeat_detik').' detik.';
         });
     }
 

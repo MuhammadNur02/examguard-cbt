@@ -61,6 +61,19 @@
                     </div>
                     <button type="submit" class="btn btn-secondary btn-sm"><x-icon name="clock" class="size-4" />Tambah waktu</button>
                 </form>
+
+                <form method="POST" action="{{ route('dosen.attempts.lock', [$exam, $attempt]) }}" class="space-y-3 lg:col-span-2" data-confirm="Kunci ujian mahasiswa ini sekarang? Jawaban yang tersimpan langsung dikirim.">
+                    @csrf
+                    <h3 class="font-semibold text-status-danger">Kunci ujian</h3>
+                    <p class="text-small text-stone-500">Mengakhiri ujian mahasiswa ini sekarang dan mengirim jawaban yang sudah tersimpan. Layar mahasiswa membeku pada heartbeat berikutnya (±{{ config('examguard.heartbeat_detik') }} detik). Dapat dibuka ulang bila keliru.</p>
+                    <div class="flex flex-wrap items-end gap-3">
+                        <div class="min-w-48 flex-1">
+                            <label for="alasan-kunci" class="form-label">Alasan</label>
+                            <input id="alasan-kunci" name="alasan" type="text" class="form-input" required minlength="5" maxlength="500">
+                        </div>
+                        <button type="submit" class="btn btn-sm border border-status-danger text-status-danger hover:bg-status-danger-bg"><x-icon name="lock" class="size-4" />Kunci &amp; kirim jawaban</button>
+                    </div>
+                </form>
             @else
                 <form method="POST" action="{{ route('dosen.attempts.reopen', [$exam, $attempt]) }}" class="space-y-3" data-confirm="Buka ulang attempt ini? Mahasiswa dapat mengubah jawabannya kembali.">
                     @csrf

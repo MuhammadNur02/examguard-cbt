@@ -196,6 +196,31 @@ class AttemptManagementTest extends TestCase
         $this->assertSame([null, null, null, null, null], [$jawaban->similarity, $jawaban->skor_sistem, $jawaban->skor_final, $jawaban->kata_kunci_cocok, $jawaban->dinilai_oleh]);
     }
 
+    public function test_kunci_mahasiswa_mengirim_jawaban_tersimpan_dan_layar_membeku(): void
+    {
+        $this->actingAs($this->mahasiswa)->postJson($this->urlMhs('jawaban'), ['jawaban' => [['nomor' => $this->nomorEsai(), 'teks' => 'Jawaban sementara']]])->assertOk();
+
+        $this->actingAs($this->dosen)->post($this->urlDosen('kunci'), ['alasan' => ''])->assertSessionHasErrors('alasan');
+        $this->post($this->urlDosen('kunci'), ['alasan' => 'Tertangkap memakai ponsel oleh pengawas.'])
+            ->assertSessionHas('status', fn ($pesan) => str_contains($pesan, 'dikunci'));
+
+        $attempt = $this->attempt->fresh();
+        $this->assertSame(AttemptStatus::Terkunci, $attempt->status);
+        $this->assertSame(FinishReason::DikunciDosen, $attempt->alasan_selesai);
+        $this->assertNotNull($attempt->result, 'Jawaban tersimpan dinilai seperti kirim biasa.');
+        $this->assertSame('Tertangkap memakai ponsel oleh pengawas.', AuditLog::where('aksi', 'attempt_dikunci')->sole()->detail['alasan']);
+
+        // Permintaan berikutnya dari layar ujian (heartbeat <= 15 detik) membekukan layar.
+        $this->actingAs($this->mahasiswa)->postJson($this->urlMhs('heartbeat'))
+            ->assertStatus(409)
+            ->assertJsonPath('attempt.status', 'terkunci')
+            ->assertJsonPath('message', 'Ujian Anda dikunci oleh dosen. Jawaban yang tersimpan sudah dikirim.');
+
+        // Tidak bisa dikunci dua kali; dapat dibuka ulang bila keliru.
+        $this->actingAs($this->dosen)->post($this->urlDosen('kunci'), ['alasan' => 'Ulangi penguncian.'])->assertSessionHas('error');
+        $this->post($this->urlDosen('buka-ulang'), ['menit' => 10, 'alasan' => 'Salah orang, dikonfirmasi pengawas.'])->assertSessionHas('status');
+    }
+
     public function test_attempt_atau_log_dari_ujian_lain_ditolak(): void
     {
         $ujianLain = Exam::factory()->create(['dosen_id' => $this->dosen->id]);
