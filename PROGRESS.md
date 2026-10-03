@@ -168,6 +168,22 @@ Menjalankan penilaian esai: layanan NLP (`uvicorn ...`) dan queue worker
 
 | 3.8 Watermark, perangkat berganti, ponsel | Selesai | `DeviceIntegrityTest`, `PerangkatTest`; di peramban: watermark terlihat pada tangkapan layar dan klik tetap tembus, ponsel (UA + layar) dan layar kecil ber-UA desktop ditolak; D-46 |
 
+| 4.7 Koreksi cepat + checklist kata kunci | Selesai | `EssayBulkAcceptTest` (hanya ≥ ambang dan belum dikonfirmasi; mutasi terdeteksi); checklist sudah ada sejak Fase 4 (`EssayCorrectionTest`); diuji dengan skor NLP sungguhan; D-47 |
+| 4.8 Maafkan/reset, tambah waktu, buka ulang | Selesai | `AttemptManagementTest` (9 skenario termasuk scoped binding dan esai yang diubah setelah buka ulang); di peramban: lencana mahasiswa 2/3 → 1/3 dan timer +10 menit lewat heartbeat; D-48 |
+| 4.9 Kemiripan esai antarmahasiswa | Selesai | `EssaySimilarityFlagTest`, `nlp-service/tests/test_kemiripan.py`; layanan NLP sungguhan menandai salinan 2301001 ↔ 2301003 (1,00 dan 0,84) dan tidak menandai pasangan lain; D-49 |
+
+### Tinjauan kritis Fase 4 (Should)
+- Semua tindakan dosen baru (terima massal, maafkan/reset, tambah waktu, buka
+  ulang) berada di grup `can:kelola` dengan binding bertingkat; tes kepemilikan
+  otomatis (`RouteSecurityTest`) mencakup 36 rute pengubah data.
+- Attempt yang dibuka ulang tidak dapat ikut dipublikasikan sebelum dikirim
+  lagi (`ReportService`: final hanya bila tidak berlangsung); buka ulang ditolak
+  bila nilainya sudah dipublikasikan.
+- Ditemukan saat pengerjaan: teks esai yang berubah setelah buka ulang akan
+  mempertahankan skor lama; kini dikosongkan (tes regresi).
+- Tanda kemiripan suatu attempt yang dibuka ulang baru diperbarui pada
+  penghitungan skor rekomendasi berikutnya (dicatat, bukan bug kritis).
+
 ### Tinjauan kritis Fase 2 (Should)
 - Tidak ada jalur baru yang mengirim kunci PG, kunci esai, atau kode akses ke
   mahasiswa (pratinjau hanya untuk dosen pemilik; payload sama dengan layar ujian).
