@@ -21,3 +21,16 @@
   dan dosen tidak dapat menggantinya sendiri.
 - **Saran:** tambahkan halaman "Ganti kata sandi" sederhana (kata sandi lama +
   baru + konfirmasi) bila diinginkan; perkiraan kecil.
+
+## B-03 Folder di OneDrive bisa mendapat atribut Read-only
+- **Status:** teratasi sementara, perlu Anda ketahui.
+- **Yang terjadi:** OneDrive memberi atribut *ReadOnly* pada folder proyek.
+  `is_writable()` PHP di Windows lalu bernilai false untuk `bootstrap/cache`,
+  sehingga `composer require/install` gagal pada langkah `package:discover`
+  ("bootstrap/cache directory must be present and writable"), padahal menulis
+  berkas sebenarnya bisa.
+- **Yang saya lakukan:** `attrib -R` pada `bootstrap\cache`, `storage\framework\*`,
+  dan `storage\logs` (di dalam proyek).
+- **Bila terulang:** jalankan `attrib -R bootstrap\cache` lalu ulangi perintah.
+  Saran jangka panjang: simpan proyek di luar folder OneDrive (mis. `C:\dev\`),
+  karena `vendor/`, `node_modules/`, dan `.venv/` juga ikut tersinkron.

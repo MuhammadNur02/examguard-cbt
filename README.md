@@ -68,7 +68,7 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
 
 | Lapisan | Teknologi |
 |---|---|
-| Web | Laravel 13 (PHP 8.3+), Blade, Tailwind CSS v4, JavaScript vanilla |
+| Web | Laravel 13 (PHP 8.4+), Blade, Tailwind CSS v4, JavaScript vanilla |
 | Basis data | SQLite (pengembangan/tes), MySQL atau PostgreSQL (produksi) |
 | Layanan NLP | Python 3.11+ 64-bit, FastAPI, Sastrawi, scikit-learn |
 | Algoritma | Fisher-Yates Shuffle, TF-IDF, Cosine Similarity (Vector Space Model) |
@@ -77,7 +77,7 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
 ## 🚀 Menjalankan di Lokal
 
 ### Prasyarat
-- PHP 8.3 atau lebih baru dengan ekstensi `mbstring`, `openssl`, `pdo_sqlite`,
+- PHP 8.4 atau lebih baru (dependensi terkunci memakai Symfony 8.1) dengan ekstensi `mbstring`, `openssl`, `pdo_sqlite`,
   `fileinfo`, `curl`, `zip` (dan `pdo_mysql`/`pdo_pgsql` bila memakai MySQL/PostgreSQL)
 - Composer 2
 - Node.js 20+ dan npm
