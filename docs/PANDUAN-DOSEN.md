@@ -135,6 +135,9 @@ log audit (siapa, kapan, alasan).
   Ditolak bila pelanggarannya masih melebihi batas (maafkan dulu) atau nilainya
   sudah dipublikasikan. Bila mahasiswa mengubah jawaban esai, skor esai lama
   jawaban itu dihapus dan perlu dihitung/dikoreksi ulang.
+- **Kunci ujian** seorang mahasiswa (mis. tertangkap pengawas): ujiannya
+  langsung diakhiri dan jawaban tersimpan dikirim; layar mahasiswa membeku pada
+  heartbeat berikutnya (±15 detik). Dapat dibuka ulang bila keliru.
 
 ### 6. Rekap dan publikasi
 
@@ -143,6 +146,18 @@ dan pelanggaran per mahasiswa; **Detail** memuat jawaban dan log pelanggaran.
 **Ekspor Excel** mengunduh rekap `.xlsx`. **Publikasikan nilai final**
 membuat nilai yang sudah final terlihat oleh mahasiswa; nilai yang masih
 menunggu koreksi tidak ikut.
+
+- **Publikasi terjadwal:** isi waktu publikasi lalu **Jadwalkan publikasi**.
+  Pada waktu itu nilai yang sudah final otomatis terlihat oleh mahasiswa (yang
+  belum final tidak ikut). Jadwal dapat dibatalkan sebelum waktunya. Penjadwal
+  (`schedule:work`/cron) sebaiknya berjalan; halaman nilai juga menjalankan
+  jadwal yang sudah tiba.
+- **Analisis butir:** persentase benar per soal PG, kategori mudah/sedang/sukar,
+  sebaran pilihan (opsi salah yang paling sering dipilih ditandai merah), dan
+  rata-rata skor esai; dapat diurutkan dari soal yang paling sering salah.
+- **Laporan PDF:** membuka laporan rekap nilai + pelanggaran per mahasiswa yang
+  siap cetak. Klik **Cetak / Simpan PDF** lalu pilih **Simpan sebagai PDF** di
+  dialog cetak peramban.
 
 ## Bagian B — Admin
 

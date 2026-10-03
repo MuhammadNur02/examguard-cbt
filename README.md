@@ -31,10 +31,10 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
 
 ## ✨ Fitur Utama
 
-> Seluruh fitur di bawah sudah diimplementasikan dan diuji (jalur MVP dan
-> tugas Should di Task.md). Fitur Could yang belum dibuat (mis. pembatasan IP
-> kampus, pool soal, ekspor PDF) dan status setiap task tercatat di
-> [Task.md](Task.md) dan [PROGRESS.md](PROGRESS.md).
+> Seluruh fitur di bawah sudah diimplementasikan dan diuji (tugas Must, Should,
+> dan Could di Task.md). Status setiap task, termasuk uji akurasi esai dan SUS
+> yang masih menunggu data nyata, tercatat di [Task.md](Task.md) dan
+> [PROGRESS.md](PROGRESS.md).
 
 ### Sisi mahasiswa: pemantauan dan proteksi layar ujian
 - **Deteksi pindah tab/jendela** lewat Page Visibility API dan event `blur`.
@@ -52,7 +52,8 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
   posisinya.
 - **Watermark nama/NIM** samar di layar ujian, **deteksi perangkat berganti**
   (IP/peramban, dicatat untuk ditinjau), dan penolakan ponsel/tablet.
-- **Kode akses** opsional dan **kelas peserta** per ujian.
+- **Kode akses** opsional, **kelas peserta**, **pembatasan jaringan kampus**
+  (IP/CIDR), dan **pool soal** (N dari M soal per mahasiswa) per ujian.
 
 ### Sisi dosen: penilaian dan validasi
 - **Nilai pilihan ganda otomatis** dihitung di server.
@@ -70,6 +71,9 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
   (wajib beralasan, tercatat di log audit).
 - **Bank soal:** impor soal dari Excel/CSV dengan laporan baris salah, duplikat
   ujian, dan pratinjau sebagai mahasiswa.
+- **Rekap dan laporan:** ekspor Excel, laporan siap cetak/PDF berisi pelanggaran
+  per mahasiswa, analisis butir soal, publikasi nilai langsung atau terjadwal,
+  serta mengunci ujian seorang mahasiswa dari halaman Kelola.
 
 ## ⚠️ Batasan yang Perlu Diketahui
 

@@ -254,3 +254,21 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+/* Laporan cetak (FR-09.3): A4 dengan margin; teks sedikit lebih kecil agar tabel muat. */
+@media print {
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+
+    /* Latar ivory bawaan tidak ikut tercetak di sisa halaman. */
+    html,
+    body {
+        background-color: var(--color-white);
+    }
+
+    .laporan-cetak {
+        font-size: 11px;
+    }
+}

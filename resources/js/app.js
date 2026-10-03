@@ -47,3 +47,10 @@ document.addEventListener('click', (event) => {
     tautan.click();
     URL.revokeObjectURL(tautan.href);
 });
+
+// Laporan cetak (FR-09.3): PDF dibuat lewat dialog cetak peramban ("Simpan sebagai PDF").
+document.addEventListener('click', (event) => {
+    if (event.target.closest('[data-cetak]')) {
+        window.print();
+    }
+});

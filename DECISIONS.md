@@ -478,3 +478,22 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 - **Alternatif:** pool per tipe/kategori (mis. 8 PG + 2 esai) agar komposisi
   setara antarmahasiswa; lebih adil untuk campuran tipe, tetapi butuh skema
   kategori soal. Dicatat di panduan dosen sebagai keterbatasan.
+
+### D-53 Kunci dari monitor, analisis butir, publikasi terjadwal, laporan PDF (Task 4.11)
+- **Kunci mahasiswa (FR-06.7):** memakai `selesaikan(..., DikunciDosen)` yang
+  sudah ada; layar membeku pada permintaan berikutnya (heartbeat ≤ 15 detik),
+  bukan seketika, karena tidak ada kanal push (K-4: polling).
+- **Analisis butir (FR-09.4):** indeks kesukaran p = benar / peserta yang
+  mendapat soal (kosong = salah), kategori 0,70/0,30 yang lazim dipakai, dan
+  sebaran pilihan. Daya beda tidak dihitung (butuh skor total final semua
+  peserta; dapat ditambahkan kemudian). Esai ditandai "sementara" bila belum
+  semua jawaban dikoreksi.
+- **Publikasi terjadwal (FR-08.1):** kolom `exams.nilai_terbit_pada`; dijalankan
+  `nilai:terbitkan-terjadwal` tiap menit dan secara malas saat halaman nilai/
+  rekap dibuka; waktu publikasi dicatat = waktu terjadwal sehingga nilai muncul
+  tepat waktu. Klaim bersyarat mencegah eksekusi ganda; audit sebagai aksi
+  sistem (`AuditLog::catatSistem`).
+- **Laporan PDF (FR-09.3):** halaman laporan siap cetak (CSS A4) dan PDF dibuat
+  lewat dialog cetak peramban ("Simpan sebagai PDF"); diverifikasi dengan PDF
+  yang dihasilkan Chromium. **Alternatif:** dompdf/Browsershot untuk unduhan PDF
+  langsung (tanpa dialog), tetapi menambah dependensi dan sulit diuji isinya.

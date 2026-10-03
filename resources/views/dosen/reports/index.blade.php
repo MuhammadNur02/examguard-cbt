@@ -13,6 +13,7 @@
             <a href="{{ route('dosen.exams.show', $exam) }}" class="btn btn-ghost btn-sm"><x-icon name="chevron-left" class="size-4" />Detail ujian</a>
             <a href="{{ route('dosen.reports.analysis', $exam) }}" class="btn btn-secondary btn-sm"><x-icon name="chart-column" class="size-4" />Analisis butir</a>
             <a href="{{ route('dosen.reports.export', $exam) }}" class="btn btn-secondary btn-sm"><x-icon name="file-spreadsheet" class="size-4" />Ekspor Excel</a>
+            <a href="{{ route('dosen.reports.print', $exam) }}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener"><x-icon name="file-text" class="size-4" />Laporan PDF</a>
             <form method="POST" action="{{ route('dosen.reports.publish', $exam) }}"
                 data-confirm="Publikasikan semua nilai yang sudah final? Mahasiswa akan dapat melihatnya. Nilai yang belum final tidak ikut.">
                 @csrf

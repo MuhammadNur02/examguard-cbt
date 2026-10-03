@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
+use App\Models\ExamLog;
 use App\Models\Question;
 use App\Services\PublicationService;
 use App\Services\ReportService;
@@ -104,6 +105,23 @@ class ReportController extends Controller
         }
 
         return back()->with('status', $pesan);
+    }
+
+    /**
+     * FR-09.3: laporan rekap + pelanggaran per mahasiswa yang siap dicetak.
+     * PDF dibuat lewat dialog cetak peramban ("Simpan sebagai PDF"), tanpa
+     * pustaka PDF tambahan (D-53).
+     */
+    public function print(Exam $exam, ReportService $laporan): View
+    {
+        $baris = $laporan->baris($exam);
+        $logs = ExamLog::whereIn('attempt_id', $baris->pluck('attempt.id'))
+            ->with('pemaaf:id,nama')
+            ->orderBy('waktu')
+            ->get()
+            ->groupBy('attempt_id');
+
+        return view('dosen.reports.print', ['exam' => $exam->load('dosen'), 'baris' => $baris, 'logs' => $logs]);
     }
 
     /** FR-08.1: jadwalkan publikasi nilai final pada waktu tertentu. */

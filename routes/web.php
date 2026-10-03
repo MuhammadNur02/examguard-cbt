@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/ujian/{exam}/rekap', [Dosen\ReportController::class, 'index'])->name('reports.index');
             Route::get('/ujian/{exam}/rekap/ekspor', [Dosen\ReportController::class, 'export'])->name('reports.export');
+            Route::get('/ujian/{exam}/rekap/cetak', [Dosen\ReportController::class, 'print'])->name('reports.print');
             Route::post('/ujian/{exam}/rekap/publikasikan', [Dosen\ReportController::class, 'publish'])->name('reports.publish');
             Route::post('/ujian/{exam}/rekap/jadwal-publikasi', [Dosen\ReportController::class, 'schedule'])->name('reports.schedule');
             Route::delete('/ujian/{exam}/rekap/jadwal-publikasi', [Dosen\ReportController::class, 'cancelSchedule'])->name('reports.schedule.cancel');
