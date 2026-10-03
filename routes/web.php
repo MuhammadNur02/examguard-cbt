@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/ujian/{exam}/rekap', [Dosen\ReportController::class, 'index'])->name('reports.index');
             Route::get('/ujian/{exam}/rekap/ekspor', [Dosen\ReportController::class, 'export'])->name('reports.export');
             Route::post('/ujian/{exam}/rekap/publikasikan', [Dosen\ReportController::class, 'publish'])->name('reports.publish');
+            Route::get('/ujian/{exam}/analisis', Dosen\ItemAnalysisController::class)->name('reports.analysis');
             Route::get('/ujian/{exam}/rekap/{attempt}', [Dosen\ReportController::class, 'show'])->scopeBindings()->name('reports.show');
 
             // Kelola attempt per mahasiswa (Task 4.8); log harus milik attempt, attempt milik ujian.
