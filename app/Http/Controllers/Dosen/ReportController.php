@@ -39,7 +39,7 @@ class ReportController extends Controller
 
     public function show(Exam $exam, ExamAttempt $attempt): View
     {
-        $attempt->load(['user', 'result', 'logs', 'answers.option']);
+        $attempt->load(['user', 'result', 'logs.pemaaf:id,nama', 'answers.option']);
         $questions = Question::with('options')->whereIn('id', $attempt->urutan_soal)->get()->keyBy('id');
         $nomorAsli = $exam->questions()->pluck('id')->flip();
 

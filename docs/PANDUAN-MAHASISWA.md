@@ -51,6 +51,13 @@ Peringatan ke-N adalah **Peringatan Terakhir**. Pelanggaran berikutnya
 Klik **Kembali ke Ujian** untuk masuk lagi ke layar penuh. Catatan pelanggaran
 ditinjau dosen sebagai penanda, bukan bukti mutlak.
 
+Bila pelanggaran terjadi karena hal di luar kendali Anda (misalnya laptop mati
+atau muat ulang tidak sengaja), laporkan ke pengawas. Dosen dapat
+**memaafkan** pelanggaran tersebut dengan alasan tercatat; hitungan di layar
+Anda menyesuaikan dalam beberapa detik. Dosen juga dapat **menambah waktu**
+atau **membuka ulang** ujian yang sudah terkunci/terkirim; setelah dibuka ulang,
+masuk ke halaman ujian lalu pilih **Lanjutkan Ujian**.
+
 ## Bila ada gangguan
 
 - **Koneksi putus:** status berubah menjadi "Offline, mencoba lagi". Tetap di

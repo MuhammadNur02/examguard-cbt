@@ -29,12 +29,19 @@ function waktuSisa(detik) {
 function barisBaru(id) {
     const tr = document.createElement('tr');
     tr.dataset.id = id;
-    tr.innerHTML = '<td class="font-mono text-ink"></td><td class="text-ink"></td><td></td><td class="num"></td><td class="num"></td><td></td><td class="num font-mono"></td>';
+    tr.innerHTML =
+        '<td class="font-mono text-ink"></td><td class="text-ink"></td><td></td><td class="num"></td><td class="num"></td><td></td><td class="num font-mono"></td>' +
+        '<td><a class="btn btn-ghost btn-sm">Kelola</a></td>';
     return tr;
 }
 
 function perbaruiBaris(tr, p) {
-    const [nim, nama, status, pelanggaran, terjawab, aktivitas, sisa] = tr.children;
+    const [nim, nama, status, pelanggaran, terjawab, aktivitas, sisa, aksi] = tr.children;
+    const tautan = aksi.firstElementChild;
+    if (tautan.getAttribute('href') !== p.url_kelola) {
+        tautan.setAttribute('href', p.url_kelola);
+        tautan.setAttribute('aria-label', `Kelola ${p.nim} (maafkan pelanggaran, tambah waktu, buka ulang)`);
+    }
     setTeks(nim, p.nim);
     setTeks(nama, p.nama);
 

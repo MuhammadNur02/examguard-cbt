@@ -99,6 +99,23 @@ ditinjau, bukan bukti mutlak kecurangan.
 Nilai akhir selalu keputusan Anda; setiap perubahan skor tercatat di audit.
 Esai yang tidak dijawab otomatis bernilai 0.
 
+### 5a. Kelola peserta: maafkan pelanggaran, tambah waktu, buka ulang
+
+Di **Live Monitor** klik **Kelola** pada baris mahasiswa (atau buka
+**Rekap Nilai → Detail**). Setiap tindakan wajib diberi alasan dan tercatat di
+log audit (siapa, kapan, alasan).
+
+- **Maafkan** satu pelanggaran di tabel log, atau **Maafkan semua pelanggaran**
+  (reset ke 0). Hitungan di layar mahasiswa menyesuaikan pada heartbeat
+  berikutnya (≤ 15 detik). Memaafkan tidak membuka ujian yang sudah terkunci.
+- **Tambah waktu** (1–180 menit) untuk mahasiswa yang masih mengerjakan; timer
+  mahasiswa menyesuaikan pada heartbeat berikutnya.
+- **Buka ulang** ujian yang sudah terkirim/terkunci: mahasiswa mendapat
+  sedikitnya N menit sejak dibuka ulang, juga bila jadwal sudah berakhir.
+  Ditolak bila pelanggarannya masih melebihi batas (maafkan dulu) atau nilainya
+  sudah dipublikasikan. Bila mahasiswa mengubah jawaban esai, skor esai lama
+  jawaban itu dihapus dan perlu dihitung/dikoreksi ulang.
+
 ### 6. Rekap dan publikasi
 
 **Rekap Nilai** menampilkan skor PG, skor esai final, nilai akhir (0–100),

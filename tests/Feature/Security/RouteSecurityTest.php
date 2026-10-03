@@ -47,11 +47,13 @@ class RouteSecurityTest extends TestCase
             'alasan_selesai' => FinishReason::Manual, 'selesai' => now(),
         ]);
         $answer = $attempt->answers()->create(['question_id' => $esai->id, 'teks_jawaban' => 'Jawaban']);
+        $log = $attempt->logs()->create(['jenis' => 'pindah_tab', 'waktu' => now(), 'dihitung' => true]);
 
         $this->parameter = [
             'exam' => $exam->id, 'question' => $esai->id, 'answer' => $answer->id,
             'attempt' => $attempt->id, 'user' => User::factory()->create()->id,
             'kelas' => Kelas::create(['nama' => 'Kelas Uji Keamanan'])->id,
+            'log' => $log->id,
         ];
     }
 
@@ -141,8 +143,8 @@ class RouteSecurityTest extends TestCase
             $diperiksa++;
         }
 
-        // 32 rute saat ini: 11 admin, 14 dosen, 5 mahasiswa, login, logout.
-        $this->assertGreaterThanOrEqual(32, $diperiksa);
+        // 36 rute saat ini: 11 admin, 18 dosen, 5 mahasiswa, login, logout.
+        $this->assertGreaterThanOrEqual(36, $diperiksa);
     }
 
     public function test_content_security_policy_aktif_saat_debug_mati(): void

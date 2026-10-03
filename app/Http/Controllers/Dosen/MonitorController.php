@@ -66,6 +66,7 @@ class MonitorController extends Controller
                 'terakhir_aktif' => $attempt->terakhir_aktif?->format('H:i:s'),
                 'sisa_detik' => $attempt->isBerlangsung() ? $attempt->sisaDetik() : 0,
                 'selesai' => $attempt->selesai?->format('H:i'),
+                'url_kelola' => route('dosen.reports.show', [$exam, $attempt]),
             ];
         })->sortBy([['status', 'asc'], ['nim', 'asc']])->values();
 

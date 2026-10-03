@@ -67,6 +67,14 @@ Route::middleware('auth')->group(function () {
             Route::post('/ujian/{exam}/rekap/publikasikan', [Dosen\ReportController::class, 'publish'])->name('reports.publish');
             Route::get('/ujian/{exam}/rekap/{attempt}', [Dosen\ReportController::class, 'show'])->scopeBindings()->name('reports.show');
 
+            // Kelola attempt per mahasiswa (Task 4.8); log harus milik attempt, attempt milik ujian.
+            Route::scopeBindings()->prefix('/ujian/{exam}/peserta/{attempt}')->name('attempts.')->group(function () {
+                Route::post('/pelanggaran/{log}/maafkan', [Dosen\AttemptManagementController::class, 'forgive'])->name('forgive');
+                Route::post('/pelanggaran/reset', [Dosen\AttemptManagementController::class, 'reset'])->name('reset');
+                Route::post('/tambah-waktu', [Dosen\AttemptManagementController::class, 'extend'])->name('extend');
+                Route::post('/buka-ulang', [Dosen\AttemptManagementController::class, 'reopen'])->name('reopen');
+            });
+
             Route::get('/ujian/{exam}/koreksi', [Dosen\EssayGradingController::class, 'index'])->name('grading.index');
             Route::post('/ujian/{exam}/koreksi/hitung', [Dosen\EssayGradingController::class, 'hitung'])->name('grading.score');
             Route::scopeBindings()->group(function () {

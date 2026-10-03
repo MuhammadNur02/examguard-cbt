@@ -37,10 +37,11 @@
                             <th scope="col" class="text-right">Terjawab</th>
                             <th scope="col">Aktivitas terakhir</th>
                             <th scope="col" class="text-right">Sisa waktu</th>
+                            <th scope="col"><span class="sr-only">Aksi</span></th>
                         </tr>
                     </thead>
                     <tbody id="monitor-peserta">
-                        <tr id="monitor-kosong"><td colspan="7" class="text-stone-500">Belum ada peserta yang memulai ujian.</td></tr>
+                        <tr id="monitor-kosong"><td colspan="8" class="text-stone-500">Belum ada peserta yang memulai ujian.</td></tr>
                     </tbody>
                 </table>
             </div>

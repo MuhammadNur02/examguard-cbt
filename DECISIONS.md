@@ -213,7 +213,7 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   terhitung sebagai pelanggaran `pindah_tab`. Hal ini dijelaskan di kartu
   persetujuan integritas ("termasuk memuat ulang atau meninggalkan halaman").
 - **Alasan:** menutup celah "pindah ke situs lain di tab yang sama lalu kembali".
-  Muat ulang yang tidak disengaja dapat dimaafkan dosen lewat fitur FR-06.5 (Task 4.8, Should — belum dibuat saat keputusan ini dicatat).
+  Muat ulang yang tidak disengaja dapat dimaafkan dosen lewat FR-06.5 (dibuat di Task 4.8, lihat D-48).
 - **Alternatif:** mengabaikan kejadian saat `beforeunload` (celah tersebut terbuka).
 
 ### D-28 Debounce dua lapis 2 detik, duplikat tidak disimpan
@@ -394,3 +394,25 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   sudah ada atau menerima di bawah 0,50 berisiko nilai salah tanpa disadari.
 - **Alternatif:** ambang bebas (input angka) atau tanpa syarat kata kunci; checklist
   kata kunci (FR-05.4) sudah ada sejak Fase 4 dan tetap tidak mengubah rumus (K-3).
+
+### D-48 Kelola pelanggaran, tambah waktu, dan buka ulang (Task 4.8)
+- **Maafkan/reset:** menandai log terhitung sebagai dimaafkan (oleh, pada,
+  alasan) lalu menghitung ulang penghitung dari log (sumber kebenaran tetap
+  `exam_logs`). Insiden yang tidak dihitung tidak dapat "dimaafkan". Memaafkan
+  tidak membuka attempt yang terkunci; buka ulang adalah tindakan terpisah yang
+  disengaja.
+- **Tambah waktu:** menambah `waktu_tambahan` (menit) dengan pembaruan bersyarat
+  `status = berlangsung` agar tidak berbalapan dengan penutupan otomatis.
+  Klien menyesuaikan dari `sisa_detik` server pada heartbeat (≤ 15 detik).
+- **Buka ulang:** mahasiswa mendapat sedikitnya N menit sejak dibuka ulang
+  (`waktu_tambahan` dinaikkan bila perlu, juga setelah jadwal berakhir).
+  Ditolak bila pelanggaran masih > batas (akan langsung terkunci lagi pada
+  pelanggaran berikutnya) atau nilai sudah dipublikasikan (mahasiswa sudah
+  melihat nilai). Alternatif: membuka ulang sambil otomatis mereset
+  pelanggaran (lebih sedikit klik, tetapi dua keputusan berbeda tercampur).
+- **Esai setelah buka ulang:** bila teks jawaban esai berubah dari teks yang
+  sudah dinilai, similarity, skor rekomendasi, kata kunci cocok, dan skor final
+  jawaban itu dikosongkan agar tidak ada nilai yang tidak sesuai jawabannya.
+- Semua tindakan wajib alasan (5–500 karakter) dan dicatat di `audit_logs`
+  (`pelanggaran_dimaafkan`, `pelanggaran_direset`, `waktu_ditambah`,
+  `attempt_dibuka_ulang`).

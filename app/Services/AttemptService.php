@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\AttemptStatus;
 use App\Enums\FinishReason;
 use App\Enums\LogType;
+use App\Exceptions\TindakanDitolak;
 use App\Exceptions\UjianTidakTersedia;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
@@ -125,6 +126,60 @@ class AttemptService
     }
 
     /**
+     * FR-06.6: tambah waktu untuk attempt yang masih berlangsung. Timer mahasiswa
+     * menyesuaikan pada heartbeat berikutnya (sisa waktu selalu dari server).
+     *
+     * @throws TindakanDitolak
+     */
+    public function tambahWaktu(ExamAttempt $attempt, int $menit): CarbonInterface
+    {
+        $this->finalisasiBilaKedaluwarsa($attempt, (int) config('examguard.toleransi_simpan_detik'));
+
+        // Bersyarat agar tidak berbalapan dengan penutupan otomatis/kirim.
+        $berubah = ExamAttempt::whereKey($attempt->id)->where('status', AttemptStatus::Berlangsung)->increment('waktu_tambahan', $menit);
+        if ($berubah !== 1) {
+            throw new TindakanDitolak('Attempt ini sudah selesai. Gunakan "Buka ulang" untuk memberi waktu lagi.');
+        }
+
+        return $attempt->refresh()->batasWaktu();
+    }
+
+    /**
+     * FR-06.6: buka ulang attempt yang sudah selesai/terkunci. Mahasiswa mendapat
+     * sedikitnya $menit sejak sekarang, juga bila jadwal ujian sudah berakhir.
+     * Ditolak bila pelanggaran masih melebihi batas (akan langsung terkunci lagi)
+     * atau nilainya sudah dipublikasikan.
+     *
+     * @throws TindakanDitolak
+     */
+    public function bukaUlang(ExamAttempt $attempt, int $menit): CarbonInterface
+    {
+        $exam = $attempt->exam;
+        if ($attempt->isBerlangsung()) {
+            throw new TindakanDitolak('Attempt ini masih berlangsung. Gunakan "Tambah waktu" bila perlu.');
+        }
+        if ($attempt->result?->dipublikasikan_pada !== null) {
+            throw new TindakanDitolak('Nilai peserta ini sudah dipublikasikan; attempt tidak dapat dibuka ulang.');
+        }
+        if ($attempt->jumlah_pelanggaran > $exam->batas_pelanggaran) {
+            throw new TindakanDitolak("Pelanggaran peserta ini ({$attempt->jumlah_pelanggaran}) masih melebihi batas {$exam->batas_pelanggaran}. Maafkan pelanggaran terlebih dahulu.");
+        }
+
+        $perluMenit = (int) ceil($exam->selesaiPada()->diffInSeconds(now()->addMinutes($menit), false) / 60);
+        $berubah = ExamAttempt::whereKey($attempt->id)->where('status', $attempt->status)->update([
+            'status' => AttemptStatus::Berlangsung,
+            'selesai' => null,
+            'alasan_selesai' => null,
+            'waktu_tambahan' => max($attempt->waktu_tambahan, $perluMenit),
+        ]);
+        if ($berubah !== 1) {
+            throw new TindakanDitolak('Status attempt baru saja berubah. Muat ulang halaman lalu coba lagi.');
+        }
+
+        return $attempt->refresh()->batasWaktu();
+    }
+
+    /**
      * FR-04.9: catat insiden "perangkat berganti" bila IP atau peramban berbeda
      * dari permintaan sebelumnya pada attempt ini. Tidak menambah hitungan
      * pelanggaran (hanya ditinjau dosen; IP bisa berubah wajar saat ganti
@@ -236,6 +291,8 @@ class AttemptService
         $questions = Question::whereIn('id', $attempt->urutan_soal)->get(['id', 'tipe'])->keyBy('id');
 
         DB::transaction(function () use ($attempt, $items, $questions, $waktu) {
+            $tersimpan = $attempt->answers()->get()->keyBy('question_id');
+
             foreach ($items as $item) {
                 $nomor = (int) $item['nomor'];
                 $peta = $this->petakanPosisi($attempt, $nomor);
@@ -264,6 +321,16 @@ class AttemptService
 
                 if (! $question->isPg() && array_key_exists('teks', $item)) {
                     $data['teks_jawaban'] = $item['teks'];
+
+                    // Teks berubah setelah dinilai (hanya mungkin setelah attempt dibuka ulang):
+                    // skor lama tidak lagi sesuai jawaban dan harus dihitung/dikoreksi ulang.
+                    $lama = $tersimpan->get($question->id);
+                    if ($lama && $lama->teks_jawaban !== $item['teks'] && ($lama->skor_sistem !== null || $lama->skor_final !== null)) {
+                        $data += [
+                            'similarity' => null, 'skor_sistem' => null, 'kata_kunci_cocok' => null,
+                            'skor_final' => null, 'dinilai_oleh' => null, 'dinilai_pada' => null,
+                        ];
+                    }
                 }
 
                 $attempt->answers()->updateOrCreate(['question_id' => $question->id], $data);

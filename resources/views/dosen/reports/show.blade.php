@@ -19,6 +19,72 @@
         </dl>
     </section>
 
+    @php
+        $berlangsung = $attempt->isBerlangsung();
+        $adaPelanggaran = $attempt->logs->contains(fn ($log) => $log->dihitung && ! $log->dimaafkan);
+    @endphp
+    <section class="card mb-6" aria-labelledby="judul-kelola">
+        <h2 id="judul-kelola" class="text-h3 font-semibold">Kelola peserta</h2>
+        <p class="mt-1 text-small text-stone-500">
+            @if ($berlangsung)
+                Sedang mengerjakan · batas waktu {{ $attempt->batasWaktu()->format('H:i') }} WIB{{ $attempt->waktu_tambahan ? ' (termasuk tambahan '.$attempt->waktu_tambahan.' menit)' : '' }}.
+            @endif
+            Setiap tindakan wajib diberi alasan dan tercatat di log audit.
+        </p>
+        <div class="mt-4 grid gap-6 lg:grid-cols-2">
+            @if ($adaPelanggaran)
+                <form method="POST" action="{{ route('dosen.attempts.reset', [$exam, $attempt]) }}" class="space-y-3" data-confirm="Maafkan semua pelanggaran peserta ini?">
+                    @csrf
+                    <h3 class="font-semibold text-ink">Reset pelanggaran</h3>
+                    <div>
+                        <label for="alasan-reset" class="form-label">Alasan</label>
+                        <input id="alasan-reset" name="alasan" type="text" class="form-input" required minlength="5" maxlength="500" placeholder="mis. gangguan perangkat yang dikonfirmasi pengawas">
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-sm"><x-icon name="refresh-cw" class="size-4" />Maafkan semua pelanggaran</button>
+                    <p class="text-small text-stone-500">Atau maafkan satu per satu di <a href="#judul-log" class="font-semibold text-maroon-700 underline">log pelanggaran</a>.</p>
+                </form>
+            @endif
+
+            @if ($berlangsung)
+                <form method="POST" action="{{ route('dosen.attempts.extend', [$exam, $attempt]) }}" class="space-y-3">
+                    @csrf
+                    <h3 class="font-semibold text-ink">Tambah waktu</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="w-28">
+                            <label for="menit-tambah" class="form-label">Menit</label>
+                            <input id="menit-tambah" name="menit" type="number" min="1" max="180" value="10" class="form-input" required>
+                        </div>
+                        <div class="min-w-48 flex-1">
+                            <label for="alasan-tambah" class="form-label">Alasan</label>
+                            <input id="alasan-tambah" name="alasan" type="text" class="form-input" required minlength="5" maxlength="500">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-sm"><x-icon name="clock" class="size-4" />Tambah waktu</button>
+                </form>
+            @else
+                <form method="POST" action="{{ route('dosen.attempts.reopen', [$exam, $attempt]) }}" class="space-y-3" data-confirm="Buka ulang attempt ini? Mahasiswa dapat mengubah jawabannya kembali.">
+                    @csrf
+                    <h3 class="font-semibold text-ink">Buka ulang attempt</h3>
+                    <p class="text-small text-stone-500">Mahasiswa mendapat sedikitnya waktu ini sejak dibuka ulang, juga bila jadwal ujian sudah berakhir. Pelanggaran yang melebihi batas harus dimaafkan dulu.</p>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="w-28">
+                            <label for="menit-buka" class="form-label">Menit</label>
+                            <input id="menit-buka" name="menit" type="number" min="1" max="180" value="15" class="form-input" required>
+                        </div>
+                        <div class="min-w-48 flex-1">
+                            <label for="alasan-buka" class="form-label">Alasan</label>
+                            <input id="alasan-buka" name="alasan" type="text" class="form-input" required minlength="5" maxlength="500">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-sm"><x-icon name="lock-open" class="size-4" />Buka ulang</button>
+                </form>
+            @endif
+        </div>
+        @if ($errors->any())
+            <div class="mt-4"><x-field-error name="alasan" /><x-field-error name="menit" /></div>
+        @endif
+    </section>
+
     <section aria-labelledby="judul-jawaban" class="mb-6">
         <h2 id="judul-jawaban" class="mb-4 text-h2 font-semibold">Jawaban (urutan tampil mahasiswa)</h2>
         @foreach ($soal as ['nomor' => $nomor, 'nomor_asli' => $nomorAsli, 'question' => $question, 'answer' => $answer])
@@ -92,7 +158,24 @@
                                     @endif
                                 </td>
                                 <td>{{ $log->dihitung ? 'Ya' : 'Tidak' }}</td>
-                                <td>{{ $log->dimaafkan ? 'Ya' : 'Tidak' }}</td>
+                                <td>
+                                    @if ($log->dimaafkan)
+                                        <span class="block">Dimaafkan {{ $log->pemaaf?->nama }}, {{ $log->dimaafkan_pada?->format('d/m H:i') }}</span>
+                                        <span class="block text-stone-500">{{ $log->alasan }}</span>
+                                    @elseif ($log->dihitung)
+                                        <details>
+                                            <summary class="cursor-pointer font-semibold text-maroon-700">Maafkan</summary>
+                                            <form method="POST" action="{{ route('dosen.attempts.forgive', [$exam, $attempt, $log]) }}" class="mt-2 flex gap-2">
+                                                @csrf
+                                                <label for="alasan-log-{{ $log->id }}" class="sr-only">Alasan</label>
+                                                <input id="alasan-log-{{ $log->id }}" name="alasan" type="text" class="form-input py-1.5" required minlength="5" maxlength="500" placeholder="Alasan">
+                                                <button type="submit" class="btn btn-secondary btn-sm">Simpan</button>
+                                            </form>
+                                        </details>
+                                    @else
+                                        –
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
