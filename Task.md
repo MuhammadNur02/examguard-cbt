@@ -65,7 +65,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 - [ ] **4.7 (S)** Koreksi cepat (terima massal di atas ambang) dan checklist kata kunci. *(FR-06.4, FR-05.4)*
 - [ ] **4.8 (S)** Kelola pelanggaran (maafkan/reset + audit log) dan tambah waktu/buka ulang attempt. *(FR-06.5, FR-06.6)*
 - [ ] **4.9 (S)** Deteksi kemiripan esai antar mahasiswa. *(FR-05.5)*
-- [ ] **4.10 (M)** Laporan: rekap nilai kelas, detail jawaban, ekspor Excel. *(FR-09.1, FR-09.2)*
+- [x] **4.10 (M)** Laporan: rekap nilai kelas, detail jawaban, ekspor Excel. *(FR-09.1, FR-09.2)*
 - [ ] **4.11 (C)** Ekspor PDF, analisis butir soal, publikasi nilai terjadwal, kunci mahasiswa dari monitor. *(FR-09.3, FR-09.4, FR-08.1, FR-06.7)*
 
 ## Fase 5 — Pengujian, Pengambilan Data KTI, dan Finalisasi
