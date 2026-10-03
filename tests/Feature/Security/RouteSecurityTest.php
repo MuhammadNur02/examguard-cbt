@@ -6,6 +6,7 @@ use App\Enums\AttemptStatus;
 use App\Enums\FinishReason;
 use App\Http\Middleware\SecurityHeaders;
 use App\Models\Exam;
+use App\Models\Kelas;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -50,6 +51,7 @@ class RouteSecurityTest extends TestCase
         $this->parameter = [
             'exam' => $exam->id, 'question' => $esai->id, 'answer' => $answer->id,
             'attempt' => $attempt->id, 'user' => User::factory()->create()->id,
+            'kelas' => Kelas::create(['nama' => 'Kelas Uji Keamanan'])->id,
         ];
     }
 
@@ -139,8 +141,8 @@ class RouteSecurityTest extends TestCase
             $diperiksa++;
         }
 
-        // 23 rute saat ini: 5 admin, 11 dosen, 5 mahasiswa, login, logout.
-        $this->assertGreaterThanOrEqual(23, $diperiksa);
+        // 29 rute saat ini: 11 admin, 11 dosen, 5 mahasiswa, login, logout.
+        $this->assertGreaterThanOrEqual(29, $diperiksa);
     }
 
     public function test_content_security_policy_aktif_saat_debug_mati(): void

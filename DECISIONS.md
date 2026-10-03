@@ -309,3 +309,18 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 - **Keputusan:** untuk 5.3 dan 5.5 hanya disiapkan alat dan instrumen yang
   teruji. Tidak ada hasil penelitian yang dibuat-buat; contoh dataset diberi
   label "rekaan" dan tidak boleh dikutip sebagai hasil.
+
+## J. Tugas Should
+
+### D-43 Visibilitas ujian per kelas
+- **Keputusan:** ujian yang ditetapkan ke ≥ 1 kelas hanya terlihat (daftar,
+  halaman, semua endpoint ujian) oleh anggota kelas tersebut; ujian tanpa kelas
+  terlihat oleh semua mahasiswa, dan halaman ujian dosen menampilkan peringatan
+  tentang hal itu. Aturan dipusatkan di `Exam::terlihatOleh()` dan scope
+  `terlihatUntuk()`.
+- **Alasan:** kompatibel dengan ujian yang sudah ada dan instalasi tanpa kelas;
+  peringatan mencegah dosen lupa memilih kelas tanpa sadar.
+- **Alternatif:** wajib memilih kelas sebelum terbit (lebih ketat, tetapi memblokir
+  dosen bila admin belum membuat kelas).
+- Kelas yang masih dipakai ujian tidak dapat dihapus; impor anggota hanya
+  menerima akun mahasiswa yang sudah ada (semua-atau-tidak sama sekali).

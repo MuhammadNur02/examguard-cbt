@@ -19,7 +19,7 @@ class ExamController extends Controller
 
     public function show(Request $request, Exam $exam): View
     {
-        abort_unless($exam->isPublished(), 404);
+        abort_unless($exam->terlihatOleh($request->user()), 404);
 
         $attempt = $this->attempts->attemptMilik($exam, $request->user());
         if ($attempt) {
@@ -36,7 +36,7 @@ class ExamController extends Controller
 
     public function work(Request $request, Exam $exam): View|RedirectResponse
     {
-        abort_unless($exam->isPublished(), 404);
+        abort_unless($exam->terlihatOleh($request->user()), 404);
 
         $attempt = $this->attempts->attemptMilik($exam, $request->user());
         if (! $attempt) {

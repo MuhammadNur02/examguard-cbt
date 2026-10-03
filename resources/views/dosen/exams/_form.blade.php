@@ -40,6 +40,22 @@
     </div>
 
     <fieldset class="sm:col-span-2">
+        <legend class="form-label">Kelas peserta</legend>
+        <p class="mb-2 text-small text-stone-500">Hanya mahasiswa di kelas terpilih yang melihat ujian. Bila tidak ada yang dipilih, ujian terlihat oleh semua mahasiswa.</p>
+        @php $terpilih = array_map('intval', (array) old('kelas', $kelasDipilih)); @endphp
+        @forelse ($daftarKelas as $kelas)
+            <label class="mr-6 inline-flex items-center gap-2 text-small text-ink">
+                <input type="checkbox" name="kelas[]" value="{{ $kelas->id }}" class="size-5 accent-maroon-700" @checked(in_array($kelas->id, $terpilih, true))>
+                {{ $kelas->nama }}
+            </label>
+        @empty
+            <p class="text-small text-stone-500">Belum ada kelas. Admin dapat membuatnya di menu Kelas.</p>
+        @endforelse
+        <x-field-error name="kelas" />
+        <x-field-error name="kelas.0" id="kelas-0" />
+    </fieldset>
+
+    <fieldset class="sm:col-span-2">
         <legend class="form-label">Pengacakan per mahasiswa</legend>
         <div class="mt-1 flex flex-wrap gap-6">
             <label class="flex items-center gap-2 text-small text-ink">

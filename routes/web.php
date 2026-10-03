@@ -30,6 +30,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/pengguna/{user}/reset-password', [Admin\UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::post('/pengguna/{user}/reset-sesi', [Admin\UserController::class, 'resetSession'])->name('users.reset-session');
         Route::patch('/pengguna/{user}/status', [Admin\UserController::class, 'updateStatus'])->name('users.status');
+
+        Route::get('/kelas', [Admin\ClassController::class, 'index'])->name('classes.index');
+        Route::post('/kelas', [Admin\ClassController::class, 'store'])->name('classes.store');
+        Route::get('/kelas/{kelas}', [Admin\ClassController::class, 'show'])->name('classes.show');
+        Route::put('/kelas/{kelas}', [Admin\ClassController::class, 'update'])->name('classes.update');
+        Route::delete('/kelas/{kelas}', [Admin\ClassController::class, 'destroy'])->name('classes.destroy');
+        Route::post('/kelas/{kelas}/anggota', [Admin\ClassController::class, 'addMember'])->name('classes.members.add');
+        Route::post('/kelas/{kelas}/anggota/impor', [Admin\ClassController::class, 'importMembers'])->name('classes.members.import');
+        Route::delete('/kelas/{kelas}/anggota/{user}', [Admin\ClassController::class, 'removeMember'])->name('classes.members.remove');
     });
 
     Route::middleware('role:dosen')->prefix('dosen')->name('dosen.')->group(function () {

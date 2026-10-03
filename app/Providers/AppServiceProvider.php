@@ -41,5 +41,6 @@ class AppServiceProvider extends ServiceProvider
         Route::pattern('user', '[0-9]+');
         Route::pattern('answer', '[0-9]+');
         Route::pattern('attempt', '[0-9]+');
+        Route::pattern('kelas', '[0-9]+');
     }
 }

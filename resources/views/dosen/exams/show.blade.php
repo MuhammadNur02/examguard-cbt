@@ -21,7 +21,15 @@
             <div><dt class="text-stone-500">Batas pelanggaran</dt><dd class="font-medium text-ink">{{ $exam->batas_pelanggaran }} (ke-{{ $exam->batas_pelanggaran + 1 }} mengunci ujian)</dd></div>
             <div><dt class="text-stone-500">Acak soal / opsi</dt><dd class="font-medium text-ink">{{ $exam->acak_soal ? 'Ya' : 'Tidak' }} / {{ $exam->acak_opsi ? 'Ya' : 'Tidak' }}</dd></div>
             <div><dt class="text-stone-500">Peserta yang memulai</dt><dd class="font-medium text-ink">{{ $exam->attempts_count }}</dd></div>
+            <div><dt class="text-stone-500">Kelas peserta</dt><dd class="font-medium text-ink">{{ $exam->kelas->pluck('nama')->join(', ') ?: 'Semua mahasiswa' }}</dd></div>
         </dl>
+
+        @if ($exam->kelas->isEmpty())
+            <p class="alert alert-warning mt-5" role="note">
+                <x-icon name="triangle-alert" class="mt-0.5 size-5" />
+                Ujian ini belum ditetapkan ke kelas sehingga terlihat oleh semua mahasiswa. Pilih kelas lewat "Ubah ujian" bila perlu.
+            </p>
+        @endif
 
         <div class="mt-6 flex flex-wrap gap-2">
             @unless ($draf)

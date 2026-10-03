@@ -26,7 +26,7 @@ class AttemptController extends Controller
     /** Mulai atau lanjutkan ujian. Persetujuan integritas wajib (FR-04.10). */
     public function start(Request $request, Exam $exam): JsonResponse|RedirectResponse
     {
-        $this->pastikanTerlihat($exam);
+        $this->pastikanTerlihat($request, $exam);
         $request->validate(
             ['setuju' => ['accepted']],
             ['setuju.accepted' => 'Centang persetujuan integritas sebelum memulai ujian.'],
@@ -114,7 +114,7 @@ class AttemptController extends Controller
     /** Kirim jawaban dan finalkan attempt (FR-07.2). Idempoten. */
     public function submit(Request $request, Exam $exam): JsonResponse|RedirectResponse
     {
-        $this->pastikanTerlihat($exam);
+        $this->pastikanTerlihat($request, $exam);
         $attempt = $this->attempts->attemptMilik($exam, $request->user());
         abort_unless($attempt, 404);
 
@@ -130,15 +130,15 @@ class AttemptController extends Controller
         return redirect()->route('mahasiswa.exams.show', $exam)->with('status', 'Jawaban Anda telah dikirim.');
     }
 
-    /** Ujian draf tidak terlihat oleh mahasiswa (FR-02.3). */
-    private function pastikanTerlihat(Exam $exam): void
+    /** Ujian draf atau ujian untuk kelas lain tidak terlihat (FR-02.3, FR-02.6). */
+    private function pastikanTerlihat(Request $request, Exam $exam): void
     {
-        abort_unless($exam->isPublished(), 404);
+        abort_unless($exam->terlihatOleh($request->user()), 404);
     }
 
     private function attemptAktif(Request $request, Exam $exam)
     {
-        $this->pastikanTerlihat($exam);
+        $this->pastikanTerlihat($request, $exam);
 
         return $this->attempts->attemptAktif($exam, $request->user(), (int) config('examguard.toleransi_simpan_detik'));
     }

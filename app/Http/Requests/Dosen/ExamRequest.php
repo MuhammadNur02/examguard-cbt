@@ -24,7 +24,15 @@ class ExamRequest extends FormRequest
             'batas_pelanggaran' => ['required', 'integer', 'min:1', 'max:20'],
             'acak_soal' => ['boolean'],
             'acak_opsi' => ['boolean'],
+            'kelas' => ['nullable', 'array'],
+            'kelas.*' => ['integer', 'exists:classes,id'],
         ];
+    }
+
+    /** @return list<int> */
+    public function kelasDipilih(): array
+    {
+        return array_values(array_unique(array_map('intval', (array) $this->input('kelas', []))));
     }
 
     public function attributes(): array

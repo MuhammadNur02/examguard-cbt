@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Mahasiswa;
 
-use App\Enums\ExamStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Services\AttemptService;
@@ -17,8 +16,8 @@ class DashboardController extends Controller
         $milikSaya = $user->attempts()->get()->keyBy('exam_id');
         $toleransi = (int) config('examguard.toleransi_simpan_detik');
 
-        // Ujian draf tidak terlihat oleh mahasiswa (FR-02.3).
-        $daftar = Exam::where('status', ExamStatus::Published)
+        // Hanya ujian terbit untuk kelas mahasiswa ini atau tanpa kelas (FR-02.3, FR-02.6).
+        $daftar = Exam::terlihatUntuk($user)
             ->orderByDesc('mulai')
             ->get()
             ->map(function (Exam $exam) use ($milikSaya, $attempts, $toleransi) {

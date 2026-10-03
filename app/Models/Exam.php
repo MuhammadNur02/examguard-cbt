@@ -6,6 +6,8 @@ use App\Enums\ExamStatus;
 use Carbon\CarbonInterface;
 use Database\Factories\ExamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -68,6 +70,32 @@ class Exam extends Model
     public function isPublished(): bool
     {
         return $this->status === ExamStatus::Published;
+    }
+
+    /**
+     * Ujian terlihat oleh mahasiswa bila terbit dan (tidak ditetapkan ke kelas
+     * mana pun, atau mahasiswa anggota salah satu kelas yang ditetapkan) (FR-02.6).
+     */
+    public function terlihatOleh(User $mahasiswa): bool
+    {
+        if (! $this->isPublished()) {
+            return false;
+        }
+
+        $kelas = $this->kelas()->pluck('classes.id');
+
+        return $kelas->isEmpty()
+            || $mahasiswa->kelas()->whereIn('classes.id', $kelas)->exists();
+    }
+
+    /** @param  Builder<Exam>  $query */
+    #[Scope]
+    protected function terlihatUntuk(Builder $query, User $mahasiswa): void
+    {
+        $query->where('status', ExamStatus::Published)
+            ->where(fn (Builder $q) => $q
+                ->whereDoesntHave('kelas')
+                ->orWhereHas('kelas.mahasiswa', fn (Builder $m) => $m->whereKey($mahasiswa->id)));
     }
 
     /** Akhir jendela ujian: mulai + durasi. */

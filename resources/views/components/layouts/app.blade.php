@@ -5,6 +5,7 @@
         \App\Enums\Role::Admin => [
             ['route' => 'admin.dashboard', 'aktif' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard'],
             ['route' => 'admin.users.index', 'aktif' => 'admin.users.*', 'label' => 'Akun Pengguna', 'icon' => 'users'],
+            ['route' => 'admin.classes.index', 'aktif' => 'admin.classes.*', 'label' => 'Kelas', 'icon' => 'school'],
         ],
         \App\Enums\Role::Dosen => [
             ['route' => 'dosen.dashboard', 'aktif' => ['dosen.dashboard', 'dosen.exams.*', 'dosen.questions.*'], 'label' => 'Ujian Saya', 'icon' => 'clipboard-list'],
