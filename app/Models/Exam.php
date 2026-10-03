@@ -127,7 +127,8 @@ class Exam extends Model
     /** Cocokkan kode akses tanpa membedakan huruf besar/kecil dan spasi tepi. */
     public function kodeAksesCocok(?string $kode): bool
     {
-        return $this->perluKodeAkses() && hash_equals($this->access->kode_akses, strtoupper(trim((string) $kode)));
+        return $this->perluKodeAkses()
+            && hash_equals(strtoupper(trim($this->access->kode_akses)), strtoupper(trim((string) $kode)));
     }
 
     /** Soal hanya boleh ditambah/diubah selama draf dan belum ada attempt. */

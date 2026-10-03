@@ -52,6 +52,14 @@ class AccessCodeTest extends TestCase
         $this->assertDatabaseCount('exam_attempts', 1);
     }
 
+    public function test_kode_tersimpan_huruf_kecil_tetap_cocok(): void
+    {
+        // Kode yang diisi di luar form (seeder/konsol) belum tentu huruf besar.
+        $this->exam->access->update(['kode_akses' => 'rahasia7']);
+
+        $this->mulai('RAHASIA7')->assertCreated();
+    }
+
     public function test_melanjutkan_attempt_yang_ada_tidak_meminta_kode_lagi(): void
     {
         $this->mulai('RAHASIA7')->assertCreated();

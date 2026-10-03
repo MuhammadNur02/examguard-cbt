@@ -31,7 +31,7 @@ function composer { php "$env:LOCALAPPDATA\Programs\Composer\composer.phar" @arg
 | 1.3 Autentikasi & peran | Selesai | `LoginTest`, `RoleAuthorizationTest`; dicek di peramban headless (login per peran, pesan galat, logout, 403) |
 | 1.4 Single session | Selesai | `SingleSessionTest`; dua profil peramban: perangkat lama dikeluarkan, perangkat baru tetap masuk, keduanya tercatat di `audit_logs` |
 | 1.5 Manajemen akun admin | Selesai | `UserManagementTest`, `UserImportTest`, tes unit CSV; impor CSV salah/benar dan login akun hasil impor dicek di peramban |
-| 1.6 Kelas (S) | Ditunda | Dikerjakan setelah jalur MVP (aturan: MVP dulu, lalu Should) |
+| 1.6 Kelas (S) | Selesai (tahap Should) | Lihat bagian "Tugas Should" di bawah |
 
 Hasil tes akhir Fase 1: **PHPUnit 86/86 lulus**, Pint lulus, **pytest 9/9
 lulus**, ruff lulus, `npm run build` berhasil.
@@ -151,11 +151,29 @@ Menjalankan penilaian esai: layanan NLP (`uvicorn ...`) dan queue worker
 | Task | Status | Bukti / catatan |
 |---|---|---|
 | 5.1 Black-box | Selesai | `docs/PENGUJIAN-BLACKBOX.md`: 25 skenario lulus (Chromium headless + tes otomatis); pindah tab/Esc disimulasikan lewat event — ulangi manual untuk lampiran |
-| 5.2 Keamanan teknis | Selesai | `RouteSecurityTest` (semua rute × peran, CSRF 23 rute, batas laju), CSP diuji di peramban; `docs/KEAMANAN.md` |
+| 5.2 Keamanan teknis | Selesai | `RouteSecurityTest` (semua rute × peran, CSRF 31 rute pengubah data, batas laju), CSP diuji di peramban; `docs/KEAMANAN.md` |
 | 5.3 Akurasi esai | **Alat siap, data belum ada** | `ujian:ekspor-esai` + `nlp-service/evaluasi.py` (teruji); butuh 30–50 jawaban yang dinilai dosen (BLOCKERS B-04) |
 | 5.4 Uji beban (S) | Belum | — |
 | 5.5 SUS/UAT | **Instrumen siap, responden belum ada** | `docs/KUESIONER-SUS-UAT.md` + `nlp-service/sus.py` (teruji) (BLOCKERS B-05) |
 | 5.6 Dokumentasi | Selesai | README, panduan dosen/admin/mahasiswa, backup, pemetaan KTI |
+
+## Tugas Should (setelah jalur MVP)
+
+| Task | Status | Bukti / catatan |
+|---|---|---|
+| 1.6 Kelas | Selesai | `ClassManagementTest`, `ClassVisibilityTest` (daftar, halaman, dan semua endpoint ujian mengikuti kelas); D-43 |
+| 2.3 Impor soal | Selesai | `QuestionImportTest` (CSV/XLSX valid, 8 jenis galat bernomor baris tanpa ada yang tersimpan, templat lolos validasi sendiri), `SpreadsheetReaderTest`, `CsvReaderTest` (sel multibaris); diuji di peramban; D-44 |
+| 2.5 Opsi pengacakan | Selesai | `ShuffleSettingsTest`: kombinasi acak soal/opsi terpisah dan opsi terkunci (tengah dan akhir) tidak berpindah atas 200 seed; diverifikasi dengan mutasi |
+| 2.6 Duplikat, pratinjau, kode akses | Selesai | `ExamDuplicatePreviewTest`, `AccessCodeTest` (kode salah/kosong ditolak tanpa attempt, tidak bocor ke HTML, batas percobaan); alur penuh diuji di peramban; D-45 |
+
+### Tinjauan kritis Fase 2 (Should)
+- Tidak ada jalur baru yang mengirim kunci PG, kunci esai, atau kode akses ke
+  mahasiswa (pratinjau hanya untuk dosen pemilik; payload sama dengan layar ujian).
+- Ditemukan dan diperbaiki saat tinjauan: `CsvReader` membaca per baris fisik
+  sehingga sel berkutip multibaris (Alt+Enter di Excel) memecah satu soal;
+  `lockForUpdate()` + `max()` ditolak PostgreSQL (dihapus); kode akses yang
+  tersimpan huruf kecil di luar form tidak akan pernah cocok (kedua sisi kini
+  dinormalkan, ada tes).
 
 ## Cara menjalankan (ringkas)
 

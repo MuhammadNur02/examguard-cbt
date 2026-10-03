@@ -141,8 +141,8 @@ class RouteSecurityTest extends TestCase
             $diperiksa++;
         }
 
-        // 29 rute saat ini: 11 admin, 11 dosen, 5 mahasiswa, login, logout.
-        $this->assertGreaterThanOrEqual(29, $diperiksa);
+        // 31 rute saat ini: 11 admin, 13 dosen, 5 mahasiswa, login, logout.
+        $this->assertGreaterThanOrEqual(31, $diperiksa);
     }
 
     public function test_content_security_policy_aktif_saat_debug_mati(): void
