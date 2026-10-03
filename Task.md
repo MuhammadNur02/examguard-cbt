@@ -70,7 +70,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 
 ## Fase 5 — Pengujian, Pengambilan Data KTI, dan Finalisasi
 
-- [ ] **5.1 (M)** Black-box testing: pindah tab, Esc fullscreen, klik kanan, copy-paste, habis waktu, putus koneksi, login ganda, urutan acak berbeda, reload. *(PRD §13.1)*
+- [x] **5.1 (M)** Black-box testing: pindah tab, Esc fullscreen, klik kanan, copy-paste, habis waktu, putus koneksi, login ganda, urutan acak berbeda, reload. *(PRD §13.1)*
 - [ ] **5.2 (M)** Keamanan teknis: CSRF, validasi input, otorisasi per peran, kunci tidak bocor di respons, rate limiting.
 - [ ] **5.3 (M)** Uji akurasi esai: dataset 30–50 jawaban dinilai manual dosen; hitung MAE dan Pearson; bandingkan dengan/tanpa stemming dan variasi korpus IDF. *(PRD §13.2)*
 - [ ] **5.4 (S)** Uji beban 50–100 peserta bersamaan dan catat latensi/error. *(PRD §13.3)*
