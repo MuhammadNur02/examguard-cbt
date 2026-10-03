@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'judul', 'mata_kuliah', 'mulai', 'durasi_menit', 'batas_pelanggaran',
-    'acak_soal', 'acak_opsi', 'pool_size', 'status',
+    'acak_soal', 'acak_opsi', 'pool_size', 'status', 'nilai_terbit_pada',
 ])]
 class Exam extends Model
 {
@@ -29,6 +29,7 @@ class Exam extends Model
     {
         return [
             'mulai' => 'datetime',
+            'nilai_terbit_pada' => 'datetime',
             'durasi_menit' => 'integer',
             'batas_pelanggaran' => 'integer',
             'acak_soal' => 'boolean',

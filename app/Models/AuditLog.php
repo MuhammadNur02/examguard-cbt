@@ -16,6 +16,19 @@ class AuditLog extends Model
         return ['detail' => 'array'];
     }
 
+    /** Catat aksi otomatis sistem (mis. publikasi terjadwal): tanpa pelaku, walau dipicu permintaan pengguna lain. */
+    public static function catatSistem(string $aksi, ?Model $subjek = null, array $detail = []): self
+    {
+        return self::create([
+            'user_id' => null,
+            'aksi' => $aksi,
+            'subjek_tipe' => $subjek ? class_basename($subjek) : null,
+            'subjek_id' => $subjek?->getKey(),
+            'detail' => $detail ?: null,
+            'ip' => null,
+        ]);
+    }
+
     /** Catat satu aksi. Pelaku dan IP diambil dari permintaan aktif bila tidak diberikan. */
     public static function catat(string $aksi, ?Model $subjek = null, array $detail = [], ?User $pelaku = null): self
     {

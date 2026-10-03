@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Mahasiswa;
 
 use App\Enums\AttemptStatus;
 use App\Http\Controllers\Controller;
+use App\Services\PublicationService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -12,8 +13,11 @@ use Illuminate\View\View;
  */
 class GradeHistoryController extends Controller
 {
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request, PublicationService $publikasi): View
     {
+        // Publikasi terjadwal yang sudah jatuh tempo (FR-08.1), walau penjadwal belum berjalan.
+        $publikasi->jalankanTerjadwal();
+
         $attempts = $request->user()->attempts()
             ->whereIn('status', [AttemptStatus::Selesai, AttemptStatus::Terkunci])
             ->with(['exam', 'result'])

@@ -125,6 +125,7 @@ class ExamController extends Controller
             $salinan = $exam->replicate(['status']);
             $salinan->judul = mb_substr($exam->judul, 0, 245).' (salinan)';
             $salinan->status = ExamStatus::Draft;
+            $salinan->nilai_terbit_pada = null;
             $salinan->save();
 
             foreach ($exam->questions()->with('options')->get() as $question) {

@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
-use App\Models\ExamResult;
 use App\Models\Question;
+use App\Services\PublicationService;
 use App\Services\ReportService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use OpenSpout\Common\Entity\Cell;
@@ -32,9 +34,11 @@ class ReportController extends Controller
         'Nilai Akhir', 'Keterangan', 'Pelanggaran', 'Dikirim', 'Dipublikasikan',
     ];
 
-    public function index(Exam $exam, ReportService $laporan): View
+    public function index(Exam $exam, ReportService $laporan, PublicationService $publikasi): View
     {
-        return view('dosen.reports.index', ['exam' => $exam, 'baris' => $laporan->baris($exam)]);
+        $publikasi->jalankanTerjadwal();
+
+        return view('dosen.reports.index', ['exam' => $exam->refresh(), 'baris' => $laporan->baris($exam)]);
     }
 
     public function show(Exam $exam, ExamAttempt $attempt): View
@@ -89,21 +93,39 @@ class ReportController extends Controller
         }, $namaBerkas, ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
     }
 
-    public function publish(Exam $exam, ReportService $laporan): RedirectResponse
+    public function publish(Exam $exam, PublicationService $publikasi): RedirectResponse
     {
-        $baris = $laporan->baris($exam);
-        $siap = $baris->where('final', true)->where('dipublikasikan', false);
-        $belum = $baris->where('final', false)->count();
+        ['jumlah' => $jumlah, 'belum_final' => $belum] = $publikasi->terbitkan($exam, now());
+        AuditLog::catat('nilai_dipublikasikan', $exam, ['jumlah' => $jumlah, 'belum_final' => $belum]);
 
-        ExamResult::whereIn('attempt_id', $siap->pluck('attempt.id'))->update(['dipublikasikan_pada' => now()]);
-        AuditLog::catat('nilai_dipublikasikan', $exam, ['jumlah' => $siap->count(), 'belum_final' => $belum]);
-
-        $pesan = "{$siap->count()} nilai dipublikasikan.";
+        $pesan = "{$jumlah} nilai dipublikasikan.";
         if ($belum > 0) {
             $pesan .= " {$belum} belum final (menunggu koreksi esai atau masih mengerjakan) dan belum dipublikasikan.";
         }
 
         return back()->with('status', $pesan);
+    }
+
+    /** FR-08.1: jadwalkan publikasi nilai final pada waktu tertentu. */
+    public function schedule(Request $request, Exam $exam): RedirectResponse
+    {
+        $data = $request->validate(['waktu' => ['required', 'date', 'after:now']], [
+            'waktu.after' => 'Waktu publikasi harus di masa depan.',
+        ], ['waktu' => 'waktu publikasi']);
+
+        $waktu = Carbon::parse($data['waktu'])->startOfMinute();
+        $exam->update(['nilai_terbit_pada' => $waktu]);
+        AuditLog::catat('publikasi_nilai_dijadwalkan', $exam, ['waktu' => $waktu->toIso8601String()]);
+
+        return back()->with('status', 'Nilai final akan dipublikasikan otomatis pada '.$waktu->translatedFormat('d M Y H:i').' WIB.');
+    }
+
+    public function cancelSchedule(Exam $exam): RedirectResponse
+    {
+        $exam->update(['nilai_terbit_pada' => null]);
+        AuditLog::catat('publikasi_nilai_dibatalkan', $exam);
+
+        return back()->with('status', 'Jadwal publikasi nilai dibatalkan.');
     }
 
     /**
