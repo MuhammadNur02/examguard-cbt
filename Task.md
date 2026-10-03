@@ -27,7 +27,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
   - DoD: ujian tidak dapat dimulai di luar jadwal.
 - [x] **2.2 (M)** Form soal PG berbobot dan esai berkunci patokan + kata kunci. *(FR-02.2)*
   - DoD: validasi satu kunci PG, kunci esai wajib.
-- [ ] **2.3 (S)** Parser impor CSV/Excel + template + laporan baris salah. *(FR-02.4)*
+- [x] **2.3 (S)** Parser impor CSV/Excel + template + laporan baris salah. *(FR-02.4)*
   - DoD: baris salah dilaporkan dengan nomor baris sebelum penyimpanan.
 - [x] **2.4 (M)** Endpoint API soal teracak per mahasiswa. *(FR-03.1–FR-03.4)*
   - Fisher-Yates dengan PRNG berseed; `shuffle_seed` disimpan di `exam_attempts`; pemetaan urutan ke ID asli disimpan; kunci jawaban tidak pernah dikirim.
