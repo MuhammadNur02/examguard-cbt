@@ -119,6 +119,33 @@ Tes otomatis juga memastikan waktu proses server satu laporan < 1 detik.
 - Layar pengerjaan tidak menyisipkan soal/kunci di HTML; soal diambil lewat API
   tanpa kunci dan dirender dengan `textContent`.
 
+## Fase 4 — Mesin Penilaian dan Dashboard Dosen (jalur MVP)
+
+| Task | Status | Bukti |
+|---|---|---|
+| 4.1 Nilai PG | Selesai | `MultipleChoiceScoringTest`: data uji hitungan manual (skor PG 6, maks 19,5, nilai 30,77), jawaban dipilih lewat API pada urutan acak |
+| 4.2 Preprocessing | Selesai | `nlp-service/tests/test_preprocessing.py` ("menghubungkan" → "hubung") |
+| 4.3 TF-IDF + Cosine | Selesai | `test_scoring.py`: contoh hitung manual (0,8165 dan 0,3495) + rumus independen pada 30 data acak; skor = similarity × bobot di `EssayScoringIntegrationTest` |
+| 4.4 Integrasi + antrean | Selesai | `EssayScoringIntegrationTest` (Http::fake) + uji ke FastAPI nyata: similarity 0,6432 × 10 = 6,43 |
+| 4.5 Live Monitor | Selesai | `MonitorTest`; dua sesi peramban: peserta dan pelanggaran baru muncul tanpa muat ulang |
+| 4.6 Koreksi berdampingan | Selesai | `EssayCorrectionTest` (12 tes); alur Setujui di peramban |
+| 4.10 Rekap + Excel | Selesai | `ReportTest`: berkas .xlsx dibaca balik, tanpa sel formula, publikasi ujung-ke-ujung. Belum dibuka langsung di aplikasi Excel |
+| 4.7–4.9, 4.11 | Belum | Should/Could |
+
+Menjalankan penilaian esai: layanan NLP (`uvicorn ...`) dan queue worker
+(`php artisan queue:work` atau `php artisan dev`) harus berjalan, dengan
+`NLP_SERVICE_TOKEN` yang sama di `.env` Laravel dan `nlp-service/.env`.
+
+### Tinjauan kritis Fase 4
+- Bug ditemukan dan diperbaiki: (1) `refresh()` setelah finalisasi membuang
+  atribut `withCount` di monitor; (2) `firstWhere('skor_final', null)`
+  membandingkan longgar sehingga skor 0 dianggap belum dikonfirmasi. Keduanya
+  punya tes regresi.
+- Injeksi formula pada ekspor Excel ditutup (OpenSpout mengubah teks berawalan
+  `=` menjadi formula bila memakai `Cell::fromValue`).
+- Ditambahkan jejak audit setiap perubahan skor esai final (dari → ke,
+  termasuk penanda bila nilai sudah dipublikasikan).
+
 ## Cara menjalankan (ringkas)
 
 ```powershell

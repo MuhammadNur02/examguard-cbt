@@ -78,8 +78,19 @@ class EssayGradingController extends Controller
         }
 
         $skor = $data['aksi'] === 'setujui' ? $answer->skor_sistem : round((float) $data['skor'], 2);
+        $skorLama = $answer->skor_final;
         $answer->update(['skor_final' => $skor, 'dinilai_oleh' => $request->user()->id, 'dinilai_pada' => now()]);
-        $scoring->perbaruiHasil($answer->attempt);
+        $hasil = $scoring->perbaruiHasil($answer->attempt);
+
+        if ($skorLama !== $skor) {
+            // Jejak perubahan nilai (siapa, kapan, dari-ke), termasuk setelah publikasi.
+            AuditLog::catat('skor_esai_diubah', $answer, [
+                'dari' => $skorLama,
+                'ke' => $skor,
+                'rekomendasi' => $answer->skor_sistem,
+                'sudah_dipublikasikan' => $hasil->dipublikasikan_pada !== null,
+            ]);
+        }
 
         // Perbandingan ketat: skor final 0 (esai kosong) bukan "belum dikonfirmasi".
         $berikutnya = $jawaban->skip($jawaban->search(fn ($a) => $a->id === $answer->id) + 1)

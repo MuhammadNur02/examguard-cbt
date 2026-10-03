@@ -4,6 +4,7 @@ namespace Tests\Feature\Dosen;
 
 use App\Enums\AttemptStatus;
 use App\Enums\FinishReason;
+use App\Models\AuditLog;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\ExamResult;
@@ -131,6 +132,24 @@ class EssayCorrectionTest extends TestCase
         $this->assertSame(8.5, $answer->fresh()->skor_final);
         $this->assertSame(6.43, $answer->fresh()->skor_sistem, 'Rekomendasi sistem tetap tersimpan.');
         $this->assertSame(87.5, ExamResult::where('attempt_id', $answer->attempt_id)->sole()->nilai_akhir);
+    }
+
+    public function test_perubahan_skor_tercatat_di_audit_termasuk_setelah_publikasi(): void
+    {
+        $answer = $this->jawaban('2301001', 'Jawaban A', 0.6432);
+        $this->actingAs($this->dosen)->put($this->url($answer, "/{$answer->id}"), ['aksi' => 'setujui']);
+        ExamResult::where('attempt_id', $answer->attempt_id)->update(['dipublikasikan_pada' => now()]);
+
+        $this->put($this->url($answer, "/{$answer->id}"), ['aksi' => 'simpan', 'skor' => '9']);
+        // Menyimpan nilai yang sama tidak menambah catatan.
+        $this->put($this->url($answer, "/{$answer->id}"), ['aksi' => 'simpan', 'skor' => '9']);
+
+        $log = AuditLog::where('aksi', 'skor_esai_diubah')->orderBy('id')->get();
+        $this->assertCount(2, $log);
+        $this->assertSame(['dari' => null, 'ke' => 6.43, 'rekomendasi' => 6.43, 'sudah_dipublikasikan' => false], $log[0]->detail);
+        // JSON menyimpan 9.0 sebagai 9: bandingkan nilainya.
+        $this->assertEquals(['dari' => 6.43, 'ke' => 9, 'rekomendasi' => 6.43, 'sudah_dipublikasikan' => true], $log[1]->detail);
+        $this->assertSame($this->dosen->id, $log[1]->user_id);
     }
 
     public function test_validasi_skor(): void
