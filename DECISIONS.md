@@ -255,3 +255,33 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 ### D-33 Batas laju endpoint ujian
 - **Keputusan:** 240 permintaan/menit per mahasiswa untuk endpoint ujian
   (autosave, heartbeat, pelanggaran, kirim) agar klien yang rusak tidak membanjiri server.
+
+## H. Penilaian dan Laporan (Fase 4)
+
+### D-34 Persyaratan PHP 8.4
+- **Keputusan:** `composer.json` kini menuntut `php: ^8.4` dan README diperbarui.
+- **Alasan:** `composer.lock` hasil instalasi sudah memakai komponen Symfony 8.1
+  yang mensyaratkan PHP ≥ 8.4.1, sehingga klaim "PHP 8.3+" sebelumnya tidak akurat.
+- **Alternatif:** menurunkan dependensi ke Symfony 7 dengan `config.platform.php=8.3`
+  (perubahan besar, belum diperlukan).
+
+### D-35 Esai kosong otomatis 0, nilai akhir menunggu dosen
+- **Keputusan:** saat attempt difinalisasi, PG langsung dinilai; esai kosong
+  diberi skor 0 final (tidak ada yang perlu dinilai); esai berisi menunggu skor
+  rekomendasi NLP lalu keputusan dosen. Nilai akhir terisi setelah semua esai final.
+
+### D-36 Skor rekomendasi dihitung setelah semua peserta selesai
+- **Keputusan:** tombol "Hitung skor rekomendasi" menolak berjalan bila masih ada
+  attempt berlangsung (setelah menutup yang kedaluwarsa), karena IDF memakai korpus
+  kunci + seluruh jawaban soal itu (K-2). Hitung ulang tidak menimpa skor final dosen.
+
+### D-37 Ekspor Excel dengan OpenSpout, teks selalu sel string
+- **Keputusan:** ekspor `.xlsx` memakai `openspout/openspout` ^5.12. Semua teks
+  ditulis sebagai `StringCell` karena `Cell::fromValue()` mengubah string berawalan
+  `=` menjadi formula (risiko injeksi formula); diuji dengan memeriksa XML lembar kerja.
+- **Alternatif:** PhpSpreadsheet (lebih berat, butuh ext-gd/mbstring), CSV (bukan Excel).
+
+### D-38 Publikasi nilai hanya untuk nilai final
+- **Keputusan:** tombol "Publikasikan nilai final" mengisi `dipublikasikan_pada`
+  untuk hasil yang `nilai_akhir`-nya sudah terisi; sisanya dilaporkan dan tidak
+  ikut. Publikasi terjadwal (FR-08.1, Could) belum dibuat.

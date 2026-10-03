@@ -27,6 +27,7 @@
             @unless ($draf)
                 <a href="{{ route('dosen.monitor', $exam) }}" class="btn btn-primary btn-sm"><x-icon name="monitor" class="size-4" />Live Monitor</a>
                 <a href="{{ route('dosen.grading.index', $exam) }}" class="btn btn-secondary btn-sm"><x-icon name="pencil" class="size-4" />Koreksi Esai</a>
+                <a href="{{ route('dosen.reports.index', $exam) }}" class="btn btn-secondary btn-sm"><x-icon name="chart-column" class="size-4" />Rekap Nilai</a>
             @endunless
             @unless ($dikerjakan)
                 <a href="{{ route('dosen.exams.edit', $exam) }}" class="btn btn-secondary btn-sm"><x-icon name="pencil" class="size-4" />Ubah ujian</a>

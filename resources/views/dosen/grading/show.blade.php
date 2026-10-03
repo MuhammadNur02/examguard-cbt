@@ -117,7 +117,7 @@
 
             <aside class="card p-0" aria-labelledby="judul-daftar">
                 <h2 id="judul-daftar" class="px-4 pt-4 label-caps text-stone-500">Jawaban ({{ $jawaban->count() }})</h2>
-                <ul class="mt-2 max-h-[32rem] divide-y divide-stone-200 overflow-y-auto border-t border-stone-200">
+                <ul class="mt-2 max-h-128 divide-y divide-stone-200 overflow-y-auto border-t border-stone-200">
                     @foreach ($jawaban as $item)
                         <li>
                             <a href="{{ route('dosen.grading.show', [$exam, $question, 'jawaban' => $item->id]) }}"

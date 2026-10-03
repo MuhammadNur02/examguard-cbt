@@ -39,5 +39,6 @@ class AppServiceProvider extends ServiceProvider
         Route::pattern('question', '[0-9]+');
         Route::pattern('user', '[0-9]+');
         Route::pattern('answer', '[0-9]+');
+        Route::pattern('attempt', '[0-9]+');
     }
 }

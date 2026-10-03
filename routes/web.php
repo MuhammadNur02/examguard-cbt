@@ -50,6 +50,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/ujian/{exam}/monitor', [Dosen\MonitorController::class, 'show'])->name('monitor');
             Route::get('/ujian/{exam}/monitor/data', [Dosen\MonitorController::class, 'data'])->name('monitor.data');
 
+            Route::get('/ujian/{exam}/rekap', [Dosen\ReportController::class, 'index'])->name('reports.index');
+            Route::get('/ujian/{exam}/rekap/ekspor', [Dosen\ReportController::class, 'export'])->name('reports.export');
+            Route::post('/ujian/{exam}/rekap/publikasikan', [Dosen\ReportController::class, 'publish'])->name('reports.publish');
+            Route::get('/ujian/{exam}/rekap/{attempt}', [Dosen\ReportController::class, 'show'])->scopeBindings()->name('reports.show');
+
             Route::get('/ujian/{exam}/koreksi', [Dosen\EssayGradingController::class, 'index'])->name('grading.index');
             Route::post('/ujian/{exam}/koreksi/hitung', [Dosen\EssayGradingController::class, 'hitung'])->name('grading.score');
             Route::scopeBindings()->group(function () {
