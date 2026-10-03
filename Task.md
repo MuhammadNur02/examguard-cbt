@@ -75,7 +75,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 - [ ] **5.3 (M)** Uji akurasi esai: dataset 30–50 jawaban dinilai manual dosen; hitung MAE dan Pearson; bandingkan dengan/tanpa stemming dan variasi korpus IDF. *(PRD §13.2)*
 - [ ] **5.4 (S)** Uji beban 50–100 peserta bersamaan dan catat latensi/error. *(PRD §13.3)*
 - [ ] **5.5 (M)** Kuesioner SUS/UAT pada mahasiswa dan dosen untuk Bab 4. *(PRD §13.4)*
-- [ ] **5.6 (M)** Dokumentasi: README, panduan dosen, panduan mahasiswa, backup database, pemetaan hasil ke Bab 1–4 KTI.
+- [x] **5.6 (M)** Dokumentasi: README, panduan dosen, panduan mahasiswa, backup database, pemetaan hasil ke Bab 1–4 KTI.
 
 ---
 
