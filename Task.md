@@ -51,7 +51,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 - [x] **3.6 (M)** Autosave berkala dan heartbeat; auto-submit memakai jawaban tersimpan. *(FR-04.7)*
   - DoD: putus koneksi tidak menghilangkan jawaban lebih lama dari satu interval autosave.
 - [x] **3.7 (M)** Tombol Kirim Jawaban + konfirmasi dan halaman riwayat nilai. *(FR-07.2, FR-07.3)*
-- [ ] **3.8 (S)** Watermark nama/NIM, deteksi perangkat berganti, penolakan perangkat mobile. *(FR-04.8, FR-04.9, FR-04.11)*
+- [x] **3.8 (S)** Watermark nama/NIM, deteksi perangkat berganti, penolakan perangkat mobile. *(FR-04.8, FR-04.9, FR-04.11)*
 
 ## Fase 4 — Mesin Penilaian dan Dashboard Dosen
 
