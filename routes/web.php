@@ -56,6 +56,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('/ujian/{exam}', [Dosen\ExamController::class, 'destroy'])->name('exams.destroy');
             Route::post('/ujian/{exam}/terbitkan', [Dosen\ExamController::class, 'publish'])->name('exams.publish');
             Route::post('/ujian/{exam}/tarik', [Dosen\ExamController::class, 'unpublish'])->name('exams.unpublish');
+            Route::post('/ujian/{exam}/duplikat', [Dosen\ExamController::class, 'duplicate'])->name('exams.duplicate');
+            Route::get('/ujian/{exam}/pratinjau', [Dosen\ExamController::class, 'preview'])->name('exams.preview');
 
             Route::get('/ujian/{exam}/monitor', [Dosen\MonitorController::class, 'show'])->name('monitor');
             Route::get('/ujian/{exam}/monitor/data', [Dosen\MonitorController::class, 'data'])->name('monitor.data');

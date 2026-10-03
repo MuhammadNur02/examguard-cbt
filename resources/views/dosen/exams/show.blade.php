@@ -22,6 +22,13 @@
             <div><dt class="text-stone-500">Acak soal / opsi</dt><dd class="font-medium text-ink">{{ $exam->acak_soal ? 'Ya' : 'Tidak' }} / {{ $exam->acak_opsi ? 'Ya' : 'Tidak' }}</dd></div>
             <div><dt class="text-stone-500">Peserta yang memulai</dt><dd class="font-medium text-ink">{{ $exam->attempts_count }}</dd></div>
             <div><dt class="text-stone-500">Kelas peserta</dt><dd class="font-medium text-ink">{{ $exam->kelas->pluck('nama')->join(', ') ?: 'Semua mahasiswa' }}</dd></div>
+            <div><dt class="text-stone-500">Kode akses</dt><dd class="font-medium text-ink">
+                @if ($exam->access?->kode_akses)
+                    <span class="font-mono tracking-wider">{{ $exam->access->kode_akses }}</span>
+                @else
+                    Tanpa kode
+                @endif
+            </dd></div>
         </dl>
 
         @if ($exam->kelas->isEmpty())
@@ -51,6 +58,13 @@
                     <button type="submit" class="btn btn-secondary btn-sm"><x-icon name="eye-off" class="size-4" />Tarik ke draf</button>
                 </form>
             @endif
+            @if ($exam->questions->isNotEmpty())
+                <a href="{{ route('dosen.exams.preview', $exam) }}" class="btn btn-secondary btn-sm" target="_blank" rel="noopener"><x-icon name="eye" class="size-4" />Pratinjau</a>
+            @endif
+            <form method="POST" action="{{ route('dosen.exams.duplicate', $exam) }}" data-confirm="Duplikat ujian ini beserta semua soalnya sebagai draf baru?">
+                @csrf
+                <button type="submit" class="btn btn-ghost btn-sm"><x-icon name="copy" class="size-4" />Duplikat</button>
+            </form>
             @unless ($dikerjakan)
                 <form method="POST" action="{{ route('dosen.exams.destroy', $exam) }}" data-confirm="Hapus ujian beserta semua soalnya? Tindakan ini tidak dapat dibatalkan.">
                     @csrf

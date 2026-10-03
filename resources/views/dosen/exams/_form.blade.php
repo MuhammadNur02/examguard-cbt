@@ -39,6 +39,15 @@
         <x-field-error name="batas_pelanggaran" />
     </div>
 
+    <div>
+        <label for="kode_akses" class="form-label">Kode akses (opsional)</label>
+        <input id="kode_akses" name="kode_akses" type="text" class="form-input font-mono uppercase" maxlength="20" autocomplete="off"
+            pattern="[A-Za-z0-9\-]{4,20}" value="{{ old('kode_akses', $exam->access?->kode_akses) }}"
+            aria-describedby="kode-help {{ $errors->has('kode_akses') ? 'kode_akses-error' : '' }}">
+        <p id="kode-help" class="mt-1.5 text-small text-stone-500">4–20 huruf/angka/tanda hubung. Bila diisi, mahasiswa harus memasukkan kode ini untuk memulai. Kosongkan bila tidak perlu.</p>
+        <x-field-error name="kode_akses" />
+    </div>
+
     <fieldset class="sm:col-span-2">
         <legend class="form-label">Kelas peserta</legend>
         <p class="mb-2 text-small text-stone-500">Hanya mahasiswa di kelas terpilih yang melihat ujian. Bila tidak ada yang dipilih, ujian terlihat oleh semua mahasiswa.</p>

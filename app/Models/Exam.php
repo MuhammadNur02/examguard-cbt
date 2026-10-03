@@ -118,6 +118,18 @@ class Exam extends Model
         return $this->attempts()->exists();
     }
 
+    /** Mahasiswa harus memasukkan kode akses untuk memulai (FR-02.8). */
+    public function perluKodeAkses(): bool
+    {
+        return filled($this->access?->kode_akses);
+    }
+
+    /** Cocokkan kode akses tanpa membedakan huruf besar/kecil dan spasi tepi. */
+    public function kodeAksesCocok(?string $kode): bool
+    {
+        return $this->perluKodeAkses() && hash_equals($this->access->kode_akses, strtoupper(trim((string) $kode)));
+    }
+
     /** Soal hanya boleh ditambah/diubah selama draf dan belum ada attempt. */
     public function soalDapatDiubah(): bool
     {

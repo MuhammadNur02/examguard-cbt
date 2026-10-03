@@ -12,7 +12,9 @@ use App\Services\ViolationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Endpoint attempt mahasiswa. Attempt selalu dicari dari pasangan
@@ -21,6 +23,10 @@ use Illuminate\Validation\Rule;
  */
 class AttemptController extends Controller
 {
+    private const MAKS_PERCOBAAN_KODE = 5;
+
+    private const JEDA_KODE_DETIK = 300;
+
     public function __construct(private readonly AttemptService $attempts) {}
 
     /** Mulai atau lanjutkan ujian. Persetujuan integritas wajib (FR-04.10). */
@@ -31,6 +37,11 @@ class AttemptController extends Controller
             ['setuju' => ['accepted']],
             ['setuju.accepted' => 'Centang persetujuan integritas sebelum memulai ujian.'],
         );
+
+        // Kode akses hanya diperiksa saat attempt baru dibuat; melanjutkan tidak memintanya lagi.
+        if (! $this->attempts->attemptMilik($exam, $request->user())) {
+            $this->periksaKodeAkses($request, $exam);
+        }
 
         try {
             $attempt = $this->attempts->mulai($exam, $request->user(), $request->ip(), $request->userAgent());
@@ -131,6 +142,38 @@ class AttemptController extends Controller
     }
 
     /** Ujian draf atau ujian untuk kelas lain tidak terlihat (FR-02.3, FR-02.6). */
+    /**
+     * FR-02.8: tanpa kode benar tidak ada attempt. Percobaan salah dibatasi per
+     * mahasiswa per ujian agar kode tidak bisa ditebak beruntun.
+     */
+    private function periksaKodeAkses(Request $request, Exam $exam): void
+    {
+        if (! $exam->perluKodeAkses()) {
+            return;
+        }
+
+        $kunci = 'kode-akses:'.$request->user()->id.':'.$exam->id;
+        if (RateLimiter::tooManyAttempts($kunci, self::MAKS_PERCOBAAN_KODE)) {
+            $pesan = 'Terlalu banyak percobaan kode akses yang salah. Coba lagi dalam '.ceil(RateLimiter::availableIn($kunci) / 60).' menit.';
+            if ($request->expectsJson()) {
+                abort(429, $pesan);
+            }
+            throw ValidationException::withMessages(['kode_akses' => $pesan]);
+        }
+
+        $request->validate(
+            ['kode_akses' => ['required', 'string', 'max:50']],
+            ['kode_akses.required' => 'Masukkan kode akses dari dosen.'],
+        );
+
+        if (! $exam->kodeAksesCocok($request->input('kode_akses'))) {
+            RateLimiter::hit($kunci, self::JEDA_KODE_DETIK);
+            throw ValidationException::withMessages(['kode_akses' => 'Kode akses salah.']);
+        }
+
+        RateLimiter::clear($kunci);
+    }
+
     private function pastikanTerlihat(Request $request, Exam $exam): void
     {
         abort_unless($exam->terlihatOleh($request->user()), 404);

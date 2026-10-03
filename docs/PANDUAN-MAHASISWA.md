@@ -17,6 +17,8 @@
    meninggalkan halaman), salin-tempel/klik kanan (dinonaktifkan), serta alamat
    IP dan jenis perangkat.
 3. Centang persetujuan; tombol **Mulai Ujian** baru aktif setelah dicentang.
+   Bila diminta **Kode akses**, masukkan kode yang diumumkan dosen pengawas.
+   Lima kali salah membuat Anda harus menunggu 5 menit.
 4. Di layar ujian, klik **Masuk Layar Penuh & Mulai**. Pemantauan aktif sejak saat ini.
 
 Jadwal ujian berlaku untuk semua peserta: bila Anda mulai terlambat, sisa waktu

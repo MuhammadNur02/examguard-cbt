@@ -69,10 +69,19 @@
                         Peringatan ditampilkan untuk pelanggaran ke-1 sampai ke-{{ $exam->batas_pelanggaran }}. Pelanggaran ke-{{ $exam->batas_pelanggaran + 1 }} mengunci ujian dan mengirim jawaban yang sudah tersimpan secara otomatis. Catatan pelanggaran ditinjau dosen.
                     </p>
                     <label class="mt-5 flex items-start gap-3 text-ink">
-                        <input type="checkbox" name="setuju" value="1" class="mt-1 size-5 accent-maroon-700" required data-persetujuan-centang>
+                        <input type="checkbox" name="setuju" value="1" class="mt-1 size-5 accent-maroon-700" required data-persetujuan-centang @checked(old('setuju'))>
                         <span>Saya memahami pemantauan di atas dan akan mengerjakan ujian ini secara jujur tanpa bantuan pihak atau sumber lain.</span>
                     </label>
                     <x-field-error name="setuju" />
+                    @if ($perluKode)
+                        <div class="mt-5 max-w-xs">
+                            <label for="kode_akses" class="form-label">Kode akses</label>
+                            <input id="kode_akses" name="kode_akses" type="text" class="form-input font-mono uppercase tracking-wider" required maxlength="20" autocomplete="off"
+                                aria-describedby="kode-help {{ $errors->has('kode_akses') ? 'kode_akses-error' : '' }}" @error('kode_akses') aria-invalid="true" @enderror>
+                            <p id="kode-help" class="mt-1.5 text-small text-stone-500">Kode diberikan oleh dosen pengawas saat ujian dimulai.</p>
+                            <x-field-error name="kode_akses" />
+                        </div>
+                    @endif
                     <button type="submit" class="btn btn-primary mt-5" disabled data-persetujuan-tombol>
                         <x-icon name="shield-check" class="size-4" />Mulai Ujian
                     </button>

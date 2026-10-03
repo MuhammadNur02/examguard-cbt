@@ -7,8 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Dosen\ExamRequest;
 use App\Models\AuditLog;
 use App\Models\Exam;
+use App\Models\ExamAttempt;
 use App\Models\Kelas;
+use App\Services\AttemptService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -32,6 +35,7 @@ class ExamController extends Controller
         $exam = DB::transaction(function () use ($request) {
             $exam = $request->user()->exams()->create([...$request->dataUjian(), 'status' => ExamStatus::Draft]);
             $exam->kelas()->sync($request->kelasDipilih());
+            $exam->access()->updateOrCreate([], ['kode_akses' => $request->kodeAkses()]);
 
             return $exam;
         });
@@ -42,7 +46,7 @@ class ExamController extends Controller
 
     public function show(Exam $exam): View
     {
-        $exam->load(['questions.options', 'kelas'])->loadCount('attempts');
+        $exam->load(['questions.options', 'kelas', 'access'])->loadCount('attempts');
 
         return view('dosen.exams.show', [
             'exam' => $exam,
@@ -68,6 +72,7 @@ class ExamController extends Controller
         DB::transaction(function () use ($request, $exam) {
             $exam->update($request->dataUjian());
             $exam->kelas()->sync($request->kelasDipilih());
+            $exam->access()->updateOrCreate([], ['kode_akses' => $request->kodeAkses()]);
         });
 
         return redirect()->route('dosen.exams.show', $exam)->with('status', 'Ujian diperbarui.');
@@ -107,6 +112,56 @@ class ExamController extends Controller
         AuditLog::catat('ujian_ditarik', $exam);
 
         return back()->with('status', 'Ujian dikembalikan ke draf dan tidak terlihat oleh mahasiswa.');
+    }
+
+    /**
+     * Duplikat satu klik (FR-02.5): pengaturan, soal, opsi, kelas, dan daftar IP
+     * disalin sebagai draf baru. Kode akses tidak disalin agar kode lama yang
+     * sudah diketahui mahasiswa tidak terpakai ulang tanpa sengaja.
+     */
+    public function duplicate(Exam $exam): RedirectResponse
+    {
+        $salinan = DB::transaction(function () use ($exam) {
+            $salinan = $exam->replicate(['status']);
+            $salinan->judul = mb_substr($exam->judul, 0, 245).' (salinan)';
+            $salinan->status = ExamStatus::Draft;
+            $salinan->save();
+
+            foreach ($exam->questions()->with('options')->get() as $question) {
+                $baru = $salinan->questions()->create($question->only(['urutan', 'tipe', 'teks', 'bobot', 'kunci_esai', 'keywords']));
+                $baru->options()->createMany($question->options->map->only(['label', 'teks', 'is_correct', 'posisi_tetap'])->all());
+            }
+
+            $salinan->kelas()->sync($exam->kelas()->pluck('classes.id'));
+            $salinan->access()->create(['kode_akses' => null, 'ip_allowlist' => $exam->access?->ip_allowlist]);
+
+            return $salinan;
+        });
+
+        AuditLog::catat('ujian_diduplikat', $salinan, ['sumber' => $exam->id]);
+
+        return redirect()->route('dosen.exams.edit', $salinan)
+            ->with('status', 'Ujian disalin sebagai draf. Periksa judul, jadwal, dan kode akses, lalu simpan.');
+    }
+
+    /**
+     * Pratinjau sebagai mahasiswa (FR-02.7): payload sama persis dengan yang
+     * diterima mahasiswa, dibangun dari attempt yang tidak disimpan. Tidak ada
+     * attempt, jawaban, log, atau nilai yang tercipta.
+     */
+    public function preview(Request $request, Exam $exam, AttemptService $attempts): View
+    {
+        $seed = filter_var($request->query('seed'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 2147483647]])
+            ?: random_int(1, 2147483647);
+
+        [$urutanSoal, $urutanOpsi] = $attempts->susunUrutan($exam, $seed);
+        $attempt = new ExamAttempt(['urutan_soal' => $urutanSoal, 'urutan_opsi' => $urutanOpsi]);
+
+        return view('dosen.exams.preview', [
+            'exam' => $exam,
+            'soal' => $attempts->soalUntukKlien($attempt),
+            'seed' => $seed,
+        ]);
     }
 
     private function tolakBilaSudahDikerjakan(Exam $exam): ?RedirectResponse

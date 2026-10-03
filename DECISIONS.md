@@ -341,3 +341,24 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 - `CsvReader` kini memakai `fgetcsv` sehingga sel berkutip berisi baris baru
   (Alt+Enter di Excel) terbaca utuh; nomor baris = nomor rekaman, sama dengan
   nomor baris di Excel.
+
+### D-45 Duplikat, pratinjau, dan kode akses (Task 2.6)
+- **Duplikat:** menyalin pengaturan, soal, opsi (termasuk kunci dan posisi
+  tetap), kelas, dan daftar IP ke draf baru berjudul "(salinan)". **Kode akses
+  tidak disalin** karena kode ujian lama mungkin sudah diketahui mahasiswa.
+  Alternatif: menyalin semuanya (lebih sedikit klik, tetapi kode bocor terpakai ulang).
+- **Pratinjau:** dirender di server dari payload yang sama dengan layar ujian
+  (`AttemptService::soalUntukKlien` atas attempt yang tidak disimpan), dengan
+  seed acak yang dapat diulang lewat `?seed=`. Tidak memuat `exam.js`, jadi
+  tidak ada permintaan ke endpoint attempt. Alternatif: mode pratinjau di
+  `exam.js` (lebih identik secara interaksi, tetapi menambah cabang pada kode
+  paling kritis). Pratinjau menampilkan semua soal dalam satu halaman dan
+  menyebutkan bahwa layar ujian menampilkannya satu per satu.
+- **Kode akses:** disimpan apa adanya (huruf besar) di `exam_access.kode_akses`
+  karena dosen perlu melihat dan mengumumkannya; tidak pernah dikirim ke halaman
+  mahasiswa (`#[Hidden]` dan tes `assertDontSee`). Dicocokkan dengan
+  `hash_equals`, tidak peka huruf/spasi tepi, hanya saat attempt baru dibuat
+  (melanjutkan tidak meminta kode lagi). Percobaan salah dibatasi 5 kali per
+  5 menit per mahasiswa per ujian. Alternatif: hash kode (tidak bisa
+  ditampilkan ke dosen) atau meminta kode di setiap lanjut (mengganggu
+  mahasiswa yang peramban-nya tertutup).

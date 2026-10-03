@@ -30,6 +30,7 @@ class ExamController extends Controller
             'exam' => $exam,
             'attempt' => $attempt,
             'keadaan' => $this->attempts->keadaan($exam, $attempt),
+            'perluKode' => $exam->perluKodeAkses(),
             'pesanSelesai' => $attempt && ! $attempt->isBerlangsung() ? $this->attempts->pesanSelesai($attempt) : null,
         ]);
     }

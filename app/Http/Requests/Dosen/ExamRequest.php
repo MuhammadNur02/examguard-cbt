@@ -26,6 +26,7 @@ class ExamRequest extends FormRequest
             'acak_opsi' => ['boolean'],
             'kelas' => ['nullable', 'array'],
             'kelas.*' => ['integer', 'exists:classes,id'],
+            'kode_akses' => ['nullable', 'string', 'regex:/^[A-Za-z0-9-]{4,20}$/'],
         ];
     }
 
@@ -35,6 +36,17 @@ class ExamRequest extends FormRequest
         return array_values(array_unique(array_map('intval', (array) $this->input('kelas', []))));
     }
 
+    /** Kode akses dinormalkan ke huruf besar; null bila ujian tidak memakai kode (FR-02.8). */
+    public function kodeAkses(): ?string
+    {
+        return filled($this->input('kode_akses')) ? strtoupper(trim((string) $this->input('kode_akses'))) : null;
+    }
+
+    public function messages(): array
+    {
+        return ['kode_akses.regex' => 'Kode akses 4–20 karakter: huruf, angka, atau tanda hubung.'];
+    }
+
     public function attributes(): array
     {
         return [
@@ -42,6 +54,7 @@ class ExamRequest extends FormRequest
             'mulai' => 'waktu mulai',
             'durasi_menit' => 'durasi',
             'batas_pelanggaran' => 'batas pelanggaran',
+            'kode_akses' => 'kode akses',
         ];
     }
 

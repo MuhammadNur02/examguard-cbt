@@ -14,6 +14,17 @@ pelanggaran N, dan opsi pengacakan (soal, opsi PG). Ujian tersimpan sebagai
 - Jadwal berlaku serentak: ujian dapat dimulai dari waktu mulai sampai
   waktu mulai + durasi; peserta yang terlambat mendapat sisa waktu.
 - Batas N: peringatan 1..N ditampilkan, pelanggaran ke-(N+1) mengunci ujian.
+- **Kelas peserta** (opsional): hanya anggota kelas terpilih yang melihat ujian.
+  Bila tidak ada kelas dipilih, ujian terlihat oleh semua mahasiswa.
+- **Kode akses** (opsional, 4–20 huruf/angka/tanda hubung): mahasiswa harus
+  memasukkan kode ini untuk memulai. Umumkan kode di ruang ujian saat ujian
+  dimulai. Kode tidak membedakan huruf besar/kecil; 5 kali salah membuat
+  mahasiswa itu menunggu 5 menit. Mahasiswa yang melanjutkan ujiannya (mis.
+  setelah peramban tertutup) tidak diminta kode lagi.
+
+**Duplikat** (di halaman ujian) membuat salinan draf berisi semua soal, opsi,
+pengaturan, dan kelas. Kode akses tidak ikut disalin. Periksa judul dan jadwal
+salinan sebelum menerbitkan.
 
 ### 2. Menambah soal
 
@@ -25,6 +36,20 @@ Di halaman ujian: **Pilihan ganda** atau **Esai**.
 - **Esai:** teks soal, **kunci jawaban patokan** (wajib, acuan skor
   rekomendasi), **kata kunci wajib** (opsional, dipisah koma; tampil sebagai
   checklist saat koreksi), bobot.
+
+**Impor soal dari Excel/CSV:** di halaman ujian klik **Impor**, unduh
+**templat Excel** (atau CSV), isi satu baris per soal, lalu unggah. Kolom:
+`tipe` (pg/esai), `teks`, `bobot` (kosong = PG 1, esai 10), `opsi_a`–`opsi_e`,
+`kunci` (huruf A–E), `opsi_tetap` (huruf opsi yang tidak diacak, mis. `E`),
+`kunci_esai`, `kata_kunci` (dipisah koma). Seluruh berkas diperiksa lebih dulu:
+bila ada satu baris salah, tidak ada soal yang disimpan dan setiap kesalahan
+ditampilkan dengan nomor barisnya. Soal hasil impor ditambahkan setelah soal
+yang sudah ada.
+
+**Pratinjau** (di halaman ujian) membuka tab berisi tampilan persis seperti
+yang dilihat satu mahasiswa, termasuk pengacakan; **Acak ulang** menampilkan
+urutan mahasiswa lain. Pratinjau tidak membuat attempt, jawaban, atau nilai,
+dan pemantauan pelanggaran tidak aktif di sana.
 
 Soal hanya dapat diubah selama ujian berstatus draf.
 
