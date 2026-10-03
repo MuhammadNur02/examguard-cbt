@@ -19,7 +19,7 @@ Prioritas: **M** Must · **S** Should · **C** Could. Tandai `[x]` bila kriteria
 - [x] **1.4 (M)** Single session login. *(FR-01.2, K-8)*
   - DoD: login kedua membatalkan sesi pertama dan tercatat.
 - [x] **1.5 (M)** Manajemen akun Admin: daftar, tambah, impor CSV, reset password, nonaktifkan. *(FR-01.3)*
-- [ ] **1.6 (S)** Manajemen kelas dan keanggotaan mahasiswa. *(FR-02.6)*
+- [x] **1.6 (S)** Manajemen kelas dan keanggotaan mahasiswa. *(FR-02.6)*
 
 ## Fase 2 — Antarmuka Dosen dan Bank Soal
 
