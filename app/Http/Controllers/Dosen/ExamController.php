@@ -35,7 +35,7 @@ class ExamController extends Controller
         $exam = DB::transaction(function () use ($request) {
             $exam = $request->user()->exams()->create([...$request->dataUjian(), 'status' => ExamStatus::Draft]);
             $exam->kelas()->sync($request->kelasDipilih());
-            $exam->access()->updateOrCreate([], ['kode_akses' => $request->kodeAkses()]);
+            $exam->access()->updateOrCreate([], ['kode_akses' => $request->kodeAkses(), 'ip_allowlist' => $request->daftarIpTeks()]);
 
             return $exam;
         });
@@ -72,7 +72,7 @@ class ExamController extends Controller
         DB::transaction(function () use ($request, $exam) {
             $exam->update($request->dataUjian());
             $exam->kelas()->sync($request->kelasDipilih());
-            $exam->access()->updateOrCreate([], ['kode_akses' => $request->kodeAkses()]);
+            $exam->access()->updateOrCreate([], ['kode_akses' => $request->kodeAkses(), 'ip_allowlist' => $request->daftarIpTeks()]);
         });
 
         return redirect()->route('dosen.exams.show', $exam)->with('status', 'Ujian diperbarui.');

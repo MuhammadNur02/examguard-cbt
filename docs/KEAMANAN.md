@@ -40,8 +40,12 @@ produksi. Bahan untuk Bab 4 KTI (PRD §12 Keamanan).
   dapat berubah wajar saat ganti jaringan.
 - Watermark nama/NIM hanya membantu menelusuri tangkapan layar; tidak mencegah
   pemotretan layar dengan ponsel.
-- Kode akses (FR-02.8) melindungi saat memulai saja; pembatasan IP/jaringan
-  kampus (FR-02.9, Could) belum ada.
+- Kode akses (FR-02.8) melindungi saat memulai saja. Pembatasan jaringan
+  (FR-02.9) bergantung pada IP yang terbaca server: tanpa *trusted proxies* yang
+  benar, semua permintaan terlihat dari IP proxy; dengan proxy dipercaya `*`,
+  header `X-Forwarded-For` dapat dipalsukan. Pembatasan ini juga tidak mencegah
+  mahasiswa di jaringan kampus memakai perangkat atau koneksi lain untuk mencari
+  jawaban.
 
 ## Daftar periksa produksi
 

@@ -10,7 +10,13 @@
             </dl>
         </section>
 
-        @if ($seluler && in_array($keadaan, ['dibuka', 'berlangsung'], true))
+        @if ($jaringanDitolak && in_array($keadaan, ['dibuka', 'berlangsung'], true))
+            {{-- FR-02.9: server juga menolak mulai, soal, autosave, dan heartbeat dari IP ini. --}}
+            <div class="alert alert-warning" role="alert">
+                <x-icon name="wifi-off" class="mt-0.5 size-5" />
+                <p>{{ $jaringanDitolak }} Sambungkan perangkat ke jaringan kampus lalu muat ulang halaman ini.</p>
+            </div>
+        @elseif ($seluler && in_array($keadaan, ['dibuka', 'berlangsung'], true))
             {{-- FR-04.11: server juga menolak memulai/melanjutkan dari user-agent seluler. --}}
             <div class="alert alert-warning" role="alert">
                 <x-icon name="monitor" class="mt-0.5 size-5" />

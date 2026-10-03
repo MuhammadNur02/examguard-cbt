@@ -33,6 +33,9 @@ class ExamController extends Controller
             'keadaan' => $this->attempts->keadaan($exam, $attempt),
             'perluKode' => $exam->perluKodeAkses(),
             'seluler' => Perangkat::seluler($request->userAgent()),
+            'jaringanDitolak' => $exam->jaringanDiizinkan($request->ip())
+                ? null
+                : str_replace(':ip', (string) $request->ip(), AttemptService::PESAN_JARINGAN),
             'pesanSelesai' => $attempt && ! $attempt->isBerlangsung() ? $this->attempts->pesanSelesai($attempt) : null,
         ]);
     }
@@ -43,6 +46,10 @@ class ExamController extends Controller
 
         if (Perangkat::seluler($request->userAgent())) {
             return redirect()->route('mahasiswa.exams.show', $exam)->with('error', AttemptService::PESAN_SELULER);
+        }
+        if (! $exam->jaringanDiizinkan($request->ip())) {
+            return redirect()->route('mahasiswa.exams.show', $exam)
+                ->with('error', str_replace(':ip', (string) $request->ip(), AttemptService::PESAN_JARINGAN));
         }
 
         $attempt = $this->attempts->attemptMilik($exam, $request->user());

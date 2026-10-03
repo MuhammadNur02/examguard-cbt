@@ -41,6 +41,7 @@ class AttemptController extends Controller
 
         try {
             $this->tolakPerangkatSeluler($request);
+            $this->attempts->pastikanJaringan($exam, $request->ip());
 
             // Kode akses hanya diperiksa saat attempt baru dibuat; melanjutkan tidak memintanya lagi.
             if (! $this->attempts->attemptMilik($exam, $request->user())) {
@@ -190,9 +191,10 @@ class AttemptController extends Controller
         $this->pastikanTerlihat($request, $exam);
         $attempt = $this->attempts->attemptAktif($exam, $request->user(), (int) config('examguard.toleransi_simpan_detik'));
 
-        // Catat dulu perubahan perangkat (termasuk bila pindah ke ponsel), baru tolak ponsel.
+        // Catat dulu perubahan perangkat/jaringan, baru tolak ponsel atau IP di luar daftar.
         $this->attempts->periksaPerangkat($attempt, $request->ip(), $request->userAgent());
         $this->tolakPerangkatSeluler($request);
+        $this->attempts->pastikanJaringan($exam, $request->ip());
 
         return $attempt;
     }

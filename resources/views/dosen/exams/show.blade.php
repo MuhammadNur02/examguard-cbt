@@ -22,6 +22,7 @@
             <div><dt class="text-stone-500">Acak soal / opsi</dt><dd class="font-medium text-ink">{{ $exam->acak_soal ? 'Ya' : 'Tidak' }} / {{ $exam->acak_opsi ? 'Ya' : 'Tidak' }}</dd></div>
             <div><dt class="text-stone-500">Peserta yang memulai</dt><dd class="font-medium text-ink">{{ $exam->attempts_count }}</dd></div>
             <div><dt class="text-stone-500">Kelas peserta</dt><dd class="font-medium text-ink">{{ $exam->kelas->pluck('nama')->join(', ') ?: 'Semua mahasiswa' }}</dd></div>
+            <div><dt class="text-stone-500">Jaringan</dt><dd class="font-medium text-ink">{{ implode(', ', $exam->daftarJaringan()) ?: 'Semua jaringan' }}</dd></div>
             <div><dt class="text-stone-500">Kode akses</dt><dd class="font-medium text-ink">
                 @if ($exam->access?->kode_akses)
                     <span class="font-mono tracking-wider">{{ $exam->access->kode_akses }}</span>

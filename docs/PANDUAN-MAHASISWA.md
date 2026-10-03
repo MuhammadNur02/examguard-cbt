@@ -69,6 +69,10 @@ masuk ke halaman ujian lalu pilih **Lanjutkan Ujian**.
 - **Ganti laptop atau jaringan:** boleh, tetapi perubahan alamat IP atau
   peramban dicatat sebagai insiden "Perangkat berganti" untuk ditinjau dosen.
   Catatan ini **tidak** menambah hitungan pelanggaran.
+- **Ujian khusus jaringan kampus:** bila dosen membatasi jaringan, ujian hanya
+  dapat dimulai dari Wi-Fi/lab kampus. Bila koneksi berpindah (mis. ke hotspot
+  ponsel), status berubah menjadi "Jaringan tidak diizinkan"; jawaban disimpan
+  sementara di peramban dan terkirim setelah Anda kembali ke jaringan kampus.
 
 ## Mengirim jawaban
 

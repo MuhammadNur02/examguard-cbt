@@ -193,6 +193,12 @@ Menjalankan penilaian esai: layanan NLP (`uvicorn ...`) dan queue worker
   tersimpan huruf kecil di luar form tidak akan pernah cocok (kedua sisi kini
   dinormalkan, ada tes).
 
+## Tugas Could
+
+| Task | Status | Bukti / catatan |
+|---|---|---|
+| 2.7 Pembatasan IP/CIDR | Selesai | `IpAllowlistTest` (mulai, soal, autosave, heartbeat, halaman kerjakan ditolak dari luar daftar; kembali ke jaringan lanjut normal; validasi per baris), `JaringanIpTest`; di peramban: status "Jaringan tidak diizinkan" lalu jawaban antrean tersimpan setelah jaringan diizinkan lagi; D-51 |
+
 ## Cara menjalankan (ringkas)
 
 ```powershell

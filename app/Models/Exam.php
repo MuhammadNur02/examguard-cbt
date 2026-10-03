@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ExamStatus;
+use App\Support\JaringanIp;
 use Carbon\CarbonInterface;
 use Database\Factories\ExamFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -116,6 +117,17 @@ class Exam extends Model
     public function sudahDikerjakan(): bool
     {
         return $this->attempts()->exists();
+    }
+
+    /** @return list<string> jaringan yang diizinkan; kosong = semua jaringan (FR-02.9) */
+    public function daftarJaringan(): array
+    {
+        return JaringanIp::pecah($this->access?->ip_allowlist);
+    }
+
+    public function jaringanDiizinkan(?string $ip): bool
+    {
+        return JaringanIp::diizinkan($ip, $this->daftarJaringan());
     }
 
     /** Mahasiswa harus memasukkan kode akses untuk memulai (FR-02.8). */

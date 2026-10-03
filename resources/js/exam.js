@@ -64,6 +64,7 @@ async function kirim(url, data = null, { metode = 'POST', keepalive = false } = 
     if (!respons.ok) {
         const galat = new Error(isi.message || `HTTP ${respons.status}`);
         galat.status = respons.status;
+        galat.kode = isi.kode;
         throw galat;
     }
 
@@ -376,8 +377,9 @@ async function kirimAntrean() {
             simpanAntreanLokal();
             tampilkanStatusSimpan('galat');
         } else {
+            // Jawaban tetap di antrean lokal dan dicoba lagi (juga bila jaringan ditolak, FR-02.9).
             keadaan.offline = true;
-            tampilkanStatusSimpan('offline');
+            tampilkanStatusSimpan(galat.kode === 'jaringan_ditolak' ? 'jaringan' : 'offline');
             setTimeout(kirimAntrean, keadaan.jedaUlang);
             keadaan.jedaUlang = Math.min(keadaan.jedaUlang * 2, 30000);
         }
@@ -406,12 +408,14 @@ function tampilkanStatusSimpan(kondisi) {
     const teks = {
         menyimpan: 'Menyimpan…',
         offline: 'Offline, mencoba lagi',
+        jaringan: 'Jaringan tidak diizinkan, sambungkan ke jaringan kampus',
         galat: 'Sebagian jawaban gagal disimpan',
         tersimpan: keadaan.tersimpanPada ? `Tersimpan otomatis · ${jam(keadaan.tersimpanPada)}` : 'Tersimpan otomatis',
     }[kondisi];
-    wadah.replaceChildren(ikon(kondisi === 'offline' || kondisi === 'galat' ? 'offline' : 'tersimpan'), teks);
-    wadah.classList.toggle('text-status-warning', kondisi === 'offline' || kondisi === 'galat');
-    wadah.classList.toggle('text-stone-500', kondisi !== 'offline' && kondisi !== 'galat');
+    const peringatan = ['offline', 'jaringan', 'galat'].includes(kondisi);
+    wadah.replaceChildren(ikon(peringatan ? 'offline' : 'tersimpan'), teks);
+    wadah.classList.toggle('text-status-warning', peringatan);
+    wadah.classList.toggle('text-stone-500', !peringatan);
 }
 
 /* ---------- Heartbeat ---------- */
@@ -429,7 +433,10 @@ async function denyut() {
     } catch (galat) {
         if (galat instanceof GalatStatus) terapkanStatus(galat.data);
         else if (galat instanceof GalatSesi) sesiBerakhir(galat.message);
-        else tampilkanStatusSimpan('offline');
+        else {
+            keadaan.offline = true;
+            tampilkanStatusSimpan(galat.kode === 'jaringan_ditolak' ? 'jaringan' : 'offline');
+        }
     }
 }
 

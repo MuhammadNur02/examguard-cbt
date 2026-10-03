@@ -48,6 +48,15 @@
         <x-field-error name="kode_akses" />
     </div>
 
+    <div class="sm:col-span-2">
+        <label for="ip_allowlist" class="form-label">Batasi jaringan (opsional)</label>
+        <textarea id="ip_allowlist" name="ip_allowlist" rows="3" class="form-input font-mono" maxlength="4000"
+            placeholder="10.20.0.0/16&#10;192.168.1.5"
+            aria-describedby="ip-help {{ $errors->has('ip_allowlist') ? 'ip_allowlist-error' : '' }}">{{ old('ip_allowlist', $exam->access?->ip_allowlist) }}</textarea>
+        <p id="ip-help" class="mt-1.5 text-small text-stone-500">Satu alamat IP atau CIDR per baris (mis. jaringan Wi-Fi/lab kampus). Mahasiswa dari jaringan lain tidak dapat memulai atau melanjutkan ujian. Kosongkan bila semua jaringan diizinkan.</p>
+        <x-field-error name="ip_allowlist" />
+    </div>
+
     <fieldset class="sm:col-span-2">
         <legend class="form-label">Kelas peserta</legend>
         <p class="mb-2 text-small text-stone-500">Hanya mahasiswa di kelas terpilih yang melihat ujian. Bila tidak ada yang dipilih, ujian terlihat oleh semua mahasiswa.</p>

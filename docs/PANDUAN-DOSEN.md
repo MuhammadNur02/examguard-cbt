@@ -21,6 +21,12 @@ pelanggaran N, dan opsi pengacakan (soal, opsi PG). Ujian tersimpan sebagai
   dimulai. Kode tidak membedakan huruf besar/kecil; 5 kali salah membuat
   mahasiswa itu menunggu 5 menit. Mahasiswa yang melanjutkan ujiannya (mis.
   setelah peramban tertutup) tidak diminta kode lagi.
+- **Batasi jaringan** (opsional): satu alamat IP atau CIDR per baris, mis.
+  `10.20.0.0/16` untuk Wi-Fi kampus. Mahasiswa dari jaringan lain tidak dapat
+  memulai, dan bila pindah jaringan di tengah ujian, jawabannya tidak tersimpan
+  sampai ia kembali ke jaringan yang diizinkan (jawaban tetap tersimpan
+  sementara di peramban). Tanyakan rentang IP jaringan kampus ke pengelola
+  jaringan; di balik proxy, *trusted proxies* harus diatur (lihat `docs/KEAMANAN.md`).
 
 **Duplikat** (di halaman ujian) membuat salinan draf berisi semua soal, opsi,
 pengaturan, dan kelas. Kode akses tidak ikut disalin. Periksa judul dan jadwal

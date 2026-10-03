@@ -448,3 +448,21 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   Docker dengan PHP-FPM + MySQL (lebih mirip produksi, tidak tersedia di mesin
   ini). Keterbatasan dicatat di `docs/UJI-BEBAN.md`: angka adalah batas bawah dan
   harus diulang di server target.
+
+## K. Tugas Could
+
+### D-51 Pembatasan jaringan per ujian (Task 2.7)
+- **Keputusan:** daftar IP/CIDR (IPv4/IPv6, satu per baris, `#` komentar, maks.
+  50) di `exam_access.ip_allowlist`, dicocokkan dengan `IpUtils::checkIp`
+  (Symfony, bawaan Laravel). Ditolak saat mulai/lanjut, halaman kerjakan, dan
+  semua endpoint attempt (soal, autosave, heartbeat, pelanggaran) dengan
+  respons 403 `kode: jaringan_ditolak`; layar ujian menampilkan "Jaringan tidak
+  diizinkan" dan menyimpan jawaban di antrean lokal sampai jaringan kembali
+  diizinkan. Kirim jawaban tetap diizinkan karena hanya memfinalkan jawaban
+  yang sudah tersimpan. Perpindahan jaringan tetap dicatat sebagai
+  `perangkat_berganti` sebelum ditolak.
+- **Alasan:** PRD FR-02.9 "ditolak saat mulai dan saat heartbeat"; menolak
+  autosave juga mencegah jawaban masuk dari luar kampus.
+- **Alternatif:** mengunci attempt saat IP keluar daftar (terlalu keras untuk
+  Wi-Fi yang berganti titik akses) atau rentang "a-b" (CIDR sudah cukup dan
+  lebih umum).

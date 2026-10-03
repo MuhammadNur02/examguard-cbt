@@ -31,6 +31,16 @@ class AttemptService
     /** @var Closure(): int */
     public const PESAN_SELULER = 'Gunakan laptop atau komputer untuk mengerjakan ujian. Perangkat seluler dan tablet tidak didukung.';
 
+    public const PESAN_JARINGAN = 'Ujian ini hanya dapat dikerjakan dari jaringan kampus. Alamat IP Anda (:ip) tidak termasuk jaringan yang diizinkan.';
+
+    /** FR-02.9: tolak permintaan dari IP di luar daftar jaringan ujian. @throws UjianTidakTersedia */
+    public function pastikanJaringan(Exam $exam, ?string $ip): void
+    {
+        if (! $exam->jaringanDiizinkan($ip)) {
+            throw new UjianTidakTersedia(str_replace(':ip', (string) $ip, self::PESAN_JARINGAN), 403, ['kode' => 'jaringan_ditolak']);
+        }
+    }
+
     private Closure $seedGenerator;
 
     /** @param  (Closure(): int)|null  $seedGenerator  dapat diganti di tes agar seed deterministik */
