@@ -166,6 +166,8 @@ Menjalankan penilaian esai: layanan NLP (`uvicorn ...`) dan queue worker
 | 2.5 Opsi pengacakan | Selesai | `ShuffleSettingsTest`: kombinasi acak soal/opsi terpisah dan opsi terkunci (tengah dan akhir) tidak berpindah atas 200 seed; diverifikasi dengan mutasi |
 | 2.6 Duplikat, pratinjau, kode akses | Selesai | `ExamDuplicatePreviewTest`, `AccessCodeTest` (kode salah/kosong ditolak tanpa attempt, tidak bocor ke HTML, batas percobaan); alur penuh diuji di peramban; D-45 |
 
+| 3.8 Watermark, perangkat berganti, ponsel | Selesai | `DeviceIntegrityTest`, `PerangkatTest`; di peramban: watermark terlihat pada tangkapan layar dan klik tetap tembus, ponsel (UA + layar) dan layar kecil ber-UA desktop ditolak; D-46 |
+
 ### Tinjauan kritis Fase 2 (Should)
 - Tidak ada jalur baru yang mengirim kunci PG, kunci esai, atau kode akses ke
   mahasiswa (pratinjau hanya untuk dosen pemilik; payload sama dengan layar ujian).

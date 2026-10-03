@@ -48,7 +48,9 @@ produksi. Bahan untuk Bab 4 KTI (PRD §12 Keamanan).
 - [ ] `APP_ENV=production`, `APP_DEBUG=false` (CSP aktif), `APP_KEY` baru.
 - [ ] HTTPS dan `SESSION_SECURE_COOKIE=true`.
 - [ ] Di balik reverse proxy/load balancer: atur *trusted proxies* agar IP asli
-      terbaca (rate limit login dan log IP).
+      terbaca (rate limit login, log IP, deteksi perangkat berganti). Percayai
+      hanya alamat proxy Anda, bukan `*`, agar header `X-Forwarded-For` tidak
+      dapat dipalsukan mahasiswa.
 - [ ] OPcache aktif (latensi pencatatan pelanggaran).
 - [ ] MySQL/PostgreSQL dengan pengguna DB berhak minimum; backup terjadwal
       (lihat `docs/BACKUP.md`).
