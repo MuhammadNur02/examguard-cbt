@@ -9,6 +9,11 @@ Tugas Akhir di Program Studi S1 Pendidikan Informatika, Universitas Ivet Semaran
 Dokumen perencanaan: [PRD.md](PRD.md) · [Task.md](Task.md) · [StyleGuide.md](StyleGuide.md) ·
 [docs/ERD.md](docs/ERD.md). Status pengembangan: [PROGRESS.md](PROGRESS.md).
 
+Panduan: [mahasiswa](docs/PANDUAN-MAHASISWA.md) · [dosen dan admin](docs/PANDUAN-DOSEN.md) ·
+[keamanan dan produksi](docs/KEAMANAN.md) · [backup](docs/BACKUP.md) ·
+[pengujian black-box](docs/PENGUJIAN-BLACKBOX.md) · [evaluasi akurasi esai](docs/EVALUASI-AKURASI-ESAI.md) ·
+[SUS/UAT](docs/KUESIONER-SUS-UAT.md) · [pemetaan ke Bab 1–4 KTI](docs/PEMETAAN-KTI.md).
+
 ## 📌 Latar Belakang Masalah
 
 Ujian daring dengan platform formulir biasa menghadapi dua masalah nyata:
@@ -26,9 +31,9 @@ berbasis kemiripan teks yang tetap divalidasi dosen.
 
 ## ✨ Fitur Utama
 
-> Proyek masih dalam pengembangan. Daftar di bawah adalah cakupan yang
-> direncanakan; status implementasi tiap fitur ada di [Task.md](Task.md) dan
-> [PROGRESS.md](PROGRESS.md).
+> Seluruh fitur di bawah sudah diimplementasikan dan diuji (jalur MVP Task.md).
+> Fitur Should/Could yang belum dibuat (mis. kelas, kode akses, memaafkan
+> pelanggaran, uji beban) tercatat di [Task.md](Task.md) dan [PROGRESS.md](PROGRESS.md).
 
 ### Sisi mahasiswa: pemantauan dan proteksi layar ujian
 - **Deteksi pindah tab/jendela** lewat Page Visibility API dan event `blur`.
@@ -116,6 +121,23 @@ uvicorn app.main:app --host 127.0.0.1 --port 8001 --env-file .env
 Isi `NLP_SERVICE_TOKEN` dengan nilai acak yang **sama** di `.env` Laravel dan
 `nlp-service/.env`. Contoh membuat token: `php -r "echo bin2hex(random_bytes(32));"`.
 Detail di [nlp-service/README.md](nlp-service/README.md).
+
+### 3. Proses latar yang dibutuhkan
+
+| Proses | Perintah | Fungsi |
+|---|---|---|
+| Queue worker | `php artisan queue:work` (sudah termasuk di `php artisan dev`) | Menghitung skor rekomendasi esai |
+| Penjadwal | `php artisan schedule:work` (produksi: cron `schedule:run` tiap menit) | Mengirim otomatis attempt yang waktunya habis saat peramban peserta tertutup |
+| Layanan NLP | `uvicorn ...` (langkah 2) | TF-IDF + Cosine Similarity |
+
+Di Windows, aktifkan OPcache (`zend_extension=opcache`, `opcache.enable_cli=1`
+di `php.ini`) agar server pengembangan cukup cepat; tanpa OPcache latensi
+pencatatan pelanggaran di mesin uji bisa mendekati 1 detik.
+
+### Produksi
+
+Lihat daftar periksa di [docs/KEAMANAN.md](docs/KEAMANAN.md). Buat admin pertama
+tanpa data contoh: `php artisan examguard:buat-admin <username> "<Nama>"`.
 
 ### Akun contoh (setelah `php artisan db:seed`)
 

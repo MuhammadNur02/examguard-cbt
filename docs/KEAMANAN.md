@@ -48,4 +48,4 @@ produksi. Bahan untuk Bab 4 KTI (PRD §12 Keamanan).
 - [ ] Layanan NLP hanya di `127.0.0.1`/jaringan privat, `NLP_SERVICE_TOKEN`
       acak panjang dan sama di kedua `.env`.
 - [ ] Jangan jalankan `db:seed` (data contoh) di produksi; buat admin pertama
-      lewat `php artisan tinker` atau perintah khusus.
+      dengan `php artisan examguard:buat-admin <username> "<Nama>"`.

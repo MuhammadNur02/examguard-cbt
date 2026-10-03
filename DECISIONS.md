@@ -213,7 +213,7 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   terhitung sebagai pelanggaran `pindah_tab`. Hal ini dijelaskan di kartu
   persetujuan integritas ("termasuk memuat ulang atau meninggalkan halaman").
 - **Alasan:** menutup celah "pindah ke situs lain di tab yang sama lalu kembali".
-  Muat ulang yang tidak disengaja dapat dimaafkan dosen (FR-06.5).
+  Muat ulang yang tidak disengaja dapat dimaafkan dosen lewat fitur FR-06.5 (Task 4.8, Should — belum dibuat saat keputusan ini dicatat).
 - **Alternatif:** mengabaikan kejadian saat `beforeunload` (celah tersebut terbuka).
 
 ### D-28 Debounce dua lapis 2 detik, duplikat tidak disimpan
