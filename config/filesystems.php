@@ -33,7 +33,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Tidak disajikan lewat rute storage/{path}: berkas privat (mis. ekspor
+            // dataset esai) tidak perlu diakses dari peramban.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

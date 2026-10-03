@@ -21,6 +21,9 @@ return [
     // Toleransi jawaban yang tiba sesaat setelah batas waktu (latensi jaringan).
     'toleransi_simpan_detik' => (int) env('EXAM_SAVE_GRACE_SECONDS', 10),
 
+    // Batas permintaan endpoint ujian per mahasiswa per menit (autosave, heartbeat, dll.).
+    'batas_permintaan_per_menit' => (int) env('EXAM_RATE_LIMIT_PER_MINUTE', 240),
+
     // Selang polling Live Monitor dosen (detik, PRD: <= 10).
     'monitor_poll_detik' => (int) env('MONITOR_POLL_SECONDS', 5),
 

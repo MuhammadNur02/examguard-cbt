@@ -32,7 +32,8 @@ class AppServiceProvider extends ServiceProvider
         Paginator::defaultView('pagination.default');
 
         // Batas wajar permintaan layar ujian per mahasiswa (autosave, heartbeat, pelanggaran).
-        RateLimiter::for('ujian', fn (Request $request) => Limit::perMinute(240)->by($request->user()?->id ?: $request->ip()));
+        RateLimiter::for('ujian', fn (Request $request) => Limit::perMinute((int) config('examguard.batas_permintaan_per_menit'))
+            ->by($request->user()?->id ?: $request->ip()));
 
         // Parameter ID pada rute selalu numerik.
         Route::pattern('exam', '[0-9]+');

@@ -285,3 +285,27 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 - **Keputusan:** tombol "Publikasikan nilai final" mengisi `dipublikasikan_pada`
   untuk hasil yang `nilai_akhir`-nya sudah terisi; sisanya dilaporkan dan tidak
   ikut. Publikasi terjadwal (FR-08.1, Could) belum dibuat.
+
+## I. Keamanan dan Pengujian (Fase 5)
+
+### D-39 CSP ketat hanya saat debug mati
+- **Keputusan:** `Content-Security-Policy` (semua sumber `'self'`, tanpa inline,
+  `frame-ancestors 'none'`) dipasang bila `APP_DEBUG=false`.
+- **Alasan:** halaman galat debug Laravel memakai skrip inline dan server Vite
+  dev memakai origin lain. Diuji di peramban dengan debug mati: layar ujian,
+  Live Monitor, dan unduhan CSV berjalan tanpa pelanggaran CSP.
+
+### D-40 Disk lokal tidak disajikan lewat rute
+- **Keputusan:** `filesystems.disks.local.serve = false`, sehingga rute bawaan
+  `GET/PUT storage/{path}` tidak terdaftar.
+- **Alasan:** tidak dipakai aplikasi; berkas privat (ekspor dataset esai) tidak
+  perlu diakses dari peramban.
+
+### D-41 Task Must di luar "Jalur MVP"
+- **Keputusan:** 5.2 dan 5.6 (Must, tidak tercantum di Jalur MVP) dikerjakan
+  setelah 5.1/5.3/5.5, sebelum tugas Should — sama seperti 1.5 (D-23).
+
+### D-42 Uji akurasi dan SUS memakai alat, bukan data rekaan
+- **Keputusan:** untuk 5.3 dan 5.5 hanya disiapkan alat dan instrumen yang
+  teruji. Tidak ada hasil penelitian yang dibuat-buat; contoh dataset diberi
+  label "rekaan" dan tidak boleh dikutip sebagai hasil.
