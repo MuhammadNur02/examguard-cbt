@@ -144,7 +144,7 @@ Detail di [nlp-service/README.md](nlp-service/README.md).
 | Proses | Perintah | Fungsi |
 |---|---|---|
 | Queue worker | `php artisan queue:work` (sudah termasuk di `php artisan dev`) | Menghitung skor rekomendasi esai |
-| Penjadwal | `php artisan schedule:work` (produksi: cron `schedule:run` tiap menit) | Mengirim otomatis attempt yang waktunya habis saat peramban peserta tertutup |
+| Penjadwal | `php artisan schedule:work` (produksi: cron `schedule:run` tiap menit) | Mengirim otomatis attempt yang waktunya habis saat peramban peserta tertutup, dan menjalankan publikasi nilai terjadwal |
 | Layanan NLP | `uvicorn ...` (langkah 2) | TF-IDF + Cosine Similarity |
 
 Di Windows, aktifkan OPcache (`zend_extension=opcache`, `opcache.enable_cli=1`

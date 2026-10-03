@@ -4,6 +4,17 @@ Ringkasan per fase: apa yang selesai, apa yang diuji dan hasilnya, serta cara
 menjalankan dan memverifikasi. Detail keputusan ada di [DECISIONS.md](DECISIONS.md),
 hambatan di [BLOCKERS.md](BLOCKERS.md).
 
+## Status terakhir (3 Okt 2026)
+
+- **Task.md:** semua task Must, Should, dan Could selesai dan dicentang, kecuali
+  **5.3** (uji akurasi esai) dan **5.5** (SUS/UAT): alat dan instrumennya siap
+  serta teruji, tetapi butuh data nyata (jawaban yang dinilai dosen,
+  responden) — lihat BLOCKERS B-04 dan B-05.
+- **Tes:** PHPUnit 344 lulus (5.268 asersi), Pint bersih; pytest layanan NLP 60
+  lulus, ruff bersih; `npm run build` berhasil.
+- **Uji beban:** `docs/UJI-BEBAN.md` (laptop pengembangan; perlu diulang di
+  server target).
+
 ## Lingkungan di mesin ini
 
 | Alat | Versi | Lokasi |
