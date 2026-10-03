@@ -198,6 +198,7 @@ Menjalankan penilaian esai: layanan NLP (`uvicorn ...`) dan queue worker
 | Task | Status | Bukti / catatan |
 |---|---|---|
 | 2.7 Pembatasan IP/CIDR | Selesai | `IpAllowlistTest` (mulai, soal, autosave, heartbeat, halaman kerjakan ditolak dari luar daftar; kembali ke jaringan lanjut normal; validasi per baris), `JaringanIpTest`; di peramban: status "Jaringan tidak diizinkan" lalu jawaban antrean tersimpan setelah jaringan diizinkan lagi; D-51 |
+| 2.8 Pool soal N dari M | Selesai | `QuestionPoolTest`: 200 seed selalu N soal berbeda dan menjangkau 18+ dari 20 subset; subset urut asli bila acak soal mati; dua mahasiswa mendapat subset berbeda dan skor maksimal dari subset masing-masing; penerbitan ditolak bila N > M; pratinjau menampilkan N soal; D-52 |
 
 ## Cara menjalankan (ringkas)
 

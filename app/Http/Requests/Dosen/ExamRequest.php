@@ -26,6 +26,7 @@ class ExamRequest extends FormRequest
             'batas_pelanggaran' => ['required', 'integer', 'min:1', 'max:20'],
             'acak_soal' => ['boolean'],
             'acak_opsi' => ['boolean'],
+            'pool_size' => ['nullable', 'integer', 'min:1', 'max:999'],
             'kelas' => ['nullable', 'array'],
             'kelas.*' => ['integer', 'exists:classes,id'],
             'kode_akses' => ['nullable', 'string', 'regex:/^[A-Za-z0-9-]{4,20}$/'],
@@ -96,6 +97,7 @@ class ExamRequest extends FormRequest
             'batas_pelanggaran' => 'batas pelanggaran',
             'kode_akses' => 'kode akses',
             'ip_allowlist' => 'daftar IP',
+            'pool_size' => 'jumlah soal per mahasiswa',
         ];
     }
 
@@ -106,6 +108,7 @@ class ExamRequest extends FormRequest
             ...$this->safe()->only(['judul', 'mata_kuliah', 'mulai', 'durasi_menit', 'batas_pelanggaran']),
             'acak_soal' => $this->boolean('acak_soal'),
             'acak_opsi' => $this->boolean('acak_opsi'),
+            'pool_size' => filled($this->input('pool_size')) ? (int) $this->input('pool_size') : null,
         ];
     }
 }

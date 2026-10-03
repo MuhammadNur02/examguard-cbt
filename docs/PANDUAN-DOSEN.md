@@ -21,6 +21,12 @@ pelanggaran N, dan opsi pengacakan (soal, opsi PG). Ujian tersimpan sebagai
   dimulai. Kode tidak membedakan huruf besar/kecil; 5 kali salah membuat
   mahasiswa itu menunggu 5 menit. Mahasiswa yang melanjutkan ujiannya (mis.
   setelah peramban tertutup) tidak diminta kode lagi.
+- **Soal per mahasiswa** (opsional, pool): isi N agar tiap mahasiswa mendapat N
+  soal acak dari seluruh soal ujian. Subset tiap mahasiswa tersimpan di
+  attempt-nya; nilai akhir (persen) dihitung dari bobot soal yang ia terima.
+  Bila soal esai ikut di-pool, jumlah esai antarmahasiswa bisa berbeda;
+  gunakan bobot yang setara bila ingin perbandingan yang adil. Ujian tidak dapat
+  diterbitkan bila N melebihi jumlah soal.
 - **Batasi jaringan** (opsional): satu alamat IP atau CIDR per baris, mis.
   `10.20.0.0/16` untuk Wi-Fi kampus. Mahasiswa dari jaringan lain tidak dapat
   memulai, dan bila pindah jaringan di tengah ujian, jawabannya tidak tersimpan

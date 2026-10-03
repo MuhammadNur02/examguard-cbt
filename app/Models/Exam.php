@@ -177,6 +177,10 @@ class Exam extends Model
             }
         }
 
+        if ($this->pool_size !== null && $this->pool_size > $questions->count()) {
+            $masalah[] = "Jumlah soal per mahasiswa ({$this->pool_size}) melebihi jumlah soal ({$questions->count()}).";
+        }
+
         return $masalah;
     }
 }

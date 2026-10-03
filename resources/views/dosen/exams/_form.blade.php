@@ -90,4 +90,13 @@
             </label>
         </div>
     </fieldset>
+
+    <div>
+        <label for="pool_size" class="form-label">Soal per mahasiswa (opsional)</label>
+        <input id="pool_size" name="pool_size" type="number" min="1" max="999" class="form-input"
+            value="{{ old('pool_size', $exam->pool_size) }}"
+            aria-describedby="pool-help {{ $errors->has('pool_size') ? 'pool_size-error' : '' }}">
+        <p id="pool-help" class="mt-1.5 text-small text-stone-500">Isi N agar tiap mahasiswa mendapat N soal acak dari seluruh soal (pool). Nilai akhir dihitung dari bobot soal yang diterima masing-masing. Kosongkan untuk memakai semua soal.</p>
+        <x-field-error name="pool_size" />
+    </div>
 </div>

@@ -391,7 +391,12 @@ class AttemptService
         $questions = $exam->questions()->with('options')->get()->keyBy('id');
 
         $urutanSoal = $questions->keys()->all();
-        if ($exam->acak_soal) {
+        $pool = $exam->pool_size;
+        if ($pool !== null && $pool > 0 && $pool < count($urutanSoal)) {
+            // FR-03.6: subset acak N dari M; tanpa acak soal, subset tetap urut seperti aslinya.
+            $terpilih = array_slice(FisherYates::shuffle($urutanSoal, $rng), 0, $pool);
+            $urutanSoal = $exam->acak_soal ? $terpilih : array_values(array_intersect($urutanSoal, $terpilih));
+        } elseif ($exam->acak_soal) {
             $urutanSoal = FisherYates::shuffle($urutanSoal, $rng);
         }
 

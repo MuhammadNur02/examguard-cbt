@@ -466,3 +466,15 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
 - **Alternatif:** mengunci attempt saat IP keluar daftar (terlalu keras untuk
   Wi-Fi yang berganti titik akses) atau rentang "a-b" (CIDR sudah cukup dan
   lebih umum).
+
+### D-52 Pool soal N dari M (Task 2.8)
+- **Keputusan:** `exams.pool_size` (opsional). Subset dipilih dengan Fisher-Yates
+  dari seed attempt yang sama (dapat direkonstruksi, FR-03.3) lalu disimpan di
+  `urutan_soal`; bila acak soal mati, subset tetap berurutan seperti aslinya.
+  Semua bagian lain (payload, penilaian, koreksi esai, rekap) sudah bekerja
+  berdasarkan `urutan_soal`, sehingga skor maksimal dan nilai akhir (persen)
+  dihitung dari subset masing-masing. Penerbitan ditolak bila N > jumlah soal.
+- **Alasan:** perubahan minimal dan konsisten dengan cara pengacakan yang ada.
+- **Alternatif:** pool per tipe/kategori (mis. 8 PG + 2 esai) agar komposisi
+  setara antarmahasiswa; lebih adil untuk campuran tipe, tetapi butuh skema
+  kategori soal. Dicatat di panduan dosen sebagai keterbatasan.
