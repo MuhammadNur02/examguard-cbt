@@ -43,3 +43,11 @@
   kolom skor_dosen kosong) dan `nlp-service/evaluasi.py` (MAE, Pearson, empat
   varian). Protokol: `docs/EVALUASI-AKURASI-ESAI.md`.
 - **Task 5.3 tidak dicentang** sampai hasil dari data nyata ada.
+
+## B-05 Task 5.5 (SUS/UAT) butuh responden
+- **Status:** instrumen dan kalkulator siap; menunggu pengambilan data.
+- **Tersedia:** `docs/KUESIONER-SUS-UAT.md` (10 butir SUS, skenario UAT per
+  peran, etika) dan `nlp-service/sus.py` (skor SUS teruji).
+- **Perlu Anda:** cocokkan rumusan butir SUS dengan sumber adaptasi bahasa
+  Indonesia yang Anda rujuk, lalu sebarkan ke mahasiswa dan dosen.
+- **Task 5.5 tidak dicentang** sampai data terkumpul dan dianalisis.
