@@ -113,10 +113,16 @@ class QuestionRequest extends FormRequest
         return array_values(array_filter(self::LABEL, fn (string $label) => filled($this->input("opsi.{$label}.teks"))));
     }
 
-    /** Kata kunci dipisah koma atau baris baru, tanpa duplikat. @return list<string> */
+    /** @return list<string> */
     public function kataKunci(): array
     {
-        $bagian = preg_split('/[,\n]+/', (string) $this->input('keywords'));
+        return self::pecahKataKunci((string) $this->input('keywords'));
+    }
+
+    /** Kata kunci dipisah koma atau baris baru, tanpa duplikat (dipakai juga oleh impor soal). @return list<string> */
+    public static function pecahKataKunci(string $teks): array
+    {
+        $bagian = preg_split('/[,\r\n]+/', $teks);
 
         return array_values(array_unique(array_filter(array_map('trim', $bagian), fn ($k) => $k !== '')));
     }

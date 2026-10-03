@@ -8,6 +8,8 @@ use SplFileObject;
 /**
  * Pembaca CSV sederhana untuk impor. Mendeteksi pemisah koma atau titik koma
  * (Excel berlokal Indonesia menyimpan CSV dengan titik koma) dan membuang BOM UTF-8.
+ * Sel berkutip boleh berisi baris baru; nomor baris = nomor rekaman, sama dengan
+ * nomor baris yang terlihat saat berkas dibuka di Excel.
  */
 class CsvReader
 {
@@ -17,8 +19,7 @@ class CsvReader
     public static function read(string $path): array
     {
         $file = new SplFileObject($path, 'r');
-        $firstLine = (string) $file->fgets();
-        $firstLine = preg_replace('/^\xEF\xBB\xBF/', '', $firstLine);
+        $firstLine = preg_replace('/^\xEF\xBB\xBF/', '', (string) $file->fgets());
 
         if (trim((string) $firstLine) === '') {
             throw new RuntimeException('Berkas kosong atau baris judul tidak ada.');
@@ -32,14 +33,12 @@ class CsvReader
 
         $rows = [];
         $line = 1;
-        while (! $file->eof()) {
-            $raw = $file->fgets();
+        while (($values = $file->fgetcsv($delimiter, '"', '')) !== false) {
             $line++;
-            if ($raw === false || trim($raw) === '') {
+            if (trim(implode('', array_map('strval', $values))) === '') {
                 continue;
             }
 
-            $values = str_getcsv(rtrim($raw, "\r\n"), $delimiter, '"', '');
             $data = [];
             foreach ($header as $i => $kolom) {
                 $data[$kolom] = trim((string) ($values[$i] ?? ''));

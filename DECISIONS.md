@@ -324,3 +324,20 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   dosen bila admin belum membuat kelas).
 - Kelas yang masih dipakai ujian tidak dapat dihapus; impor anggota hanya
   menerima akun mahasiswa yang sudah ada (semua-atau-tidak sama sekali).
+
+### D-44 Impor soal: XLSX + CSV, semua-atau-tidak sama sekali
+- **Keputusan:** impor soal menerima `.xlsx` (lembar pertama, dibaca OpenSpout)
+  dan `.csv` dengan kolom tetap (`tipe, teks, bobot, opsi_a–opsi_e, kunci,
+  opsi_tetap, kunci_esai, kata_kunci`). Seluruh berkas divalidasi dengan aturan
+  yang sama dengan form soal; satu baris salah membatalkan seluruh impor dan
+  semua galat dilaporkan per nomor baris. Kolom yang tidak dikenal ditolak agar
+  salah ketik judul kolom tidak diam-diam diabaikan. Soal ditambahkan setelah
+  soal yang ada dan hanya pada ujian draf.
+- **Alasan:** sama dengan impor akun (D-25) sehingga perilaku mudah
+  ditebak; dosen memperbaiki berkas lalu mengunggah ulang tanpa duplikat setengah
+  jadi. Templat Excel paling mudah diisi dosen; CSV tetap ada untuk alat lain.
+- **Alternatif:** pratinjau lalu konfirmasi (perlu menyimpan berkas sementara di
+  server), atau menyimpan baris yang valid saja (berisiko soal hilang tanpa sadar).
+- `CsvReader` kini memakai `fgetcsv` sehingga sel berkutip berisi baris baru
+  (Alt+Enter di Excel) terbaca utuh; nomor baris = nomor rekaman, sama dengan
+  nomor baris di Excel.

@@ -20,7 +20,7 @@ class QuestionController extends Controller
 {
     public function create(Request $request, Exam $exam): View|RedirectResponse
     {
-        if ($tolak = $this->tolakBilaBukanDraf($exam)) {
+        if ($tolak = self::tolakBilaBukanDraf($exam)) {
             return $tolak;
         }
 
@@ -38,7 +38,7 @@ class QuestionController extends Controller
 
     public function store(QuestionRequest $request, Exam $exam): RedirectResponse
     {
-        if ($tolak = $this->tolakBilaBukanDraf($exam)) {
+        if ($tolak = self::tolakBilaBukanDraf($exam)) {
             return $tolak;
         }
 
@@ -52,7 +52,7 @@ class QuestionController extends Controller
 
     public function edit(Exam $exam, Question $question): View|RedirectResponse
     {
-        if ($tolak = $this->tolakBilaBukanDraf($exam)) {
+        if ($tolak = self::tolakBilaBukanDraf($exam)) {
             return $tolak;
         }
 
@@ -61,7 +61,7 @@ class QuestionController extends Controller
 
     public function update(QuestionRequest $request, Exam $exam, Question $question): RedirectResponse
     {
-        if ($tolak = $this->tolakBilaBukanDraf($exam)) {
+        if ($tolak = self::tolakBilaBukanDraf($exam)) {
             return $tolak;
         }
 
@@ -75,7 +75,7 @@ class QuestionController extends Controller
 
     public function destroy(Exam $exam, Question $question): RedirectResponse
     {
-        if ($tolak = $this->tolakBilaBukanDraf($exam)) {
+        if ($tolak = self::tolakBilaBukanDraf($exam)) {
             return $tolak;
         }
 
@@ -104,10 +104,10 @@ class QuestionController extends Controller
         $question->options()->whereNotIn('label', $terisi)->delete();
     }
 
-    private function tolakBilaBukanDraf(Exam $exam): ?RedirectResponse
+    public static function tolakBilaBukanDraf(Exam $exam): ?RedirectResponse
     {
-        return $exam->isPublished() || $exam->sudahDikerjakan()
-            ? redirect()->route('dosen.exams.show', $exam)->with('error', 'Soal hanya dapat diubah saat ujian berstatus draf. Tarik ujian ke draf terlebih dahulu.')
-            : null;
+        return $exam->soalDapatDiubah()
+            ? null
+            : redirect()->route('dosen.exams.show', $exam)->with('error', 'Soal hanya dapat diubah saat ujian berstatus draf. Tarik ujian ke draf terlebih dahulu.');
     }
 }

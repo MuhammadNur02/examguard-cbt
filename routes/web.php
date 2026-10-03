@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/ujian/buat', [Dosen\ExamController::class, 'create'])->name('exams.create');
         Route::post('/ujian', [Dosen\ExamController::class, 'store'])->name('exams.store');
+        Route::get('/soal/templat', [Dosen\QuestionImportController::class, 'template'])->name('questions.import.template');
 
         // Hanya dosen pemilik ujian (ExamPolicy@kelola).
         Route::middleware('can:kelola,exam')->group(function () {
@@ -73,6 +74,8 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/ujian/{exam}/soal/buat', [Dosen\QuestionController::class, 'create'])->name('questions.create');
             Route::post('/ujian/{exam}/soal', [Dosen\QuestionController::class, 'store'])->name('questions.store');
+            Route::get('/ujian/{exam}/soal/impor', [Dosen\QuestionImportController::class, 'create'])->name('questions.import');
+            Route::post('/ujian/{exam}/soal/impor', [Dosen\QuestionImportController::class, 'store'])->name('questions.import.store');
             Route::scopeBindings()->group(function () {
                 Route::get('/ujian/{exam}/soal/{question}/ubah', [Dosen\QuestionController::class, 'edit'])->name('questions.edit');
                 Route::put('/ujian/{exam}/soal/{question}', [Dosen\QuestionController::class, 'update'])->name('questions.update');

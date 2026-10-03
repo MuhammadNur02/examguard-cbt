@@ -118,6 +118,12 @@ class Exam extends Model
         return $this->attempts()->exists();
     }
 
+    /** Soal hanya boleh ditambah/diubah selama draf dan belum ada attempt. */
+    public function soalDapatDiubah(): bool
+    {
+        return ! $this->isPublished() && ! $this->sudahDikerjakan();
+    }
+
     /**
      * Alasan ujian belum dapat diterbitkan (FR-02.2). Kosong berarti siap.
      *

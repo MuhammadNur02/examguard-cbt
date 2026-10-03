@@ -44,6 +44,16 @@ class CsvReaderTest extends TestCase
         $this->assertSame(5, $hasil['rows'][1]['line']);
     }
 
+    public function test_sel_berkutip_berisi_baris_baru_tetap_satu_baris_data(): void
+    {
+        // Excel menyimpan Alt+Enter dalam sel sebagai baris baru di dalam tanda kutip.
+        $hasil = CsvReader::read($this->berkas("tipe,teks\r\nesai,\"Jelaskan:\r\n1. GET\r\n2. POST\"\r\npg,Soal kedua\r\n"));
+
+        $this->assertCount(2, $hasil['rows']);
+        $this->assertSame("Jelaskan:\r\n1. GET\r\n2. POST", $hasil['rows'][0]['data']['teks']);
+        $this->assertSame(3, $hasil['rows'][1]['line'], 'Nomor baris mengikuti nomor baris Excel (rekaman), bukan baris fisik.');
+    }
+
     public function test_kolom_kurang_diisi_string_kosong(): void
     {
         $hasil = CsvReader::read($this->berkas("nim_nidn,nama,peran\n2301001,Andi\n"));

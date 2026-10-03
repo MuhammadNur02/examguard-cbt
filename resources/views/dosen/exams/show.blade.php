@@ -84,6 +84,7 @@
                 <div class="flex gap-2">
                     <a href="{{ route('dosen.questions.create', [$exam, 'tipe' => 'pg']) }}" class="btn btn-secondary btn-sm"><x-icon name="plus" class="size-4" />Pilihan ganda</a>
                     <a href="{{ route('dosen.questions.create', [$exam, 'tipe' => 'esai']) }}" class="btn btn-secondary btn-sm"><x-icon name="plus" class="size-4" />Esai</a>
+                    <a href="{{ route('dosen.questions.import', $exam) }}" class="btn btn-ghost btn-sm"><x-icon name="upload" class="size-4" />Impor</a>
                 </div>
             @else
                 <p class="text-small text-stone-500">Soal hanya dapat diubah saat ujian berstatus draf.</p>
