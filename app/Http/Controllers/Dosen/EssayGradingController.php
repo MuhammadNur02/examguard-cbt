@@ -17,6 +17,7 @@ use App\Support\Format;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
@@ -53,13 +54,76 @@ class EssayGradingController extends Controller
 
         abort_if($request->filled('jawaban') && ! $dipilih, 404);
 
+        $adaKataKunci = filled($question->keywords);
+        $opsiAmbang = collect(config('examguard.ambang_terima_massal'))->mapWithKeys(fn (float $ambang) => [(string) $ambang => [
+            'dengan_kata_kunci' => $this->calonTerimaMassal($jawaban, $question, $ambang, $adaKataKunci)->count(),
+            'tanpa_syarat' => $this->calonTerimaMassal($jawaban, $question, $ambang, false)->count(),
+        ]]);
+
         return view('dosen.grading.show', [
             'exam' => $exam,
             'question' => $question,
             'jawaban' => $jawaban,
             'dipilih' => $dipilih,
             'posisi' => $dipilih ? $jawaban->search(fn ($a) => $a->id === $dipilih->id) : null,
+            'opsiAmbang' => $opsiAmbang,
+            'ambangBawaan' => (float) config('examguard.ambang_terima_massal_bawaan'),
         ]);
+    }
+
+    /**
+     * Koreksi cepat (FR-06.4): terima rekomendasi sekaligus untuk jawaban yang
+     * belum dikonfirmasi dengan similarity ≥ ambang (opsional: semua kata kunci
+     * terpenuhi). Keputusan dosen yang sudah ada tidak pernah ditimpa.
+     */
+    public function terimaMassal(Request $request, Exam $exam, Question $question, ScoringService $scoring): RedirectResponse
+    {
+        abort_if($question->isPg(), 404);
+        $data = $request->validate([
+            'ambang' => ['required', 'numeric', 'min:0.5', 'max:1'],
+            'wajib_kata_kunci' => ['sometimes', 'boolean'],
+        ], [], ['ambang' => 'ambang similarity']);
+
+        $ambang = round((float) $data['ambang'], 2);
+        $wajibKataKunci = $request->boolean('wajib_kata_kunci') && filled($question->keywords);
+        $jawaban = $this->jawabanFinal($question);
+        $calon = $this->calonTerimaMassal($jawaban, $question, $ambang, $wajibKataKunci);
+        $syarat = 'similarity ≥ '.number_format($ambang, 2, ',', '.').($wajibKataKunci ? ', semua kata kunci terpenuhi' : '');
+
+        if ($calon->isEmpty()) {
+            return back()->with('error', "Tidak ada jawaban belum dikonfirmasi yang memenuhi syarat ({$syarat}).");
+        }
+
+        DB::transaction(function () use ($calon, $request, $scoring) {
+            foreach ($calon as $answer) {
+                $answer->update(['skor_final' => $answer->skor_sistem, 'dinilai_oleh' => $request->user()->id, 'dinilai_pada' => now()]);
+                $scoring->perbaruiHasil($answer->attempt);
+            }
+        });
+
+        AuditLog::catat('skor_esai_diterima_massal', $question, [
+            'ambang' => $ambang,
+            'wajib_kata_kunci' => $wajibKataKunci,
+            'jumlah' => $calon->count(),
+            'skor' => $calon->mapWithKeys(fn (StudentAnswer $a) => [$a->id => $a->skor_final])->all(),
+        ]);
+
+        $sisa = $jawaban->filter(fn (StudentAnswer $a) => $a->skor_final === null)->count();
+
+        return redirect()->route('dosen.grading.show', [$exam, $question])
+            ->with('status', "{$calon->count()} rekomendasi diterima ({$syarat}). {$sisa} jawaban lain belum dikonfirmasi.");
+    }
+
+    /** @param  Collection<int, StudentAnswer>  $jawaban  @return Collection<int, StudentAnswer> */
+    private function calonTerimaMassal(Collection $jawaban, Question $question, float $ambang, bool $wajibKataKunci): Collection
+    {
+        $kataKunci = $question->keywords ?? [];
+
+        return $jawaban->filter(fn (StudentAnswer $a) => $a->skor_final === null
+            && $a->skor_sistem !== null
+            && $a->similarity !== null
+            && round($a->similarity, 4) >= round($ambang, 4)
+            && (! $wajibKataKunci || array_diff($kataKunci, $a->kata_kunci_cocok ?? []) === []))->values();
     }
 
     public function update(Request $request, Exam $exam, Question $question, StudentAnswer $answer, ScoringService $scoring): RedirectResponse

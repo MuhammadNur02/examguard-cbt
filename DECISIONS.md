@@ -380,3 +380,17 @@ alternatif yang dipertimbangkan. Semua dapat diubah; beri tahu bila tidak setuju
   layar < 1024 px sisi terpanjang atau perangkat sentuh tanpa mouse/trackpad.
   Perubahan perangkat dicatat dulu sebelum permintaan dari ponsel ditolak.
   Batasan (dapat dikelabui) ditulis jujur di `docs/KEAMANAN.md`.
+
+### D-47 Koreksi cepat esai (Task 4.7)
+- **Keputusan:** "Terima massal" menyetujui skor rekomendasi hanya untuk jawaban
+  dari attempt final yang **belum dikonfirmasi**, sudah punya rekomendasi, dan
+  similarity ≥ ambang (pilihan 0,50–0,90, bawaan 0,80 di
+  `config/examguard.php`). Opsi bawaan menyala: semua kata kunci wajib harus
+  terpenuhi. Daftar ambang menampilkan jumlah jawaban yang akan diterima
+  (dengan dan tanpa syarat kata kunci) sebelum dosen menekan tombol. Satu
+  entri audit `skor_esai_diterima_massal` memuat ambang, syarat, dan skor per
+  jawaban.
+- **Alasan:** PRD FR-06.4 "hanya di atas ambang"; menimpa keputusan dosen yang
+  sudah ada atau menerima di bawah 0,50 berisiko nilai salah tanpa disadari.
+- **Alternatif:** ambang bebas (input angka) atau tanpa syarat kata kunci; checklist
+  kata kunci (FR-05.4) sudah ada sejak Fase 4 dan tetap tidak mengubah rumus (K-3).

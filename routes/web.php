@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/ujian/{exam}/koreksi/hitung', [Dosen\EssayGradingController::class, 'hitung'])->name('grading.score');
             Route::scopeBindings()->group(function () {
                 Route::get('/ujian/{exam}/koreksi/{question}', [Dosen\EssayGradingController::class, 'show'])->name('grading.show');
+                Route::post('/ujian/{exam}/koreksi/{question}/terima-massal', [Dosen\EssayGradingController::class, 'terimaMassal'])->name('grading.bulk');
                 Route::put('/ujian/{exam}/koreksi/{question}/{answer}', [Dosen\EssayGradingController::class, 'update'])->name('grading.update');
             });
 

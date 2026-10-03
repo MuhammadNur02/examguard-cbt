@@ -87,6 +87,14 @@ ditinjau, bukan bukti mutlak kecurangan.
    berdampingan dengan kunci Anda, beserta similarity dan skor rekomendasi.
 3. **Setujui** untuk memakai rekomendasi, atau isi skor lalu **Simpan
    Perubahan**. Halaman berpindah ke jawaban berikutnya yang belum dikonfirmasi.
+   Daftar **kata kunci wajib** menandai kata kunci yang terpenuhi (✓) dan yang
+   tidak ditemukan (✗); checklist ini tidak mengubah rumus skor (PRD K-3).
+4. **Koreksi cepat** (opsional): pilih ambang similarity (bawaan 0,80) lalu
+   **Terima massal**. Hanya jawaban yang **belum dikonfirmasi** dengan similarity
+   ≥ ambang yang skornya disetujui; bila dicentang, semua kata kunci wajib juga
+   harus terpenuhi. Pilihan ambang menampilkan jumlah jawaban yang akan
+   diterima. Jawaban lain tetap dikoreksi satu per satu, dan skor yang sudah
+   Anda tetapkan tidak pernah ditimpa.
 
 Nilai akhir selalu keputusan Anda; setiap perubahan skor tercatat di audit.
 Esai yang tidak dijawab otomatis bernilai 0.

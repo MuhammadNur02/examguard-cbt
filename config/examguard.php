@@ -27,4 +27,8 @@ return [
     // Selang polling Live Monitor dosen (detik, PRD: <= 10).
     'monitor_poll_detik' => (int) env('MONITOR_POLL_SECONDS', 5),
 
+    // Koreksi cepat esai: pilihan ambang similarity dan bawaannya (FR-06.4).
+    'ambang_terima_massal' => [0.9, 0.85, 0.8, 0.75, 0.7, 0.6, 0.5],
+    'ambang_terima_massal_bawaan' => 0.8,
+
 ];

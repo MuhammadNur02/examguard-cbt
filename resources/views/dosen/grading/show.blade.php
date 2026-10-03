@@ -17,6 +17,34 @@
     @if (! $dipilih)
         <p class="card text-stone-500">Belum ada jawaban dari attempt yang sudah selesai.</p>
     @else
+        <section class="card mb-6" aria-labelledby="judul-cepat">
+            <h2 id="judul-cepat" class="text-h3 font-semibold">Koreksi cepat</h2>
+            <p class="mt-1 text-small text-stone-500">Terima skor rekomendasi sekaligus untuk jawaban yang <strong>belum dikonfirmasi</strong> dengan similarity di atas ambang. Skor yang sudah Anda tetapkan tidak berubah; jawaban lain tetap dikoreksi satu per satu.</p>
+            <form method="POST" action="{{ route('dosen.grading.bulk', [$exam, $question]) }}" class="mt-4 flex flex-wrap items-end gap-4"
+                data-confirm="Terima rekomendasi untuk semua jawaban yang memenuhi ambang? Skor dapat diubah lagi satu per satu.">
+                @csrf
+                <div>
+                    <label for="ambang" class="form-label">Ambang similarity</label>
+                    <select id="ambang" name="ambang" class="form-input w-auto">
+                        @foreach ($opsiAmbang as $ambang => $jumlah)
+                            <option value="{{ $ambang }}" @selected((float) $ambang === $ambangBawaan)>
+                                ≥ {{ number_format((float) $ambang, 2, ',', '.') }} — {{ $kataKunci ? $jumlah['dengan_kata_kunci'] : $jumlah['tanpa_syarat'] }} jawaban{{ $kataKunci ? ' ('.$jumlah['tanpa_syarat'].' tanpa syarat kata kunci)' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <x-field-error name="ambang" />
+                </div>
+                @if ($kataKunci)
+                    <label class="flex items-center gap-2 pb-3 text-small text-ink">
+                        <input type="hidden" name="wajib_kata_kunci" value="0">
+                        <input type="checkbox" name="wajib_kata_kunci" value="1" class="size-5 accent-maroon-700" checked>
+                        Hanya bila semua kata kunci wajib terpenuhi
+                    </label>
+                @endif
+                <button type="submit" class="btn btn-secondary"><x-icon name="check" class="size-4" />Terima massal</button>
+            </form>
+        </section>
+
         <div class="grid items-start gap-6 xl:grid-cols-[1fr_15rem]">
             <div class="space-y-6">
                 <div class="grid gap-6 lg:grid-cols-2">
